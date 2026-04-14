@@ -1,12 +1,12 @@
 # 💾 Repository Pattern (6 Repositories)
 
-**Dateien:** `srv/handler/repositories/*.ts`
+**Files:** `srv/handler/repositories/*.ts`
 
-Das **Repository Pattern** abstrahiert den Datenzugriff und kapselt alle SQL-Operationen. Jede Entity hat ihr eigenes Repository mit domain-spezifischer Logik:
+The **Repository Pattern** abstracts data access and encapsulates all database operations. Each entity has its own repository with domain-specific logic:
 
 ```typescript
 /**
- * TimeEntryRepository - Datenzugriff für TimeEntries
+ * TimeEntryRepository - data access for time entries
  */
 export class TimeEntryRepository {
   private TimeEntries: any;
@@ -16,7 +16,7 @@ export class TimeEntryRepository {
   }
 
   /**
-   * Lädt Eintrag nach User/Datum
+   * loads entry by user/date
    */
   async getEntryByUserAndDate(
     tx: Transaction,
@@ -28,11 +28,11 @@ export class TimeEntryRepository {
     if (excludeId) whereClause.ID = { '!=': excludeId };
 
     const entry = await tx.run(SELECT.one.from(this.TimeEntries).where(whereClause));
-    return entry || null; // 🎯 Kein throw! Pure Datenabfrage
+    return entry || null; // 🎯 no throw! pure data query
   }
 
   /**
-   * Batch-Insert für Performance
+   * batch insert for performance
    */
   async insertBatch(tx: Transaction, entries: TimeEntry[]): Promise<void> {
     await tx.run(INSERT.into(this.TimeEntries).entries(entries));
@@ -42,17 +42,17 @@ export class TimeEntryRepository {
 
 **Features:**
 
-- 💾 Komplette Abstraktion der Datenschicht
-- 🔍 Domain-spezifische Queries (z.B. `getEntryByUserAndDate`)
-- ⚡ Performance-Optimierung mit Batch-Operations
-- 🎯 Reiner Datenzugriff ohne Business Logic (Separation of Concerns!)
-- 🧪 Perfekt mockbar für Unit Tests
+- 💾 complete abstraction of the data layer
+- 🔍 domain-specific queries (e.g., `getEntryByUserAndDate`)
+- ⚡ performance optimization with batch operations
+- 🎯 pure data access without business logic (separation of concerns!)
+- 🧪 perfectly mockable for unit tests
 
-**Unsere 6 Repositories:**
+**Our 6 repositories:**
 
-- `TimeEntryRepository` - CRUD + Queries + Batch Insert
-- `UserRepository` - User-Lookup by Email/ID
-- `ProjectRepository` - Validierung aktiver Projekte
-- `ActivityTypeRepository` - Validierung von Activity Codes
-- `WorkLocationRepository` - Validierung von Arbeitsorten
-- `TravelTypeRepository` - Validierung von Reisearten
+- `TimeEntryRepository` – CRUD + queries + batch insert
+- `UserRepository` – user lookup by email/ID
+- `ProjectRepository` – validation of active projects
+- `ActivityTypeRepository` – validation of activity codes
+- `WorkLocationRepository` – validation of work locations
+- `TravelTypeRepository` – validation of travel types
