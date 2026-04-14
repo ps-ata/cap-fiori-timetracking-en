@@ -1,46 +1,46 @@
-# ADR 0002: Command-Pattern fuer Business-Logik
+# ADR 0002: Command Pattern for Business Logic
 
 ## Status
 
-Akzeptiert - Fruehe Service-Konsolidierung
+Accepted - Early service consolidation
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Die TimeEntry-Logik umfasst Validierungen, Zeitberechnungen, Abhaengigkeiten zu mehreren Repositories sowie Bound Actions (z.B. Recalculate). Fruehe Iterationen mit Logik in Handlern fuehrten zu schwer testbaren Methoden und doppeltem Code fuer CREATE und UPDATE. Wir benoetigten eine Moeglichkeit, Geschaeftsregeln wiederverwendbar und transaktional einheitlich abzulegen.
+The TimeEntry logic includes validations, time calculations, dependencies on multiple repositories, and bound actions (e.g. Recalculate). Early iterations with logic in handlers led to methods that were hard to test and duplicated code for CREATE and UPDATE. We needed a way to store business rules reusable and transactionally consistent.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Wiederverwendung der gleichen Regelwerke fuer Handler, Aktionen und kuenftige Automatisierungen.
-- Explizite Dokumentation, welche Abhaengigkeiten eine Operation benoetigt.
-- Einfache Logging-Hooks pro Geschaeftsvorfall (`logger.command*`).
-- Testbarkeit durch reine Klassen ohne CAP-spezifisches Binding.
+- Reuse the same rule sets for handlers, actions, and future automations.
+- Explicitly document which dependencies an operation requires.
+- Simple logging hooks per business transaction (`logger.command*`).
+- Testability through pure classes without CAP-specific binding.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Logik direkt in Handlern oder Services
+### Option A - Logic directly in handlers or services
 
-- Handler rufen Repositories und Utilities direkt auf.
-- Bound Actions muessen ihre Regeln erneut implementieren.
+- Handlers call repositories and utilities directly.
+- Bound actions must reimplement their rules.
 
-### Option B - Separates Command-Layer fuer jede Operation
+### Option B - Separate command layer for each operation
 
-- Command-Klassen kapseln die Ausfuehrung (`srv/track-service/handler/commands/**`).
-- Handler uebergeben nur Request und Transaction (`srv/track-service/handler/handlers/TimeEntryHandlers.ts`).
-- Abhaengigkeiten werden vom ServiceContainer injiziert.
+- Command classes encapsulate execution (`srv/track-service/handler/commands/**`).
+- Handlers only pass request and transaction (`srv/track-service/handler/handlers/TimeEntryHandlers.ts`).
+- Dependencies are injected by the ServiceContainer.
 
-## Entscheidung
+## Decision
 
-Wir waehlen Option B. Jeder Geschaeftsvorfall erhaelt eine Command-Klasse, die alle Abhaengigkeiten im Konstruktor entgegennimmt. Handler bleiben auf Request-Vorbereitung und Fehlerrueckgabe beschraenkt. Bound Actions wie `handleRecalculate` nutzen dieselben Commands, womit Mehrfachimplementierungen vermieden werden.
+We choose Option B. Each business transaction gets a command class that receives all dependencies in the constructor. Handlers remain limited to request preparation and error handling. Bound actions like `handleRecalculate` use the same commands, avoiding duplicate implementations.
 
-## Konsequenzen
+## Consequences
 
-- Positiv: Commands lassen sich isoliert unit-testen, da sie nur `Transaction` und Plain Objects benoetigen.
-- Positiv: Logging und Fehlerbehandlung folgen einer konsistenten Struktur ueber `logger.commandStart/End`.
-- Positiv: Neue Operationen (z.B. `GetVacationBalance`) koennen schnelle ueber Commands angebunden werden, ohne Handler-Logik anzupassen.
-- Negativ: Mehr Dateien und Boilerplate pro Anwendungsfall.
-- Negativ: Entwickler muessen Abhaengigkeiten im ServiceContainer aktuell halten, sonst schlagen Commands zur Laufzeit fehl.
+- Positive: Commands can be unit-tested in isolation since they only need `Transaction` and plain objects.
+- Positive: Logging and error handling follow a consistent structure via `logger.commandStart/End`.
+- Positive: New operations (e.g. `GetVacationBalance`) can be quickly attached via commands without modifying handler logic.
+- Negative: More files and boilerplate per use case.
+- Negative: Developers must keep dependencies in the ServiceContainer up to date or commands will fail at runtime.
 
-## Verweise
+## References
 
 - `srv/track-service/handler/commands/time-entry/CreateTimeEntryCommand.ts`
 - `srv/track-service/handler/commands/time-entry/UpdateTimeEntryCommand.ts`
