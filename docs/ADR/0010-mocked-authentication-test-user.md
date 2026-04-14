@@ -1,67 +1,67 @@
-# ADR 0010: Mocked Authentication mit Test-Usern für lokale Entwicklung
+# ADR 0010: Mocked Authentication with Test Users for Local Development
 
 ## Status
 
-Akzeptiert - Projektstart (historisch)
+Accepted - Project start (historical)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Für die lokale Entwicklung der Zeiterfassungs-Anwendung benötigten wir ein einfaches Authentication-System, das folgende Anforderungen erfüllt:
+For local development of the time tracking application, we needed a simple authentication system that meets the following requirements:
 
-1. **Schneller Entwicklungs-Workflow**: Entwickler sollen sich ohne komplexe OAuth2/XSUAA-Konfiguration anmelden können.
-2. **Multi-User-Testing**: Testen von User-spezifischen Features (z.B. eigene TimeEntries, User-Präferenzen) erfordert mehrere Test-User.
-3. **Realistische User-IDs**: User-IDs sollen E-Mail-Format haben, um Production-ähnliche Daten zu simulieren (z.B. `max.mustermann@test.de` statt `user1`).
-4. **Einfache Credentials**: Login-Credentials (Username/Password) sollen einfach merkbar sein für Entwickler und Tester.
-5. **Keine externe Abhängigkeit**: Keine Notwendigkeit für externe Identity Provider (z.B. SAP Identity Authentication Service) während lokaler Entwicklung.
-6. **Production-Ready Migration**: Das System soll einfach auf echte Authentication (z.B. XSUAA, JWT) umstellbar sein ohne Code-Änderungen in Business-Logik.
+1. **Fast development workflow**: Developers should be able to sign in without complex OAuth2/XSUAA configuration.
+2. **Multi-user testing**: Testing user-specific features (e.g. own TimeEntries, user preferences) requires multiple test users.
+3. **Realistic user IDs**: User IDs should use email format to simulate production-like data (e.g. `max.mustermann@test.de` instead of `user1`).
+4. **Simple credentials**: Login credentials (username/password) should be easy to remember for developers and testers.
+5. **No external dependency**: No need for external identity providers (e.g. SAP Identity Authentication Service) during local development.
+6. **Production-ready migration**: The system should be easy to switch to real authentication (e.g. XSUAA, JWT) without code changes in business logic.
 
-Frühe Prototypen nutzten keine Authentication, was zu folgenden Problemen führte:
+Early prototypes had no authentication, which caused the following problems:
 
-- User-spezifische Features (z.B. `UserService.getCurrentUserID()`) konnten nicht getestet werden.
-- TimeEntries hatten keine realistischen User-Zuordnungen.
-- Multi-User-Szenarien (z.B. Team-Lead sieht Einträge von Mitarbeitern) waren nicht testbar.
+- User-specific features (e.g. `UserService.getCurrentUserID()`) could not be tested.
+- TimeEntries had no realistic user assignments.
+- Multi-user scenarios (e.g. team lead views employee entries) were not testable.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Einfachheit**: Entwickler sollen ohne Setup lokale Entwicklung starten können.
-- **Multi-User-Support**: Mindestens 2 Test-User für verschiedene Szenarien.
-- **Realistische Daten**: User-IDs im E-Mail-Format, deutsche Namen für bessere Lesbarkeit.
-- **CAP-native**: Nutzung der CAP-eigenen `auth.kind: mocked` Konfiguration ohne zusätzliche Libraries.
-- **Production-Kompatibilität**: Einfacher Wechsel zu echter Authentication in Production.
+- **Simplicity**: Developers should be able to start local development without setup.
+- **Multi-user support**: At least 2 test users for different scenarios.
+- **Realistic data**: User IDs in email format, German names for readability.
+- **CAP-native**: Use CAP's native `auth.kind: mocked` configuration without additional libraries.
+- **Production compatibility**: Easy switch to real authentication in production.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Keine Authentication (Anonymous)
+### Option A - No Authentication (Anonymous)
 
-- Kein Login, alle Requests als anonymer User.
-- Vorteil: Kein Setup, einfachste Lösung.
-- Nachteil: User-spezifische Features nicht testbar, unrealistische Production-Umgebung.
+- No login, all requests are anonymous.
+- Pros: No setup, simplest solution.
+- Cons: User-specific features are not testable, unrealistic production environment.
 
-### Option B - Hard-coded User im Code
+### Option B - Hard-coded User in Code
 
-- `UserService.getCurrentUserID()` gibt Hard-coded User-ID zurück (z.B. `'user123'`).
-- Vorteil: Einfach, keine Authentication-Konfiguration.
-- Nachteil: Multi-User-Testing unmöglich, unrealistische User-IDs, Code-Änderungen für Production notwendig.
+- `UserService.getCurrentUserID()` returns a hard-coded user ID (e.g. `'user123'`).
+- Pros: Simple, no authentication configuration.
+- Cons: Multi-user testing impossible, unrealistic user IDs, requires production code changes.
 
-### Option C - CAP Mocked Authentication mit Test-Usern
+### Option C - CAP Mocked Authentication with Test Users
 
-- Nutzung von CAP's `auth.kind: mocked` in `package.json`.
-- Definition von Test-Usern mit Credentials und Rollen.
-- Login via Standard-CAP-Login-Seite (`/login`).
-- Vorteil: CAP-native, Multi-User-Support, realistische User-IDs, keine Code-Änderungen für Production.
-- Nachteil: Zusätzliche Konfiguration in `package.json`.
+- Use CAP's `auth.kind: mocked` in `package.json`.
+- Define test users with credentials and roles.
+- Login via CAP standard login page (`/login`).
+- Pros: CAP-native, multi-user support, realistic user IDs, no code changes for production.
+- Cons: Additional configuration in `package.json`.
 
-### Option D - Lokaler OAuth2 Mock-Server
+### Option D - Local OAuth2 Mock Server
 
-- Separater Mock-Server (z.B. Keycloak, Mock-XSUAA) für lokale Entwicklung.
-- Vorteil: Production-nahe Authentication-Flows.
-- Nachteil: Hohe Komplexität, zusätzliche Infrastruktur, langsamer Setup.
+- Separate mock server (e.g. Keycloak, mock XSUAA) for local development.
+- Pros: Production-like authentication flows.
+- Cons: High complexity, additional infrastructure, slower setup.
 
-## Entscheidung
+## Decision
 
-Wir wählen **Option C** - CAP Mocked Authentication mit Test-Usern. Die Konfiguration erfolgt in `package.json` unter `cds.requires.auth`:
+We choose **Option C** - CAP mocked authentication with test users. The configuration is done in `package.json` under `cds.requires.auth`:
 
-### Konfiguration in `package.json`
+### Configuration in `package.json`
 
 ```json
 {
@@ -95,89 +95,89 @@ Wir wählen **Option C** - CAP Mocked Authentication mit Test-Usern. Die Konfigu
 }
 ```
 
-### Test-User Details
+### Test User Details
 
-Wir definieren 3 Test-User mit deutschen Namen und den produktiven Rollenbezeichnungen, damit wir lokal das spätere Autorisierungskonzept simulieren:
+We define 3 test users with German names and production-like role labels so we can locally simulate the later authorization concept:
 
 #### User 1: Max Mustermann
 
-- **User-ID**: `max.mustermann@test.de` (entspricht E-Mail im User-Profil)
-- **Password**: `max` (einfach merkbar)
-- **Rollen**: `TimeTrackingUser`, `TimeTrackingAdmin` (Admin-Fall für lokale Tests)
-- **Profil**: Referenziert in `db/data/io.nimble-Users.csv` mit vollständigem Profil (Name, weeklyHoursDec, etc.)
+- **User ID**: `max.mustermann@test.de` (corresponds to the email in the user profile)
+- **Password**: `max` (easy to remember)
+- **Roles**: `TimeTrackingUser`, `TimeTrackingAdmin` (admin scenario for local tests)
+- **Profile**: Referenced in `db/data/io.nimble-Users.csv` with full profile data (name, weeklyHoursDec, etc.)
 
 #### User 2: Erika Musterfrau
 
-- **User-ID**: `erika.musterfrau@test.de`
+- **User ID**: `erika.musterfrau@test.de`
 - **Password**: `erika`
-- **Rolle**: `TimeTrackingUser`
-- **Profil**: Referenziert in `db/data/io.nimble-Users.csv`
+- **Role**: `TimeTrackingUser`
+- **Profile**: Referenced in `db/data/io.nimble-Users.csv`
 
 #### User 3: Frank Genehmiger
 
-- **User-ID**: `frank.genehmiger@test.de`
+- **User ID**: `frank.genehmiger@test.de`
 - **Password**: `frank`
-- **Rollen**: `TimeTrackingUser`, `TimeTrackingApprover`
-- **Profil**: Referenziert in `db/data/io.nimble-Users.csv`
+- **Roles**: `TimeTrackingUser`, `TimeTrackingApprover`
+- **Profile**: Referenced in `db/data/io.nimble-Users.csv`
 
-### Login-Flow
+### Login Flow
 
-1. Entwickler startet App mit `npm run watch`.
-2. Browser öffnet `http://localhost:4004/`.
-3. CAP zeigt Standard-Login-Seite mit User-Auswahl.
-4. Entwickler wählt User (z.B. "max.mustermann@test.de") und gibt Passwort ("max") ein.
-5. Session wird erstellt, `req.user.id` gibt User-ID zurück.
+1. Developer starts the app with `npm run watch`.
+2. Browser opens `http://localhost:4004/`.
+3. CAP displays the standard login page with user selection.
+4. Developer selects a user (e.g. `max.mustermann@test.de`) and enters the password (`max`).
+5. Session is created, and `req.user.id` returns the user ID.
 
-### Integration mit UserService
+### Integration with UserService
 
-`UserService.getCurrentUserID()` nutzt `req.user.id` aus CAP-Request-Context:
+`UserService.getCurrentUserID()` uses `req.user.id` from the CAP request context:
 
 ```typescript
 export class UserService {
   static getCurrentUserID(req?: any): string {
     const userId = req?.user?.id || cds.context?.user?.id;
     if (!userId) {
-      throw new Error('User nicht authentifiziert');
+      throw new Error('User not authenticated');
     }
     return userId;
   }
 }
 ```
 
-## Konsequenzen
+## Consequences
 
-### Positiv
+### Positive
 
-- **Einfacher Entwicklungs-Workflow**: Entwickler starten App und loggen sich mit einem Klick ein, keine OAuth2-Konfiguration notwendig.
-- **Multi-User-Testing**: Zwei Test-User ermöglichen Tests von User-spezifischen Features (z.B. "Max erstellt Entry, Erika sieht ihn nicht").
-- **Realistische User-IDs**: E-Mail-Format (`max.mustermann@test.de`) entspricht Production-User-IDs, was realistischere Test-Daten liefert.
-- **Einfache Credentials**: Passwörter wie "max" und "erika" sind leicht merkbar und kommunizierbar im Team.
-- **CAP-native Integration**: Keine zusätzlichen Libraries oder Mock-Server notwendig, nutzt CAP-Standard-Features.
-- **Production-Ready**: Wechsel zu echter Authentication (z.B. XSUAA) erfordert nur Änderung von `auth.kind` in `package.json`, keine Code-Änderungen in Business-Logik.
-- **Rollen-Unterstützung**: Ermöglicht zukünftige Erweiterungen mit Rollen-basierter Authorization (z.B. `admin`, `team-lead`).
+- **Simpler development workflow**: Developers can start the app and sign in with one click, no OAuth2 configuration needed.
+- **Multi-user testing**: Two test users allow testing user-specific features (e.g. "Max creates an entry, Erika does not see it").
+- **Realistic user IDs**: Email format (`max.mustermann@test.de`) matches production user IDs, which yields more realistic test data.
+- **Simple credentials**: Passwords like `max` and `erika` are easy to remember and communicate within the team.
+- **CAP-native integration**: No additional libraries or mock server required; uses CAP standard features.
+- **Production-ready**: Switching to real authentication (e.g. XSUAA) only requires changing `auth.kind` in `package.json`, no business logic changes.
+- **Role support**: Enables future extension with role-based authorization (e.g. `admin`, `team-lead`).
 
-### Negativ
+### Negative
 
-- **Nicht Production-geeignet**: Mocked Authentication ist nur für Entwicklung/Testing, nicht für Production.
-- **Begrenzte User-Anzahl**: Nur 2 Test-User definiert, mehr User erfordern manuelle Anpassung in `package.json`.
-- **Einfache Passwörter**: Passwörter wie "max" sind unsicher, aber akzeptabel für lokale Entwicklung.
-- **Keine Passwort-Rotation**: Passwörter sind statisch in `package.json`, keine Rotation/Ablauf-Mechanismen.
+- **Not production-suitable**: Mocked authentication is only for development/testing, not for production.
+- **Limited user count**: Only 3 test users are defined; more users require manual updates in `package.json`.
+- **Simple passwords**: Passwords like `max` are insecure, but acceptable for local development.
+- **No password rotation**: Passwords are static in `package.json`; no rotation or expiration mechanism.
 
 ### Trade-offs
 
-Wir akzeptieren die begrenzten User und einfachen Passwörter zugunsten von Entwicklungsgeschwindigkeit und Einfachheit. Für Production-Deployment wird `auth.kind` auf `xsuaa` oder `jwt` umgestellt, wodurch echte User-Verwaltung aktiv wird.
+We accept the limited user count and simple passwords in favor of development speed and simplicity. For production deployment, `auth.kind` will be switched to `xsuaa` or `jwt`, activating real user management.
 
-## Beispiel-Code
+## Example Code
 
-### Login-Seite (automatisch von CAP generiert)
+### Login Page (generated automatically by CAP)
 
-CAP zeigt automatisch eine Login-Seite unter `/login` mit User-Auswahl:
+CAP automatically displays a login page under `/login` with user selection:
 
 ```
 ┌─────────────────────────────────┐
 │  Login                          │
 │                                 │
-│  Username: [max.mustermann...] │
+│  Username: [max.mustermann...]   │
 │  Password: [•••]                │
 │                                 │
 │  [Login]                        │
@@ -190,17 +190,17 @@ CAP zeigt automatisch eine Login-Seite unter `/login` mit User-Auswahl:
 // srv/track-service/handler/services/UserService.ts
 export class UserService {
   /**
-   * Ermittelt die ID des aktuell angemeldeten Users
-   * @param req - Request-Objekt (optional, falls nicht in cds.context verfügbar)
-   * @returns User-ID (z.B. 'max.mustermann@test.de')
+   * Returns the currently authenticated user's ID
+   * @param req - Request object (optional if not available in cds.context)
+   * @returns User ID (e.g. 'max.mustermann@test.de')
    */
   static getCurrentUserID(req?: any): string {
-    // Versuche User-ID aus Request oder CDS-Context zu ermitteln
+    // Try to determine the user ID from the request or CDS context
     const userId = req?.user?.id || cds.context?.user?.id;
 
     if (!userId) {
-      logger.error('User nicht authentifiziert', null, { context: 'UserService.getCurrentUserID' });
-      throw new Error('User nicht authentifiziert');
+      logger.error('User not authenticated', null, { context: 'UserService.getCurrentUserID' });
+      throw new Error('User not authenticated');
     }
 
     logger.userOperation('GetCurrentUserID', `User ${userId} authenticated`, { userId });
@@ -209,16 +209,16 @@ export class UserService {
 }
 ```
 
-### Handler-Nutzung
+### Handler Usage
 
 ```typescript
 // srv/track-service/handler/handlers/TimeEntryHandlers.ts
 class TimeEntryHandlers {
   async onCreate(req: Request) {
-    // User-ID wird automatisch aus Authentication-Context ermittelt
+    // User ID is automatically determined from the authentication context
     const userId = UserService.getCurrentUserID(req);
 
-    // Setze User-ID automatisch auf aktuellen User
+    // Automatically assign current user to the new entry
     req.data.user_ID = userId;
 
     const result = await this.createCommand.execute(req.transaction, req.data);
@@ -227,9 +227,9 @@ class TimeEntryHandlers {
 }
 ```
 
-## Production-Migration
+## Production Migration
 
-### Schritt 1: Authentication-Kind ändern
+### Step 1: Change authentication kind
 
 ```json
 // package.json (Production)
@@ -237,33 +237,33 @@ class TimeEntryHandlers {
   "cds": {
     "requires": {
       "auth": {
-        "kind": "xsuaa" // <- Geändert von "mocked"
-        // XSUAA-spezifische Config hier
+        "kind": "xsuaa" // <- changed from "mocked"
+        // XSUAA-specific config here
       }
     }
   }
 }
 ```
 
-### Schritt 2: Keine Code-Änderungen notwendig
+### Step 2: No code changes required
 
-`UserService.getCurrentUserID()` und alle Commands/Handlers funktionieren unverändert, da sie nur `req.user.id` nutzen, das von CAP bei allen Authentication-Arten bereitgestellt wird.
+`UserService.getCurrentUserID()` and all commands/handlers work unchanged because they only use `req.user.id`, which CAP provides for all authentication types.
 
-### Schritt 3: User-Profile migrieren
+### Step 3: Migrate user profiles
 
-Test-User-Daten aus `db/data/io.nimble-Users.csv` müssen durch echte User-Profile ersetzt werden, die aus XSUAA oder Identity Provider kommen.
+Test user data from `db/data/io.nimble-Users.csv` must be replaced with real user profiles sourced from XSUAA or an identity provider.
 
-## Verweise
+## References
 
-- `package.json` - Mocked Authentication Konfiguration unter `cds.requires.auth`
-- `srv/track-service/handler/services/UserService.ts` - `getCurrentUserID()` Implementierung
-- `db/data/io.nimble-Users.csv` - User-Profile für Test-User
-- `.github/copilot-instructions.md` - Mock-User Details im AI-Development-Guide
+- `package.json` - mocked authentication configuration under `cds.requires.auth`
+- `srv/track-service/handler/services/UserService.ts` - `getCurrentUserID()` implementation
+- `db/data/io.nimble-Users.csv` - user profiles for test users
+- `.github/copilot-instructions.md` - mock user details in the AI development guide
 
-## Hinweise für Entwickler
+## Notes for Developers
 
-- **Login-Credentials**: `max.mustermann@test.de` / `max` und `erika.musterfrau@test.de` / `erika`
-- **User hinzufügen**: Neuen User in `package.json` unter `cds.requires.auth.users` hinzufügen, User-Profil in `db/data/io.nimble-Users.csv` anlegen.
-- **Logout**: Browser-Session löschen oder `/logout` aufrufen.
-- **Production-Deployment**: `auth.kind` auf `xsuaa` oder `jwt` ändern, keine Code-Änderungen notwendig.
-- **Rollen testen**: Neue Rollen in `package.json` definieren (z.B. `"roles": ["TimeTrackingUser", "TimeTrackingAdmin"]`) und via `req.user.is('TimeTrackingAdmin')` prüfen.
+- **Login credentials**: `max.mustermann@test.de` / `max` and `erika.musterfrau@test.de` / `erika`
+- **Add a user**: Add a new user in `package.json` under `cds.requires.auth.users`, and create the user profile in `db/data/io.nimble-Users.csv`.
+- **Logout**: Clear the browser session or call `/logout`.
+- **Production deployment**: Change `auth.kind` to `xsuaa` or `jwt`; no code changes required.
+- **Test roles**: Define new roles in `package.json` (e.g. `"roles": ["TimeTrackingUser", "TimeTrackingAdmin"]`) and verify with `req.user.is('TimeTrackingAdmin')`.
