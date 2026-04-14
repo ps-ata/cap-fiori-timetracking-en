@@ -1,45 +1,45 @@
-# ADR 0005: Duale UI5-Strategie fuer Zeiterfassung
+# ADR 0005: Dual UI5 Strategy for Time Tracking
 
 ## Status
 
-Akzeptiert - Erweiterung um Dashboard-Anforderungen
+Accepted - Extension for dashboard requirements
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Das Projekt soll sowohl eine schnelle Fiori-Elements-Liste fuer Fachanwender als auch ein visuell reiches Dashboard fuer Self-Service bieten. Ein einzelner App-Typ deckte beide Nutzungsfaelle nicht ab: Die List Report App liefert schnelle CRUD-Prozesse, waehrend Planungsfunktionen (Kalender, KPIs) kundenspezifische Steuerung benoetigen.
+The project should offer both a fast Fiori Elements list for business users and a visually rich dashboard for self-service. A single app type did not cover both use cases: the List Report app provides quick CRUD processes, while planning functions (calendar, KPIs) require custom controls.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Wiederverwendung desselben TrackService (`/odata/v4/track/`) fuer beide Clients.
-- Gemeinsame OData-Annotationen, aber unterschiedliche Darstellung.
-- Moeglichkeit, Custom UI5-Controls (SinglePlanningCalendar) einzubinden.
-- Trennung der Build-Konfiguration, damit Generator-Updates sicher eingespielt werden koennen.
+- Reuse the same TrackService (`/odata/v4/track/`) for both clients.
+- Share OData annotations while allowing different presentations.
+- Ability to integrate custom UI5 controls (SinglePlanningCalendar).
+- Separate build configuration so generator updates can be applied safely.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Eine einzige Fiori-Elements-App mit Erweiterungen
+### Option A - Single Fiori Elements app with extensions
 
-- Nutzung von Extension Points und Side Effects fuer Sonderfaelle.
-- Komplexe Custom Controls muessten in FE eingebettet werden.
+- Use extension points and side effects for special cases.
+- Complex custom controls would need to be embedded in FE.
 
-### Option B - Zwei spezialisierte UI5-Apps auf gemeinsamer Servicebasis
+### Option B - Two specialized UI5 apps on shared service basis
 
-- `app/timetable` als Fiori-Elements List Report mit Annotations (`app/timetable/annotations.cds`).
-- `app/timetracking` als Custom-TypeScript-App mit eigenen Controllern (`app/timetracking/webapp/controller/*.ts`).
-- Gemeinsame Service-Definition ueber `app/services.cds` und denselben CAP-Service.
+- `app/timetable` as Fiori Elements List Report with annotations (`app/timetable/annotations.cds`).
+- `app/timetracking` as custom TypeScript app with own controllers (`app/timetracking/webapp/controller/*.ts`).
+- Shared service definition via `app/services.cds` and the same CAP service.
 
-## Entscheidung
+## Decision
 
-Wir setzen Option B um. Beide Apps leben als Workspaces, teilen sich die Backend-OData und nutzen spezialisierte UI-Funktionalitaet. Annotations werden pro App gepflegt, wodurch FE-spezifische Einstellungen getrennt vom Custom Frontend bleiben. Das Deployment kann beide Bundles parallel ausliefern.
+We implement Option B. Both apps live as workspaces, share the backend OData, and use specialized UI functionality. Annotations are maintained per app, keeping FE-specific settings separate from the custom frontend. Deployment can deliver both bundles in parallel.
 
-## Konsequenzen
+## Consequences
 
-- Positiv: Fachanwender erhalten eine sofort nutzbare FE-Liste, Entwickler koennen UI5-Funktionen im Dashboard frei gestalten.
-- Positiv: Annotations in `app/timetable` und `srv/track-service/annotations/ui` koennen ohne Ruecksicht auf Custom Views optimiert werden.
-- Negativ: Zwei Build-Pipelines (ui5.yaml) muessen gepflegt und getestet werden.
-- Negativ: Gemeinsame Assets (i18n) muessen bewusst synchronisiert werden.
+- Positive: Business users get a ready-to-use FE list, developers can design UI5 features freely in the dashboard.
+- Positive: Annotations in `app/timetable` and `srv/track-service/annotations/ui` can be optimized without regard to custom views.
+- Negative: Two build pipelines (ui5.yaml) must be maintained and tested.
+- Negative: Shared assets (i18n) must be consciously synchronized.
 
-## Verweise
+## References
 
 - `app/timetable/`
 - `app/timetracking/`
