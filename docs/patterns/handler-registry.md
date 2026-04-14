@@ -1,8 +1,8 @@
 # 📋 HandlerRegistry Pattern
 
-**Datei:** `srv/handler/registry/HandlerRegistry.ts`
+**File:** `srv/handler/registry/HandlerRegistry.ts`
 
-Strukturierte Event-Handler-Registrierung mit **before/on/after** Support:
+structured event-handler registration with **before/on/after** support:
 
 ```typescript
 registry.register({
@@ -18,9 +18,9 @@ registry.apply(service);
 
 # 📋 Registrar Pattern
 
-**Datei:** `srv/handler/registry/HandlerRegistrar.ts`
+**File:** `srv/handler/registry/HandlerRegistrar.ts`
 
-Trennt Registrierungslogik von der Business-Logik:
+separates registration logic from business logic:
 
 ```typescript
 class HandlerRegistrar {
@@ -34,7 +34,7 @@ class HandlerRegistrar {
       handler: handlers.handleCreate.bind(handlers),
       description: 'Validate and enrich time entry before creation',
     });
-    // ... weitere Registrierungen
+    // ... more registrations
   }
 
   registerAllHandlers(handlers: { ... }): void {
@@ -47,6 +47,6 @@ class HandlerRegistrar {
 
 **Features:**
 
-- 📋 Strukturierte Registrierung
-- 🎯 Separation of Concerns
-- 🔄 Wiederverwendbar
+- 📋 structured registration
+- 🎯 separation of concerns
+- 🔄 reusable
