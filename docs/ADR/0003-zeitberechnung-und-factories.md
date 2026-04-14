@@ -1,46 +1,46 @@
-# ADR 0003: Zentralisierte Zeitberechnung ueber Factory und Services
+# ADR 0003: Centralized Time Calculation via Factory and Services
 
 ## Status
 
-Akzeptiert - Nach ersten TimeEntry-Prototypen
+Accepted - After initial TimeEntry prototypes
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Zeitwerte wie `durationHoursNet`, `overtimeHours` und `expectedDailyHoursDec` muessen serverseitig konsistent bleiben, egal ob Eintraege manuell oder automatisiert entstehen. In fruehen Tests kam es zu Abweichungen, weil Handler verschiedene Berechnungen nutzten oder UI-Werte durchrutschten. Zudem benoetigen generierte Eintraege (Wochenende, Feiertage, Default) gemeinsame Regeln.
+Time values such as `durationHoursNet`, `overtimeHours`, and `expectedDailyHoursDec` must remain consistent on the server side, whether entries are created manually or automatically. Early tests showed deviations because handlers used different calculations or UI values leaked through. Generated entries (weekend, holiday, default) also need shared rules.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Einmalige Definition der Arbeitszeitberechnung inklusive Rundung und Fehlerfaelle.
-- Wiederverwendbare Erstellung von generierten Eintraegen fuer Monats- und Jahreslauf.
-- Strikte Kontrolle, dass UI-Clients berechnete Felder nicht manipulieren.
-- Zugriff auf User-bezogene Sollstunden in jeder Operation.
+- Single definition of time calculation including rounding and error handling.
+- Reusable generation of entries for monthly and yearly runs.
+- Strict control to prevent UI clients from manipulating calculated fields.
+- Access to user-specific target hours in every operation.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Berechnungen in Handlern oder Commands duplizieren
+### Option A - Duplicate calculations in handlers or commands
 
-- Jeder Handler berechnet Dauer, Pause, Ueberstunden selbst.
-- Generierung erstellt Objekte ad hoc.
+- Each handler calculates duration, break, and overtime itself.
+- Generation creates objects ad hoc.
 
-### Option B - TimeEntryFactory plus TimeCalculationService als zentrale Quelle
+### Option B - TimeEntryFactory plus TimeCalculationService as central source
 
-- `TimeEntryFactory` erstellt Work-, Non-Work-, Default-, Wochenend- und Feiertags-Eintraege (`srv/track-service/handler/factories/TimeEntryFactory.ts`).
-- `TimeCalculationService` uebernimmt Umrechnungen und Rundungen (`srv/track-service/handler/services/TimeCalculationService.ts`).
-- Commands rufen Factory-Methoden auf und uebernehmen nur Rueckgabewerte (`srv/track-service/handler/commands/time-entry/CreateTimeEntryCommand.ts`).
+- `TimeEntryFactory` creates work, non-work, default, weekend, and holiday entries (`srv/track-service/handler/factories/TimeEntryFactory.ts`).
+- `TimeCalculationService` handles conversions and rounding (`srv/track-service/handler/services/TimeCalculationService.ts`).
+- Commands call factory methods and only adopt returned values (`srv/track-service/handler/commands/time-entry/CreateTimeEntryCommand.ts`).
 
-## Entscheidung
+## Decision
 
-Wir setzen Option B um. Alle Zeitberechnungen laufen durch TimeCalculationService, waehrend TimeEntryFactory Domain-Objekte erzeugt. Commands validieren Eingaben, fragen Sollstunden ueber den UserService ab und uebernehmen berechnete Werte in den Request. Generationsstrategien nutzen dieselbe Factory fuer konsistente UI-Werte.
+We implement Option B. All time calculations go through TimeCalculationService, while TimeEntryFactory produces domain objects. Commands validate inputs, request target hours through UserService, and apply calculated values to the request. Generation strategies use the same factory for consistent UI values.
 
-## Konsequenzen
+## Consequences
 
-- Positiv: Einheitliche Rundung auf zwei Dezimalstellen und einheitliche Fehlertexte.
-- Positiv: Bereits berechnete Werte aus automatischen Eintraegen koennen unveraendert uebernommen werden (siehe `CreateTimeEntryCommand.execute`).
-- Positiv: Tests muessen nur Factory und Calculation Service pruefen, nicht jede Handler-Variante.
-- Negativ: Entwickler muessen neue Felder zuerst in Factory und Service einfuehren, bevor sie in Commands nutzbar sind.
-- Negativ: Starke Kopplung an den UserService fuer Sollstunden, dadurch Abhaengigkeit auf `Transaction`.
+- Positive: Consistent rounding to two decimal places and unified error messages.
+- Positive: Pre-calculated values from automatic entries can be accepted unchanged (see `CreateTimeEntryCommand.execute`).
+- Positive: Tests only need to verify the factory and calculation service, not every handler variant.
+- Negative: Developers must introduce new fields in the factory and service before they can be used in commands.
+- Negative: Strong coupling to UserService for target hours, causing a dependency on `Transaction`.
 
-## Verweise
+## References
 
 - `srv/track-service/handler/factories/TimeEntryFactory.ts`
 - `srv/track-service/handler/services/TimeCalculationService.ts`
