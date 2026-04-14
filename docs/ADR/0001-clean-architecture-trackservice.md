@@ -1,45 +1,45 @@
-# ADR 0001: Clean-Architecture-Layer fuer TrackService
+# ADR 0001: Clean Architecture Layer for TrackService
 
 ## Status
 
-Akzeptiert - Projektstart (historisch)
+Accepted - Project start (historical)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Das Backend musste von Beginn an komplexe Zeitwirtschaftsregeln, externe Feiertagsdaten sowie mehrere UI5-Clients bedienen. Die Standard-CAP-Praxis, Event-Handler direkt im Service zu definieren, fuehrte bei fruehen Prototypen zu starken Abhaengigkeiten zwischen Datenzugriff, Validierung und Orchestrierung. Wir brauchten eine Struktur, die Testbarkeit, Wiederverwendung und klare Verantwortlichkeiten sicherstellt.
+The backend had to support complex time management rules, external holiday data, and multiple UI5 clients from the beginning. The standard CAP practice of defining event handlers directly in the service led early prototypes to strong dependencies between data access, validation, and orchestration. We needed a structure that ensures testability, reuse, and clear responsibilities.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Konsistente Trennung von Infrastruktur, Anwendung und Domain-Logik (Clean Architecture).
-- Austauschbarkeit von Implementierungen fuer Repositories, Services und Commands ohne Code-Duplikation.
-- Moeglichkeit, Handler kontrolliert zu registrieren und spaeter automatisiert zu validieren oder testen.
-- Einfache Beobachtbarkeit durch zentrale Initialisierung und Logging.
+- Consistent separation of infrastructure, application, and domain logic (Clean Architecture).
+- Replaceability of implementations for repositories, services, and commands without code duplication.
+- Ability to register handlers in a controlled way and later validate or test them automatically.
+- Simple observability through centralized initialization and logging.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - CAP-Standard mit direkt registrierten Handlern
+### Option A - CAP standard with directly registered handlers
 
-- Handler werden per `this.before(...)` im Service verteilt abgelegt.
-- Abhaengigkeiten werden ueber direkte Importe verdrahtet.
+- Handlers are distributed across the service using `this.before(...)`.
+- Dependencies are wired through direct imports.
 
-### Option B - Eigenes Clean-Architecture-Layer mit Container und Registry
+### Option B - Custom Clean Architecture layer with container and registry
 
-- ServiceContainer baut Repositories, Services, Validatoren, Strategien, Factories und Commands auf (`srv/track-service/handler/container/ServiceContainer.ts`).
-- HandlerRegistry und HandlerSetup registrieren Handler gruppiert und nachvollziehbar (`srv/track-service/handler/registry/HandlerRegistry.ts`, `srv/track-service/handler/setup/HandlerSetup.ts`).
-- `srv/track-service/track-service.ts` orchestriert den Aufbau vor `super.init()`.
+- ServiceContainer constructs repositories, services, validators, strategies, factories, and commands (`srv/track-service/handler/container/ServiceContainer.ts`).
+- HandlerRegistry and HandlerSetup register handlers in grouped, traceable units (`srv/track-service/handler/registry/HandlerRegistry.ts`, `srv/track-service/handler/setup/HandlerSetup.ts`).
+- `srv/track-service/track-service.ts` orchestrates the setup before `super.init()`.
 
-## Entscheidung
+## Decision
 
-Wir waehlen Option B. Der TrackService initialisiert zuerst den ServiceContainer und nutzt dann HandlerSetup, um saemtliche Handlergruppen anzubinden. Dadurch bleibt der ApplicationService schlank, und neue Komponenten koennen ueber den Container eingebunden werden, ohne Aufrufer anzupassen.
+We choose Option B. The TrackService first initializes the ServiceContainer and then uses HandlerSetup to attach all handler groups. This keeps the ApplicationService slim, and new components can be integrated through the container without adjusting callers.
 
-## Konsequenzen
+## Consequences
 
-- Positiv: Saubere Layer-Trennung, konsistentes Logging via `logger.service*`, einfache Wiederverwendung in Tests.
-- Positiv: Neue Handlergruppen lassen sich per `.with...Handlers()` aktivieren, ohne bestehende Registrierung anzufassen.
-- Negativ: Hoeherer Initialaufwand, da alle Abhaengigkeiten im Container gepflegt werden muessen.
-- Negativ: Entwickler muessen sich mit dem fluenten Setup vertraut machen, bevor neue Events bedient werden koennen.
+- Positive: Clean layer separation, consistent logging via `logger.service*`, easy reuse in tests.
+- Positive: New handler groups can be activated via `.with...Handlers()` without changing existing registration.
+- Negative: Higher initial effort because all dependencies must be maintained in the container.
+- Negative: Developers must become familiar with the fluent setup before they can handle new events.
 
-## Verweise
+## References
 
 - `srv/track-service/track-service.ts`
 - `srv/track-service/handler/container/ServiceContainer.ts`
