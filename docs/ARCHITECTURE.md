@@ -90,143 +90,143 @@ Time tracking application based on SAP Cloud Application Programming Model with 
 
 ## 🔗 Navigation
 
-- **← Zurück:** [README](../README.md) - Executive Summary
-- **→ Weiter:** [GETTING_STARTED](../GETTING_STARTED.md) - Installation & Quick Start
-- **📚 Mehr:** [CONTRIBUTING](../CONTRIBUTING.md) - Contribution Guidelines
-- **📋 ADRs:** [ADR-Verzeichnis](ADR/) - Architecture Decision Records
+- **← Back:** [README](../README.md) - Executive Summary
+- **→ Next:** [GETTING_STARTED](../GETTING_STARTED.md) - Installation & Quick Start
+- **📚 More:** [CONTRIBUTING](../CONTRIBUTING.md) - Contribution Guidelines
+- **📋 ADRs:** [ADR Directory](ADR/) - Architecture Decision Records
 
 ---
 
-## 1. Einführung und Ziele
+## 1. Introduction and Goals
 
-### 1.1 Aufgabenstellung
+### 1.1 Problem Statement
 
-**Geschäftliches Problem:**
+**Business Problem:**
 
-Mitarbeiter in Unternehmen müssen ihre Arbeitszeiten dokumentieren für:
+Employees in companies must document their working hours for:
 
-- Projektabrechnung und Controlling
-- Personalabteilung (Urlaub, Krankheit, Überstunden)
-- Gesetzliche Arbeitszeiterfassung
+- Project billing and controlling
+- Human Resources (vacation, sick leave, overtime)
+- Legal working time documentation
 
-**Fachliche Anforderungen:**
+**Business Requirements:**
 
-| Kategorie              | Anforderungen                                                     |
-| ---------------------- | ----------------------------------------------------------------- |
-| **Zeitbuchung**        | Erfassung von Start-/Endzeit, Pausen, Projekt-Zuordnung           |
-| **Berechnungen**       | Automatische Ermittlung von Brutto-/Nettozeit, Über-/Unterstunden |
-| **Massenoperationen**  | Monatliche oder jährliche Vorgenerierung von Arbeitstagen         |
-| **Saldoverwaltung**    | Zeitkonto-Tracking über Monate hinweg                             |
-| **Abwesenheiten**      | Urlaub, Krankheit, Feiertage (bundeslandabhängig)                 |
-| **Projektcontrolling** | Buchung auf Projekte und Tätigkeitsarten                          |
+| Category              | Requirements                                                     |
+| -------------------- | ----------------------------------------------------------------- |
+| **Time Entry**        | Recording of start/end time, breaks, project assignment           |
+| **Calculations**      | Automatic calculation of gross/net time, over/under hours         |
+| **Bulk Operations**   | Monthly or yearly pre-generation of work days                     |
+| **Balance Management** | Time account tracking over months                                |
+| **Absences**         | Vacation, sick leave, public holidays (state-dependent)          |
+| **Project Controlling** | Booking on projects and activity types                           |
 
-**Zielgruppe:**
+**Target Users:**
 
-- Mitarbeiter (täglich)
-- Projektleiter (wöchentlich für Auswertungen)
-- Personalabteilung (monatlich)
-- Entwickler (als Referenzimplementierung)
-
----
-
-### 1.2 Qualitätsziele
-
-Die Top-5-Qualitätsziele nach Priorität:
-
-| Prio | Qualitätsziel     | Konkrete Metrik                                  | Begründung                                 |
-| ---- | ----------------- | ------------------------------------------------ | ------------------------------------------ |
-| 1    | **Wartbarkeit**   | Neue Funktionen in max. 2 Arbeitstagen umsetzbar | Häufige Änderungswünsche durch Business    |
-| 2    | **Testbarkeit**   | Alle Geschäftslogik-Klassen isoliert testbar     | Hohe Code-Qualität ohne Regressions-Risiko |
-| 3    | **Performance**   | Jahresgenerierung < 2 Sekunden                   | Nutzer-Akzeptanz bei Massenoperationen     |
-| 4    | **Typsicherheit** | 100% TypeScript, keine any-Types                 | Fehler zur Compile-Zeit statt Laufzeit     |
-| 5    | **Bedienbarkeit** | Neue Buchung in < 30 Sekunden                    | Tägliche Nutzung muss schnell sein         |
-
-**Qualitätsszenarien (Beispiele):**
-
-- **QS-1 (Wartbarkeit):** Ein Entwickler kann eine neue Balance-Berechnung (z.B. für Gleitzeit) in 2 Tagen hinzufügen, indem er einen neuen Command und Service erstellt.
-- **QS-2 (Testbarkeit):** Alle 13 Commands können mit Mock-Dependencies isoliert getestet werden ohne CAP-Server.
-- **QS-3 (Performance):** Generierung von 365 Tagen inkl. Feiertags-API-Aufruf dauert max. 2 Sekunden.
+- Employees (daily)
+- Project managers (weekly for evaluations)
+- Human Resources (monthly)
+- Developers (as reference implementation)
 
 ---
 
-### 1.3 Stakeholder
+### 1.2 Quality Goals
 
-| Rolle                    | Kontakt            | Erwartungshaltung                          | Relevanz    |
-| ------------------------ | ------------------ | ------------------------------------------ | ----------- |
-| **Entwickler**           | Development Team   | Saubere Architektur, gute Doku, TypeScript | ⭐⭐⭐ Hoch |
-| **Mitarbeiter**          | End Users          | Schnelle, einfache Zeitbuchung             | ⭐⭐⭐ Hoch |
-| **Projektleiter**        | Management         | Projekt-Zeitauswertungen                   | ⭐⭐ Mittel |
-| **HR**                   | Personalabteilung  | Urlaubstage, Krankentage                   | ⭐⭐ Mittel |
-| **Software-Architekten** | Architecture Board | Referenzimplementierung für CAP+TypeScript | ⭐⭐ Mittel |
-| **Operations**           | IT-Betrieb         | Einfaches Deployment, Monitoring           | ⭐ Niedrig  |
+Top 5 quality goals by priority:
 
----
+| Priority | Quality Goal    | Concrete Metric                                | Rationale                               |
+| -------- | --------------- | ---------------------------------------------- | --------------------------------------- |
+| 1        | **Maintainability** | New features in max. 2 working days        | Frequent change requests from business  |
+| 2        | **Testability**     | All business logic classes isolatedly testable | High code quality without regression risk |
+| 3        | **Performance**     | Yearly generation < 2 seconds              | User acceptance for bulk operations     |
+| 4        | **Type Safety**     | 100% TypeScript, no any-types              | Errors at compile-time not runtime      |
+| 5        | **Usability**       | New entry in < 30 seconds                  | Daily usage must be fast                |
 
-## 2. Randbedingungen
+**Quality Scenarios (Examples):**
 
-### 2.1 Technische Randbedingungen
-
-| Randbedingung                                         | Beschreibung                                          | Auswirkung                                                    |
-| ----------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------- |
-| **SAP CAP Framework**                                 | Cloud Application Programming Model (Node.js-basiert) | Architektur muss CAP-Events verwenden                         |
-| **TypeScript >= 5.0**                                 | Vollständig typisierte Codebase                       | Strikte Type-Checks aktiviert                                 |
-| **UI5 >= 1.120**                                      | SAP UI5 für Frontend-Anwendungen                      | Fiori Guidelines einhalten                                    |
-| **Node.js >= 22 LTS**                                 | Laufzeitumgebung                                      | Verwendung von ES2022-Features möglich                        |
-| **OData V4**                                          | REST-Protokoll für UI-Backend-Kommunikation           | Komplexe Queries via $expand/$filter                          |
-| **@cap-js/attachments**                               | Offizielles CAP Attachments Plugin für Dateiablagen   | Standardisierte Upload/Download-Flows, Metadaten & Persistenz |
-| **SAP Identity Services** (IAS / AMS, XSUAA Fallback) | Autorisierung & Authentifizierung in der BTP          | JWT-basierte SSO-Tokens, Role Collections, Policy-Management  |
-| **Cloud-native Prinzipien**                           | 12-Factor-konformes App-Design auf SAP BTP            | Konfigurationsentkopplung, deklarative Deployments (MTA)      |
-| **SQLite (Dev) / HANA (Prod)**                        | Datenbank-Technologien                                | SQL muss kompatibel sein                                      |
-
-**Entwicklungswerkzeuge:**
-
-- **VS Code** als primäre IDE
-- **ESLint + Prettier** für Code-Qualität (verpflichtend)
-- **Jest** für Unit-Tests
-- **Git** für Versionskontrolle
-- **nvm + .nvmrc** um Node-Versionen zu pinnen (22.20.0)
-- **.env/.env.example** für lokale Secrets & Feature-Toggles (niemals ins Repo einchecken)
+- **QS-1 (Maintainability):** A developer can add a new balance calculation (e.g., for flexible hours) in 2 days by creating a new command and service.
+- **QS-2 (Testability):** All 13 commands can be tested in isolation with mock dependencies without CAP server.
+- **QS-3 (Performance):** Generation of 365 days including holiday API call takes max. 2 seconds.
 
 ---
 
-### 2.2 Organisatorische Randbedingungen
+### 1.3 Stakeholders
 
-| Randbedingung           | Beschreibung                                                                                    |
-| ----------------------- | ----------------------------------------------------------------------------------------------- |
-| **Team**                | 1-3 Entwickler (Fullstack CAP/UI5)                                                              |
-| **Methodik**            | Agile Entwicklung, 2-Wochen-Sprints                                                             |
-| **Code Reviews**        | Mandatory für alle Pull Requests                                                                |
-| **Dokumentation**       | ADRs (Architecture Decision Records) für alle wichtigen Entscheidungen                          |
-| **Deployment**          | CI/CD-ready, automatisierte Builds                                                              |
-| **Security Governance** | Rollenmodell & Policy-Verwaltung via BTP Role Collections, Freigabeprozess für Produktiv-Rollen |
+| Role                    | Contact            | Expectation                                    | Relevance   |
+| ----------------------- | ------------------ | ---------------------------------------------- | ----------- |
+| **Developers**          | Development Team   | Clean architecture, good docs, TypeScript      | ⭐⭐⭐ High   |
+| **Employees**           | End Users          | Fast, simple time entry                        | ⭐⭐⭐ High   |
+| **Project Managers**    | Management         | Project time evaluations                       | ⭐⭐ Medium  |
+| **Human Resources**     | HR Department      | Vacation days, sick days                       | ⭐⭐ Medium  |
+| **Software Architects**  | Architecture Board | Reference implementation for CAP+TypeScript    | ⭐⭐ Medium  |
+| **Operations**          | IT Operations      | Simple deployment, monitoring                  | ⭐ Low     |
 
 ---
 
-### 2.3 Konventionen
+## 2. Constraints
 
-**Code-Konventionen:**
+### 2.1 Technical Constraints
 
-- **Sprache:** Englisch für Code, Deutsch für Doku
-- **Naming:** camelCase (Variables), PascalCase (Classes), kebab-case (Files)
+| Constraint                                          | Description                                          | Impact                                                        |
+| --------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------- |
+| **SAP CAP Framework**                               | Cloud Application Programming Model (Node.js-based) | Architecture must use CAP events                              |
+| **TypeScript >= 5.0**                               | Fully typed codebase                                 | Strict type checks enabled                                    |
+| **UI5 >= 1.120**                                    | SAP UI5 for frontend applications                   | Follow Fiori Guidelines                                       |
+| **Node.js >= 22 LTS**                               | Runtime environment                                 | ES2022 features available                                     |
+| **OData V4**                                        | REST protocol for UI-backend communication           | Complex queries via $expand/$filter                           |
+| **@cap-js/attachments**                             | Official CAP Attachments Plugin for file storage    | Standardized upload/download flows, metadata & persistence    |
+| **SAP Identity Services** (IAS / AMS, XSUAA Fallback) | Authorization & authentication on BTP              | JWT-based SSO tokens, Role Collections, Policy Management     |
+| **Cloud-native Principles**                         | 12-Factor-compliant app design on SAP BTP           | Configuration decoupling, declarative deployments (MTA)       |
+| **SQLite (Dev) / HANA (Prod)**                      | Database technologies                               | SQL must be compatible                                        |
+
+**Development Tools:**
+
+- **VS Code** as primary IDE
+- **ESLint + Prettier** for code quality (mandatory)
+- **Jest** for unit tests
+- **Git** for version control
+- **nvm + .nvmrc** to pin Node versions (22.20.0)
+- **.env/.env.example** for local secrets & feature toggles (never commit to repo)
+
+---
+
+### 2.2 Organizational Constraints
+
+| Constraint           | Description                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| **Team**             | 1-3 developers (Fullstack CAP/UI5)                                                             |
+| **Methodology**      | Agile development, 2-week sprints                                                              |
+| **Code Reviews**     | Mandatory for all pull requests                                                                |
+| **Documentation**    | ADRs (Architecture Decision Records) for all major decisions                                   |
+| **Deployment**       | CI/CD-ready, automated builds                                                                  |
+| **Security Governance** | Role model & policy management via BTP Role Collections, release process for prod roles     |
+
+---
+
+### 2.3 Conventions
+
+**Code Conventions:**
+
+- **Language:** English for code, German for docs
+- **Naming:** camelCase (variables), PascalCase (classes), kebab-case (files)
 - **Commits:** Conventional Commits (`feat:`, `fix:`, `docs:`)
-- **File Structure:** Barrel Exports (`index.ts`) für jedes Verzeichnis
-- **JSDoc:** Pflicht für alle public APIs
+- **File Structure:** Barrel Exports (`index.ts`) for each directory
+- **JSDoc:** Mandatory for all public APIs
 
-**Architektur-Konventionen:**
+**Architecture Conventions:**
 
-- Dependency Injection über ServiceContainer (keine direkten `new`-Aufrufe)
-- Business-Logik nur in Commands
-- Daten-Zugriff nur über Repositories
-- Handler sind "thin orchestrators"
-- Secrets/Konfiguration ausschließlich über Environment Variablen (CAP `.env`, BTP Service Bindings); niemals Hard-Coding in Quellcode oder CSV
+- Dependency Injection via ServiceContainer (no direct `new` calls)
+- Business logic only in Commands
+- Data access only via Repositories
+- Handlers are "thin orchestrators"
+- Secrets/configuration exclusively via environment variables (CAP `.env`, BTP service bindings); never hard-code in source or CSV
 
 ---
 
-## 3. Kontextabgrenzung
+## 3. System Scope and Context
 
-### 3.1 Fachlicher Kontext
+### 3.1 Business Context
 
-**Externe Kommunikationspartner:**
+**External Communication Partners:**
 
 ```mermaid
 ---
@@ -237,10 +237,10 @@ config:
   theme: neo
 ---
 graph LR
-    User[👤 Mitarbeiter] -->|erfasst Zeiten| App[⚙️ TimeTracking App]
-    App -->|ruft Feiertage ab| API[🎉 feiertage-api.de]
-    App -->|könnte exportieren nach| HR[📊 HR-System]
-    App -->|könnte importieren von| PM[📋 Projekt-Management]
+    User[👤 Employee] -->|records times| App[⚙️ TimeTracking App]
+    App -->|fetches holidays| API[🎉 feiertage-api.de]
+    App -->|could export to| HR[📊 HR System]
+    App -->|could import from| PM[📋 Project Management]
 
     style App fill:#e1f5ff,stroke:#0288d1,stroke-width:3px
     style API fill:#fff3e0,stroke:#f57c00,stroke-width:2px
@@ -248,32 +248,32 @@ graph LR
     style PM fill:#e8f5e9,stroke:#43a047,stroke-width:2px
 ```
 
-**Status-Modell & Workflow:**
+**Status Model & Workflow:**
 
-- `TimeEntryStatuses` bildet den bearbeitbaren Status-Lebenszyklus (`O`pen, `P`rocessed, `D`one, `R`eleased) inklusive erlaubter Transitionen (`from_code` / `to_code`) und UI-Freigaben (`allowDoneAction`, `allowReleaseAction`) ab.
-- `TimeEntries.status_code` assoziiert jede Buchung mit genau einem Status. Änderungen am Eintrag erzwingen automatisch den `Processed`-Status; eine finale Freigabe (`Released`) erfolgt ausschließlich über dedizierte Actions.
-- Das `Customizing`-Singleton liefert alle verwendeten Status-Codes als Konfiguration, sodass Mandanten eigene Codes pflegen können, ohne Business-Logik anfassen zu müssen.
-- Bound Statusaktionen `markTimeEntryDone` und `releaseTimeEntry` setzen einzelne Buchungen via OData auf die konfigurierten Ziel-Status und erzwingen dabei die Stammdaten-Transitionen sowie Sperren für endgültig freigegebene Einträge.
+- `TimeEntryStatuses` represents the editable status lifecycle (`O`pen, `P`rocessed, `D`one, `R`eleased) including allowed transitions (`from_code` / `to_code`) and UI permissions (`allowDoneAction`, `allowReleaseAction`).
+- `TimeEntries.status_code` associates each entry with exactly one status. Changes to an entry automatically enforce the `Processed` status; final release (`Released`) only occurs via dedicated actions.
+- The `Customizing` singleton provides all status codes as configuration, allowing tenants to maintain their own codes without modifying business logic.
+- Bound status actions `markTimeEntryDone` and `releaseTimeEntry` set individual entries via OData to the configured target status and enforce master data transitions as well as locks for finally released entries.
 
-**Schnittstellen-Beschreibung:**
+**Interface Description:**
 
-| Partner                            | Eingabe                      | Ausgabe                          | Protokoll / Vermittler                    |
-| ---------------------------------- | ---------------------------- | -------------------------------- | ----------------------------------------- |
-| **Mitarbeiter**                    | Zeitbuchungen, Abfrage Saldo | Berechnete Zeiten, Balance-Daten | UI5 Frontend                              |
-| **feiertage-api.de**               | Jahr, Bundesland             | JSON mit Feiertagen              | SAP BTP Connectivity + Destination → REST |
-| **HR-System** (zukünftig)          | -                            | CSV/Excel Export                 | File                                      |
-| **Projekt-Management** (zukünftig) | Projekt-Stammdaten           | -                                | REST API                                  |
-| **SAP Identity Services**          | OAuth2/SAML Request          | JWT + Role Collections           | HTTPS                                     |
+| Partner                          | Input                       | Output                         | Protocol / Intermediary                    |
+| -------------------------------- | --------------------------- | ------------------------------ | ------------------------------------------ |
+| **Employee**                     | Time entries, Balance query | Calculated times, Balance data | UI5 Frontend                               |
+| **feiertage-api.de**             | Year, State code            | JSON with holidays             | SAP BTP Connectivity + Destination → REST  |
+| **HR System** (future)           | -                           | CSV/Excel Export               | File                                       |
+| **Project Management** (future)  | Project master data         | -                              | REST API                                   |
+| **SAP Identity Services**        | OAuth2/SAML Request         | JWT + Role Collections         | HTTPS                                      |
 
 ---
 
-#### 🔗 External Integrations: Feiertags-API
+#### 🔗 External Integrations: Holiday API
 
-Die Anwendung integriert die kostenlose **[Feiertage-API (feiertage-api.de)](https://feiertage-api.de)** zur automatischen Erkennung deutscher Feiertage für die Jahresgenerierung von Zeiteinträgen.
+The application integrates the free **[Holiday API (feiertage-api.de)](https://feiertage-api.de)** for automatic recognition of German holidays during yearly generation of time entries.
 
-**Lokale Entwicklung:**
+**Local Development:**
 
-- **Direct HTTP-Call** via `fetch()` ohne zusätzliche Setup-Schritte
+- **Direct HTTP-Call** via `fetch()` without additional setup steps
 - Konfiguration über `.env`:
   ```bash
   HOLIDAY_API_BASE_URL=https://feiertage-api.de
@@ -281,12 +281,12 @@ Die Anwendung integriert die kostenlose **[Feiertage-API (feiertage-api.de)](htt
 
 **Production (SAP BTP):**
 
-- **Destination**: `holiday-api` (automatisch angelegt via `mta.yaml`)
-- **Connectivity Service**: Managed Proxy für Outbound-Calls
+- **Destination**: `holiday-api` (automatically created via `mta.yaml`)
+- **Connectivity Service**: Managed proxy for outbound calls
 - **Integration**: Via `@sap-cloud-sdk/connectivity` + `@sap-cloud-sdk/http-client`
-- **Security**: Keine Credentials im Code – URL wird in BTP Destination verwaltet
+- **Security**: No credentials in code – URL is managed in BTP Destination
 
-**Hybrid-Architektur:**
+**Hybrid Architecture:**
 
 Der `HolidayService` wählt automatisch den richtigen Code-Pfad basierend auf der Umgebung:
 
@@ -296,14 +296,14 @@ private isProduction(): boolean {
   return process.env.NODE_ENV === 'production' || !!process.env.VCAP_SERVICES;
 }
 
-// Lokal: Direct Fetch
+// Local: Direct Fetch
 private async fetchDirectly(year: number, stateCode: string) {
   const url = this.buildHolidayUrl(year, stateCode);
   const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
   // ...
 }
 
-// BTP: Destination-basiert
+// BTP: Destination-based
 private async fetchViaDestination(year: number, stateCode: string) {
   const destination = { destinationName: 'holiday-api' };
   const response = await executeHttpRequest(destination, {
@@ -315,36 +315,36 @@ private async fetchViaDestination(year: number, stateCode: string) {
 }
 ```
 
-**Technische Features:**
+**Technical Features:**
 
-- ✅ **Cache-Strategie:** Pro Jahr + Bundesland (Key: `${year}-${stateCode}`)
-- ✅ **Graceful Degradation:** Bei API-Fehlern wird leere Map zurückgegeben
-- ✅ **Unterstützung:** Alle 16 deutschen Bundesländer
-- ✅ **Logging:** Strukturiertes Logging für beide Code-Pfade
-- ✅ **Timeout:** 5 Sekunden für alle API-Calls
-- ✅ **Performance:** ~200ms pro API-Call, dann gecacht
+- ✅ **Caching Strategy:** Per year + state code (Key: `${year}-${stateCode}`)
+- ✅ **Graceful Degradation:** Empty map returned on API errors
+- ✅ **Support:** All 16 German states
+- ✅ **Logging:** Structured logging for both code paths
+- ✅ **Timeout:** 5 seconds for all API calls
+- ✅ **Performance:** ~200ms per API call, then cached
 
-**Architektur-Referenzen:**
+**Architecture References:**
 
-- **Implementierung:** `srv/track-service/handler/services/HolidayService.ts`
-- **MTA-Konfiguration:** `mta.yaml` → `resources.cap-fiori-timetracking-destination`
+- **Implementation:** `srv/track-service/handler/services/HolidayService.ts`
+- **MTA Configuration:** `mta.yaml` → `resources.cap-fiori-timetracking-destination`
 - **Tests:**
-  - `tests/integration/holiday-service.test.ts` - Integration Tests mit API-Mocks
-  - `tests/unit/holiday-service.test.ts` - Unit Tests für Caching & Error Handling
+  - `tests/integration/holiday-service.test.ts` - Integration tests with API mocks
+  - `tests/unit/holiday-service.test.ts` - Unit tests for caching & error handling
 - **ADR:** [ADR-0020: Holiday API Integration via BTP Destination](ADR/0020-holiday-api-btp-destination.md)
 
 **Business Impact:**
 
-- Automatische Feiertags-Erkennung bei Jahresgenerierung
-- Korrekte Buchung von nicht-arbeitenden Tagen (EntryType `H` = Holiday)
-- Berücksichtigung bundeslandspezifischer Feiertage (z.B. Heilige Drei Könige nur in BY, BW, ST)
-- Reduziert manuellen Pflegeaufwand für Feiertage erheblich
+- Automatic holiday recognition during yearly generation
+- Correct booking of non-working days (EntryType `H` = Holiday)
+- Consideration of state-specific holidays (e.g., Epiphany only in BY, BW, ST)
+- Significantly reduces manual effort for holiday maintenance
 
 ---
 
-### 3.2 Technischer Kontext
+### 3.2 Technical Context
 
-**Deployment-Übersicht:**
+**Deployment Overview:**
 
 ```mermaid
 C4Context
@@ -414,31 +414,31 @@ C4Context
 
 ---
 
-## 4. Lösungsstrategie
+## 4. Solution Strategy
 
-### 4.1 Zentrale Architektur-Ansätze
+### 4.1 Central Architecture Approaches
 
-**Gewählte Strategie: Clean Architecture mit Design Patterns**
+**Chosen Strategy: Clean Architecture with Design Patterns**
 
-Die Anwendung folgt einer **strikten 3-Tier-Architektur** mit klarer Trennung:
+The application follows a **strict 3-tier architecture** with clear separation:
 
-| Schicht            | Technologie                    | Verantwortung                    |
-| ------------------ | ------------------------------ | -------------------------------- |
+| Layer            | Technology                     | Responsibility                   |
+| ------------------- | ------------------------------- | -------------------------------- |
 | **Presentation**   | UI5 (Fiori Elements + Custom)  | User Interface, Rendering        |
-| **Application**    | CAP Service (TypeScript)       | Request-Handling, Orchestrierung |
-| **Business Logic** | Commands, Validators, Services | Fachlogik, Berechnungen          |
-| **Data Access**    | Repositories                   | SQL-Queries, Datenbankzugriff    |
+| **Application**    | CAP Service (TypeScript)       | Request-Handling, Orchestration  |
+| **Business Logic** | Commands, Validators, Services | Business logic, Calculations     |
+| **Data Access**    | Repositories                   | SQL-Queries, Database access     |
 
-**Architektur-Treiber:**
+**Architecture Drivers:**
 
-| Qualitätsziel       | Gewählter Ansatz           | Umsetzung                                                             |
-| ------------------- | -------------------------- | --------------------------------------------------------------------- |
-| **Wartbarkeit**     | Clean Architecture + SOLID | Jede Klasse hat genau eine Verantwortung                              |
-| **Testbarkeit**     | Dependency Injection       | ServiceContainer managed alle Abhängigkeiten                          |
-| **Erweiterbarkeit** | Design Patterns            | Strategy (Algorithmen), Command (Operations)                          |
-| **Typsicherheit**   | TypeScript Strict Mode     | Auto-generierte Types aus CDS-Models                                  |
-| **Performance**     | Repository-Pattern         | Batch-Operations, Caching (HolidayService)                            |
-| **Cloud Native**    | 12-Factor + MTA Deployment | Externe Konfiguration, Build/Run-Trennung, deklarative CF-Deployments |
+| Quality Goal       | Chosen Approach           | Implementation                                                        |
+| -------------------- | -------------------------- | --------------------------------------------------------------------- |
+| **Maintainability**  | Clean Architecture + SOLID | Each class has exactly one responsibility                              |
+| **Testability**      | Dependency Injection       | ServiceContainer manages all dependencies                              |
+| **Extensibility**    | Design Patterns            | Strategy (Algorithms), Command (Operations)                            |
+| **Type Safety**      | TypeScript Strict Mode     | Auto-generated types from CDS models                                   |
+| **Performance**      | Repository Pattern         | Batch operations, Caching (HolidayService)                             |
+| **Cloud Native**     | 12-Factor + MTA Deployment | External configuration, Build/Run separation, declarative CF deployments |
 
 ---
 
@@ -446,18 +446,18 @@ Die Anwendung folgt einer **strikten 3-Tier-Architektur** mit klarer Trennung:
 
 **Top-10-Entscheidungen:**
 
-1. **TypeScript statt JavaScript** → Compile-Time-Validierung, besseres Tooling
-2. **Design Patterns** → Strukturierte, wiederverwendbare Architektur (13 Commands, 7 Validators, 2 Strategies)
-3. **ServiceContainer (DI)** → Zentrale Dependency-Auflösung
-4. **Command Pattern** → Kapselt Business-Operations
-5. **Repository Pattern** → Abstrahiert Datenzugriff
-6. **Factory Pattern** → Konsistente Domain-Objekte
-7. **Multi-App UI Strategy** → Zwei Fiori Elements Apps + Custom Dashboard (je nach Use Case)
-8. **Modular CDS Annotations** → common/ + ui/ statt Monolith
-9. **Customizing Singleton** → Globale Defaults zentral via CustomizingService gepflegt
-10. **ADR-Dokumentation & Tooling** → Nachvollziehbare Entscheidungen + REST Client Tests
+1. **TypeScript instead of JavaScript** → Compile-time validation, better tooling
+2. **Design Patterns** → Structured, reusable architecture (13 Commands, 7 Validators, 2 Strategies)
+3. **ServiceContainer (DI)** → Central dependency resolution
+4. **Command Pattern** → Encapsulates business operations
+5. **Repository Pattern** → Abstracts data access
+6. **Factory Pattern** → Consistent domain objects
+7. **Multi-App UI Strategy** → Two Fiori Elements apps + Custom dashboard (depending on use case)
+8. **Modular CDS Annotations** → common/ + ui/ instead of monolith
+9. **Customizing Singleton** → Global defaults centrally maintained via CustomizingService
+10. **ADR Documentation & Tooling** → Traceable decisions + REST client tests
 
-Details zu allen Entscheidungen: siehe [Kapitel 9 - Architekturentscheidungen](#9-architekturentscheidungen)
+Details for all decisions: see [Chapter 9 - Architecture Decisions](#9-architecture-decisions)
 
 ---
 
@@ -477,21 +477,21 @@ Details zu allen Entscheidungen: siehe [Kapitel 9 - Architekturentscheidungen](#
 
 ### 4.4 Inner Loop Development & Airplane Mode
 
-- **Lokale Mocks:** CAPs Entwicklungspreset (`profile: development`) verwendet SQLite, Mock Auth & generische Provider → schnelle Schleifen ohne Cloud-Anbindung („airplane mode“).
-- **`cds watch` & Hot Reload:** `npm run watch` startet CAP, UI5 Workspaces (sapux) und TypeScript Watcher parallel. Änderungen werden in Sekunden sichtbar.
-- **Hybrid & Cloud Loops:** Bei Bedarf schaltet `cds` automatisch auf echte Services (HANA, IAS/XSUAA, AMS, Connectivity/Destination) um, sobald `profile: production` oder BTP-Bindings greifen.
-- **Parallelisierte Teams:** Frontend & Backend können unabhängig arbeiten; CDS-Services liefern generische REST/OData-Repositories, die später durch Custom Handler ersetzt werden.
+- **Local Mocks:** CAP's development preset (`profile: development`) uses SQLite, mock auth & generic providers → fast loops without cloud connectivity ("airplane mode").
+- **`cds watch` & Hot Reload:** `npm run watch` starts CAP, UI5 workspaces (sapux) and TypeScript watcher in parallel. Changes are visible in seconds.
+- **Hybrid & Cloud Loops:** When needed, `cds` automatically switches to real services (HANA, IAS/XSUAA, AMS, Connectivity/Destination) as soon as `profile: production` or BTP bindings take effect.
+- **Parallelized Teams:** Frontend & backend can work independently; CDS services provide generic REST/OData repositories that are later replaced by custom handlers.
 - **Spätes Schneiden (Modulith → Microservices):** Wir folgen dem CAP-Modulith-Ansatz; mehrere Services laufen lokal im selben Prozess und werden erst bei Bedarf als eigenständige Deployments (z. B. Microservices) geschnitten.
 
-> Ergebnis: Sehr schnelle „code → run → test“-Zyklen im Inner Loop, während der Outer Loop (PR, CI, npm run deploy:cf) nur bei stabilen Ergebnissen aktiviert wird.
+> Result: Very fast "code → run → test" cycles in the inner loop, while the outer loop (PR, CI, npm run deploy:cf) is only activated for stable results.
 
 ---
 
-## 5. Bausteinsicht
+## 5. Building Block View
 
-### 5.1 Ebene 1: Gesamtsystem (Whitebox)
+### 5.1 Level 1: Overall System (Whitebox)
 
-**Kontext:** Das Gesamtsystem zeigt die 5 Hauptschichten der Anwendung mit klaren Verantwortlichkeiten.
+**Context:** The overall system shows the 5 main layers of the application with clear responsibilities.
 
 ```mermaid
 ---
@@ -587,7 +587,7 @@ graph TB
     style ADMIN fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
 ```
 
-**Enthaltene Bausteine (Ebene 1):**
+**Contained Components (Level 1):**
 
 | Baustein                 | Verantwortung                         | Schnittstellen           |
 | ------------------------ | ------------------------------------- | ------------------------ |
@@ -599,7 +599,7 @@ graph TB
 
 ---
 
-### 5.2 Ebene 2: Application Layer (Whitebox TrackService)
+### 5.2 Level 2: Application Layer (Whitebox TrackService)
 
 **Zweck:** Der TrackService ist der zentrale Orchestrator. Er registriert Event-Handler, löst Dependencies auf und routet Requests.
 
@@ -608,7 +608,7 @@ graph TB
 - **Eingehend:** HTTP/OData V4 Requests von UI5-Apps
 - **Ausgehend:** Events an Handler-Klassen, Dependency-Resolution über Container
 
-**Ablauf der Initialisierung:**
+**Initialization Sequence:**
 
 ```mermaid
 sequenceDiagram
@@ -654,7 +654,7 @@ sequenceDiagram
   SVC-->>Main: ✅ Service ready
 ```
 
-**Enthaltene Bausteine (Ebene 2):**
+**Contained Components (Level 2):**
 
 | Baustein             | Typ            | Verantwortung                                                                             |
 | -------------------- | -------------- | ----------------------------------------------------------------------------------------- |
@@ -672,7 +672,7 @@ sequenceDiagram
 - **CREATE (CRUD):** Handler enriched nur `req.data`, CAP macht automatisch INSERT
 - **Generation (Bulk):** Command erzeugt Array, expliziter `repository.insertBatch()` Call
 
-**Weiterführende Pattern-Dokumentation:** Für detaillierte Beschreibungen der eingesetzten Design-Patterns (ServiceContainer, HandlerRegistry, Commands, Repositories, Factories, Strategies, Validators) siehe das Pattern-Index-Dokument: [Pattern-Index](./patterns/README.md)
+**Further Pattern Documentation:** For detailed descriptions of the used design patterns (ServiceContainer, HandlerRegistry, Commands, Repositories, Factories, Strategies, Validators) see the pattern index document: [Pattern Index](./patterns/README.md)
 
 ---
 
@@ -693,7 +693,7 @@ sequenceDiagram
 
 ---
 
-### 5.3 Ebene 3: Business Logic Layer (Whitebox Commands)
+### 5.3 Level 3: Business Logic Layer (Whitebox Commands)
 
 **Zweck:** Commands kapseln EINE Business-Operation. Sie orchestrieren Validator + Service + Repository + Factory.
 
@@ -715,16 +715,16 @@ sequenceDiagram
 | `GetVacationBalanceCommand`   | Balance    | Urlaubssaldo-Berechnung                   | VacationBalanceService                                          |
 | `GetSickLeaveBalanceCommand`  | Balance    | Krankheitsstand-Berechnung                | SickLeaveBalanceService                                         |
 
-**Ablauf eines Commands (Beispiel CreateTimeEntryCommand):**
+**Command Sequence (Example CreateTimeEntryCommand):**
 
-1. **Validierung:** Pflichtfelder, Eindeutigkeit, Referenzen prüfen
+1. **Validation:** Required fields, uniqueness, references check
 2. **User-Lookup:** Aktuelle User-Daten laden (für expectedDailyHours)
 3. **Factory:** Berechnete Daten erstellen (gross, net, overtime)
 4. **Return:** Strukturiertes Objekt zurückgeben (nicht gespeichert!)
 
 ---
 
-### 5.4 Ebene 4: Datenmodell (Domain Model)
+### 5.4 Level 4: Data Model (Domain Model)
 
 **ER-Diagramm:**
 
@@ -876,7 +876,7 @@ erDiagram
 - Die Entity `Customizing` liefert alle zentralen Defaults (Arbeitsbeginn, Pausenlänge, EntryType- und Source-Codes).
 - Balance-, Urlaubs- und Krankheitsschwellen werden hier gepflegt und von Services/Validatoren konsumiert.
 - UI-Toggles: `hideAttachmentFacet` steuert das Attachment-Facet der Fiori Object Page und kann über das Singleton von Key Usern ein-/ausgeschaltet werden.
-- Enthält Integrationsparameter (Feiertags-API, Locale) und Fallback-Werte für Benutzer (Wochenstunden, Arbeitstage, Demo-User).
+- Contains integration parameters (Holiday API, Locale) and fallback values for users (weekly hours, working days, demo user).
 - `CustomizingService` cached den Datensatz und wird im `TrackService` beim Start initialisiert.
 
 **Wichtige Designentscheidungen:**
@@ -889,22 +889,22 @@ erDiagram
 
 ---
 
-### 5.5 Ebene 5: Infrastruktur Layer (ServiceContainer & HandlerRegistry)
+### 5.5 Level 5: Infrastructure Layer (ServiceContainer & HandlerRegistry)
 
-Der Infrastruktur-Layer bildet das Fundament zwischen CAP-Runtime und unserer Business-Logik. Hier werden alle Abhängigkeiten aufgebaut, konfiguriert und die Event-Handler registriert. Ziel ist es, den TrackService schlank zu halten und eine zentrale Stelle für Querschnittsaufgaben wie Dependency Injection, Caching, Logging und Date-Konfiguration zu besitzen.
+The infrastructure layer forms the foundation between CAP runtime and our business logic. Here all dependencies are built, configured, and event handlers are registered. The goal is to keep the TrackService lean and provide a central place for cross-cutting concerns like dependency injection, caching, logging, and date configuration.
 
-**Beteiligte Bausteine und Verantwortungen:**
+**Involved Components and Responsibilities:**
 
-| Baustein                               | Verantwortung                                                                                                                                                        | Wichtige Artefakte                                                                                                |
-| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `ServiceContainer`                     | Baut Repositories, Services, Validators, Strategies, Factories und Commands auf. Verwaltet sechs Kategorien und liefert typsichere Getter.                           | `srv/track-service/handler/container/ServiceContainer.ts`                                                         |
-| `CustomizingService`                   | Lädt das `Customizing`-Singleton, cached globale Defaults und stellt typisierte Getter für alle Schichten bereit. Initialisiert Locale/Working-Days für `DateUtils`. | `srv/track-service/handler/services/CustomizingService.ts`, `db/data-model.cds`                                   |
-| `HandlerSetup` & `HandlerFactory`      | Fluent API zum Zusammenstellen aller Handlergruppen (TimeEntry, Generation, Balance).                                                                                | `srv/track-service/handler/setup/HandlerSetup.ts`, `srv/track-service/handler/factories/HandlerFactory.ts`        |
-| `HandlerRegistry` & `HandlerRegistrar` | Registrieren before/on/after Events bei CAP. Gewährleisten transparente Handler-Ketten mit Logging.                                                                  | `srv/track-service/handler/registry/HandlerRegistry.ts`, `srv/track-service/handler/registry/HandlerRegistrar.ts` |
-| `DateUtils`                            | Infrastruktur-Hilfsklasse zur zeitzonen-sicheren Verarbeitung. Locale und Standard-Arbeitstage werden beim Service-Start gesetzt.                                    | `srv/track-service/handler/utils/DateUtils.ts`                                                                    |
-| `Logger`                               | Einheitliche, farbcodierte Log-Ausgabe für Service-, Command- und Handler-Layer.                                                                                     | `srv/track-service/handler/utils/Logger.ts`                                                                       |
+| Component                              | Responsibility                                                                                                                                                    | Important Artifacts                                                                                               |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `ServiceContainer`                     | Builds repositories, services, validators, strategies, factories, and commands. Manages six categories and provides type-safe getters.                             | `srv/track-service/handler/container/ServiceContainer.ts`                                                         |
+| `CustomizingService`                   | Loads the `Customizing` singleton, caches global defaults, and provides typed getters for all layers. Initializes locale/working-days for `DateUtils`.           | `srv/track-service/handler/services/CustomizingService.ts`, `db/data-model.cds`                                   |
+| `HandlerSetup` & `HandlerFactory`      | Fluent API for assembling all handler groups (TimeEntry, Generation, Balance).                                                                                    | `srv/track-service/handler/setup/HandlerSetup.ts`, `srv/track-service/handler/factories/HandlerFactory.ts`        |
+| `HandlerRegistry` & `HandlerRegistrar` | Register before/on/after events with CAP. Ensure transparent handler chains with logging.                                                                        | `srv/track-service/handler/registry/HandlerRegistry.ts`, `srv/track-service/handler/registry/HandlerRegistrar.ts` |
+| `DateUtils`                            | Infrastructure utility class for timezone-safe processing. Locale and standard working days are set at service startup.                                         | `srv/track-service/handler/utils/DateUtils.ts`                                                                    |
+| `Logger`                               | Unified, color-coded logging output for service, command, and handler layers.                                                                                     | `srv/track-service/handler/utils/Logger.ts`                                                                       |
 
-**Initialisierungsablauf (vereinfacht):**
+**Initialization Sequence (simplified):**
 
 ```mermaid
 sequenceDiagram
@@ -918,13 +918,13 @@ sequenceDiagram
     participant REG as 📋 HandlerRegistry
 
     SVC->>CONTAINER: build(entities)
-    CONTAINER->>CONTAINER: Registriere Repos, Services, Validators, Commands
-    CONTAINER-->>SVC: Dependencies bereit
+    CONTAINER->>CONTAINER: Register repos, services, validators, commands
+    CONTAINER-->>SVC: Dependencies ready
 
     SVC->>CUSTOM: initialize()
-    CUSTOM->>CUSTOM: lade Customizing Singleton
+    CUSTOM->>CUSTOM: load Customizing singleton
     CUSTOM->>DATE: configure(locale, workingDays)
-    DATE-->>SVC: Locale/Working Days gesetzt
+    DATE-->>SVC: Locale/Working days set
 
     SVC->>REG: new HandlerRegistry()
     SVC->>SETUP: create(container, registry)
@@ -932,7 +932,7 @@ sequenceDiagram
     SETUP->>SETUP: withAllHandlers()
     SETUP->>REGISTRAR: registerTimeEntry/Generation/Balance
     REGISTRAR->>REG: apply(service)
-    REG-->>SVC: Handler registriert
+    REG-->>SVC: Handlers registered
 ```
 
 **Vorteile der Infrastruktur-Schicht:**
@@ -946,7 +946,7 @@ Damit ist der Infrastruktur-Layer die „Schaltzentrale“ des TrackService und 
 
 ---
 
-### 5.6 Ebene 6: User Interface Layer (Fiori Elements & Freestyle Apps)
+### 5.6 Level 6: User Interface Layer (Fiori Elements & Freestyle Apps)
 
 Wir haben drei UI5-Apps, die zeigen, wie unterschiedlich man an Fiori-Entwicklung rangehen kann:
 
@@ -963,14 +963,14 @@ Die "No-Code"-Variante! Fiori Elements generiert automatisch eine komplette App 
 
 Die meiste Arbeit passiert in den `annotations.cds` Files. Wenig Code, viel Power! 💪
 
-**Zwei Workflows für Zeiterfassung:**
+**Two Workflows for Time Entry:**
 
 Anwender können je nach Präferenz zwischen zwei Erfassungsstrategien wählen:
 
-**Workflow A: Generierung + Überschreiben (empfohlen für regelmäßige Arbeitszeiten)**
+**Workflow A: Generation + Override (recommended for regular working hours)**
 
 1. Nutzer navigiert zur Timetable-App und klickt auf die Action „Monat generieren" oder „Jahr generieren"
-2. System erstellt automatisch Einträge für alle Arbeitstage:
+2. System automatically creates entries for all working days:
    - **Arbeitstage (Mo-Fr)**: Vorausgefüllte Einträge mit Default-Zeiten (z.B. 08:00-16:30, EntryType=W)
    - **Wochenenden**: Markiert als „Frei" (EntryType=O)
    - **Feiertage**: Automatisch erkannt via Feiertags-API (EntryType=H, abhängig vom Bundesland des Users)
@@ -984,7 +984,7 @@ Anwender können je nach Präferenz zwischen zwei Erfassungsstrategien wählen:
 4. System berechnet bei jeder Änderung automatisch Über-/Unterstunden neu
 5. **Vorteil**: Schnelle Erfassung mit minimalem Aufwand; besonders effizient bei regelmäßigen Arbeitszeiten
 
-**Workflow B: Händische Einzelerfassung (für variable Arbeitszeiten)**
+**Workflow B: Manual Individual Entry (for variable working hours)**
 
 1. Nutzer navigiert zur Timetable-App und klickt auf „Create" (Plus-Button)
 2. Füllt das Draft-Formular manuell aus:
@@ -995,7 +995,7 @@ Anwender können je nach Präferenz zwischen zwei Erfassungsstrategien wählen:
    - Projekt/Aktivität selektieren (optional)
    - Arbeitsort und Reiseart auswählen (optional)
    - Notiz hinzufügen (optional)
-3. System validiert beim Speichern (Eindeutigkeit pro User+Tag, aktive Referenzen)
+3. System validates when saving (uniqueness per user+day, active references)
 4. System berechnet automatisch alle Zeitwerte (gross, net, overtime, undertime)
 5. **Vorteil**: Volle Kontrolle, kein „Überschreiben" nötig; ideal für Projektarbeit mit wechselnden Zeiten
 
@@ -1039,7 +1039,7 @@ annotate TrackService.TimeEntries with @(
 
 - Ergänzt die Timetable-App um eine schlanke Maintenance-Oberfläche für Activity Types und angrenzende Stammdaten.
 - Nutzt das Fiori Tools Basic V4 Template, wodurch Inline-Edit, Filterbar und Tabellenfunktionen sofort verfügbar sind.
-- Konsumiert primär den `AdminService` (OData V2) – Stammdatenprojektionen plus `Customizing` – und profitiert von den modularen Annotationen unter `srv/admin-service/annotations/`.
+- Consumes primarily the `AdminService` (OData V2) – master data projections plus `Customizing` – and benefits from modular annotations under `srv/admin-service/annotations/`.
 - Value Helps & Security leiten sich aus `annotations/common` (FieldControls, Authorization, ValueHelps) ab; Layouts stammen aus `annotations/ui/*`.
 
 **Technische Details:**
@@ -1134,19 +1134,19 @@ export default class Home extends BaseController {
 
 ---
 
-## 6. Laufzeitsicht
+## 6. Runtime View
 
-_GIF demonstriert List Report und Object Page, während eine TimeEntry-Buchung angepasst wird._
+_GIF demonstrates list report and object page while adjusting a TimeEntry booking._
 
 ![Timetable Fiori App Screenshot (Placeholder)](assets/timetable-app.gif)
 
-### 6.1 Szenario 1: TimeEntry erstellen (CREATE)
+### 6.1 Scenario 1: Create TimeEntry (CREATE)
 
-**Beschreibung:** Ein Mitarbeiter erfasst eine neue Zeitbuchung über die Fiori Elements App. Das System validiert die Eingabe, berechnet Zeiten (Brutto/Netto/Über-/Unterstunden) und speichert den Eintrag.
+**Description:** An employee records a new time entry via the Fiori Elements app. The system validates the input, calculates times (gross/net/over/undertime) and saves the entry.
 
-**Beteiligte:** User, Fiori UI, TrackService, HandlerRegistry, TimeEntryHandlers, CreateTimeEntryCommand, Validators, CustomizingService, Repositories, TimeEntryFactory, Database
+**Involved:** User, Fiori UI, TrackService, HandlerRegistry, TimeEntryHandlers, CreateTimeEntryCommand, Validators, CustomizingService, Repositories, TimeEntryFactory, Database
 
-**Ablauf:**
+**Flow:**
 
 ```mermaid
 sequenceDiagram
@@ -1237,20 +1237,20 @@ sequenceDiagram
 
 - Handler enriched nur `req.data` mit berechneten Feldern
 - **CAP Framework** macht automatisch den INSERT (kein expliziter Repository-Call!)
-- Validierung in 3 Stufen: Pflichtfelder → Eindeutigkeit → Referenzen
+- Validation in 3 stages: Required fields → Uniqueness → References
 - Factory kennt alle Berechnungsregeln (Zeitberechnung, Über-/Unterstunden)
 
 **Performance:** ~50-100ms (ohne Netzwerk-Latenz)
 
 ---
 
-### 6.2 Szenario 2: Jahresgenerierung (Yearly Generation)
+### 6.2 Scenario 2: Yearly Generation (Yearly Generation)
 
-**Beschreibung:** Ein Mitarbeiter klickt auf "Jahr generieren" und gibt Jahr (z.B. 2025) und Bundesland (z.B. Bayern="BY") an. Das System ruft die externe Feiertags-API auf, erstellt 365 Entries (Arbeitstage, Wochenenden, Feiertage) und speichert sie per Batch-Insert.
+**Description:** An employee clicks "Generate yearly" and enters year (e.g., 2025) and state (e.g., Bavaria="BY"). The system calls the external holiday API, creates 365 entries (working days, weekends, holidays) and saves them in batch.
 
-**Beteiligte:** User, Fiori UI, TrackService, GenerationHandlers, GenerateYearlyCommand, Validators, UserService, CustomizingService, YearlyGenerationStrategy, Feiertage-API, TimeEntryFactory, Repository, Database
+**Involved:** User, Fiori UI, TrackService, GenerationHandlers, GenerateYearlyCommand, Validators, UserService, CustomizingService, YearlyGenerationStrategy, Holiday API, TimeEntryFactory, Repository, Database
 
-**Ablauf:**
+**Flow:**
 
 ```mermaid
 sequenceDiagram
@@ -1433,13 +1433,13 @@ sequenceDiagram
 
 ---
 
-## 7. Verteilungssicht
+## 7. Deployment View
 
-### 7.1 Infrastruktur Level 1: Entwicklungsumgebung
+### 7.1 Infrastructure Level 1: Development Environment
 
-Das Projekt unterstützt **drei Entwicklungsszenarien** mit unterschiedlichen Trade-offs zwischen Setup-Zeit, Flexibilität und Konsistenz:
+The project supports **three development scenarios** with different trade-offs between setup time, flexibility, and consistency:
 
-#### Variante A: GitHub Codespaces (Empfohlen für Onboarding)
+#### Variant A: GitHub Codespaces (Recommended for Onboarding)
 
 **Zero-Config Cloud Development Environment:**
 
@@ -1473,24 +1473,24 @@ Das Projekt unterstützt **drei Entwicklungsszenarien** mit unterschiedlichen Tr
     https://[codespace-name]-4004.app.github.dev
 ```
 
-**Vorteile:**
+**Advantages:**
 
-- ✅ **Setup in < 5 Minuten**: Automatisches Tool-Installation via `.devcontainer/setup.sh`
-- ✅ **Zero "Works on my machine" Problems**: Identische Umgebung für alle Entwickler
-- ✅ **Remote-First**: Keine lokale Hardware-Anforderungen (läuft in GitHub Cloud)
-- ✅ **Pre-configured**: Alle VS Code Extensions, Settings und Tools vorinstalliert
-- ✅ **Port-Forwarding**: Automatische HTTPS-URLs für Testing (inkl. Mobile)
+- ✅ **Setup in < 5 minutes**: Automatic tool installation via `.devcontainer/setup.sh`
+- ✅ **Zero "Works on my machine" Problems**: Identical environment for all developers
+- ✅ **Remote-First**: No local hardware requirements (runs in GitHub Cloud)
+- ✅ **Pre-configured**: All VS Code extensions, settings and tools pre-installed
+- ✅ **Port-Forwarding**: Automatic HTTPS URLs for testing (including mobile)
 
-**Nachteile:**
+**Disadvantages:**
 
-- ⚠️ Codespaces Limit: 60 Std/Monat gratis (2-core), danach kostenpflichtig
-- ⚠️ Internetabhängigkeit für Zugriff
+- ⚠️ Codespaces limit: 60 hrs/month free (2-core), then paid
+- ⚠️ Internet dependency for access
 
-**Mehr Details:** [ADR-0021: Devcontainer & Codespaces](../docs/ADR/0021-devcontainer-github-codespaces.md), [.devcontainer/README.md](../.devcontainer/README.md)
+**More Details:** [ADR-0021: Devcontainer & Codespaces]( /docs/ADR/0021-devcontainer-github-codespaces.md), [.devcontainer/README.md](../.devcontainer/README.md)
 
 ---
 
-#### Variante B: VS Code Dev Containers (Lokal mit Docker)
+#### Variant B: VS Code Dev Containers (Local with Docker)
 
 **Container-basierte Entwicklung auf lokalem Rechner:**
 
@@ -1532,7 +1532,7 @@ Das Projekt unterstützt **drei Entwicklungsszenarien** mit unterschiedlichen Tr
 
 ---
 
-#### Variante C: Manuelle Lokale Installation (Klassisch)
+#### Variant C: Manual Local Installation (Classic)
 
 **Traditionelle Entwicklung direkt auf Host-System:**
 
@@ -1560,29 +1560,29 @@ Das Projekt unterstützt **drei Entwicklungsszenarien** mit unterschiedlichen Tr
 └─────────────────────────────────────────────────────┘
 ```
 
-**Vorteile:**
+**Advantages:**
 
-- ✅ **Maximale Flexibilität**: Volle Kontrolle über Tools & Versionen
-- ✅ **Kein Docker**: Funktioniert ohne Container-Runtime
-- ✅ **Bestehende Setup nutzen**: Wenn Tools bereits installiert
+- ✅ **Maximum flexibility**: Full control over tools & versions
+- ✅ **No Docker**: Works without container runtime
+- ✅ **Use existing setup**: If tools already installed
 
-**Nachteile:**
+**Disadvantages:**
 
-- ⚠️ Setup-Zeit: 30-60 Minuten (Node, Java, SAP Tools, etc.)
-- ⚠️ Plattform-Unterschiede: Potenzielle "Works on my machine" Probleme
-- ⚠️ Manuelle Updates: Tools müssen manuell synchron gehalten werden
+- ⚠️ Setup time: 30-60 minutes (Node, Java, SAP tools, etc.)
+- ⚠️ Platform differences: Potential "works on my machine" problems
+- ⚠️ Manual updates: Tools must be manually kept in sync
 
-**Mehr Details:** [GETTING_STARTED.md](../GETTING_STARTED.md)
+**More Details:** [GETTING_STARTED.md](../GETTING_STARTED.md)
 
 ---
 
-**Security-Hinweise (Dev):**
+**Security Notes (Dev):**
 
-- Authentifizierung erfolgt über CAP Mock-User (`cds.requires.auth.kind = mocked`) mit klar definierten Test-Rollen.
-- Secrets (API Keys, Feature Toggles) werden lokal in `.env` gepflegt; `.env.example` liefert Defaults.
-- **Codespaces Secrets**: CF-Credentials können als Codespaces Secrets gespeichert werden (GitHub Settings → Codespaces → Secrets)
-- HTTPS ist optional – für lokale Penetration Tests kann `cds watch --ssl` genutzt werden.
-- Tests gegen externe APIs nutzen dedizierte Sandbox-Keys (keine Produktiv-Credentials im Repo).
+- Authentication via CAP mock user (`cds.requires.auth.kind = mocked`) with clearly defined test roles.
+- Secrets (API keys, feature toggles) are managed locally in `.env`; `.env.example` provides defaults.
+- **Codespaces Secrets**: CF credentials can be stored as Codespaces secrets (GitHub Settings → Codespaces → Secrets)
+- HTTPS is optional – for local penetration tests, `cds watch --ssl` can be used.
+- Tests against external APIs use dedicated sandbox keys (no production credentials in repo).
 
 **Technologie-Stack (Alle Varianten):**
 
@@ -1600,7 +1600,7 @@ Das Projekt unterstützt **drei Entwicklungsszenarien** mit unterschiedlichen Tr
 
 ---
 
-### 7.2 Infrastruktur Level 2: Produktionsumgebung (SAP BTP)
+### 7.2 Infrastructure Level 2: Production Environment (SAP BTP)
 
 **Production Deployment auf SAP Business Technology Platform:**
 
@@ -1668,19 +1668,17 @@ Das Projekt unterstützt **drei Entwicklungsszenarien** mit unterschiedlichen Tr
 
 ---
 
-### 7.3 Deployment-Szenarien
+### 7.3 Deployment Scenarios
 
-**Szenario 1: Local Development**
-
-| Aspekt         | Konfiguration                                                  |
-| -------------- | -------------------------------------------------------------- |
+| Scenario        | Configuration                                                  |
+| -------- | -------------------------------------------------------------- |
 | **Command**    | `npm run watch`                                                |
 | **Database**   | SQLite (In-Memory)                                             |
-| **Auth**       | Mock Users (max.mustermann@test.de / erika.musterfrau@test.de) |
-| **URL**        | http://localhost:4004                                          |
-| **Hot Reload** | ✅ Aktiviert (cds-tsx)                                         |
+| **Auth**       | Mock users (max.mustermann@test.de / erika.musterfrau@test.de) |
+| **URL**        | <http://localhost:4004>                                        |
+| **Hot Reload** | ✅ Activated (cds-tsx)                                         |
 
-**Szenario 2: Cloud Foundry (BTP)**
+**Scenario 2: Cloud Foundry (BTP)**
 
 | Aspekt       | Konfiguration                                                                                       |
 | ------------ | --------------------------------------------------------------------------------------------------- |
@@ -1720,7 +1718,7 @@ Die Holiday-API wird produktiv über Destination + Connectivity konsumiert; loka
 2. **IAS-Provisionierung:** Subaccount-Instanz `cap-fiori-timetracking-ias` (Service `identity`) mit `xsuaa-cross-consumption` erzeugen; `Application Frontend Service` konsumiert dieselbe Instanz.
 3. **AMS-Provisionierung:** Subaccount-Instanz `cap-fiori-timetracking-ams` (Service `identity-authorization`) für Policy-Deployment anlegen; Policy-Daten werden über das neue Deployment-Modul verteilt.
 4. **CAP-Konfiguration:** Default-Authentifizierung auf IAS umgestellt (`cds.requires.auth = "ias"`, `cds.requires.xsuaa = true`); lokale Mock-User erweitern die Produktivrollen.
-5. **AMS-Attribute & Policies:** `db/ams-attributes.cds` mappt fachliche Attribute (`UserID`, `ProjectID`, `ProjectNumber`, `PreferredState`, `StatusCode`) an AMS; `ams/dcl/basePolicies.dcl` definiert Rollen-Policies.
+5. **AMS Attributes & Policies:** `db/ams-attributes.cds` maps business attributes (`UserID`, `ProjectID`, `ProjectNumber`, `PreferredState`, `StatusCode`) to AMS; `ams/dcl/basePolicies.dcl` defines role policies.
 6. **Deployment-Artefakte:** `mta.yaml` bindet nun IAS + AMS an das CAP-Service-Modul und fügt das technische Modul `cap-fiori-timetracking-ams-policies-deployer` hinzu; `xs-security.json` liefert die produktiven Scopes.
 7. **Work Zone Integration:** Application Frontend Service stellt Destinations mit JWT-Forwarding bereit; Role-Collections im Subaccount referenzieren die Templates aus `xs-security.json`.
 8. **Qualitätssicherung:** Mocked Tests nutzen weiterhin `npm run watch`; für CF-Deployments erzeugt `npm run build:mta` das MTAR, das anschließend mit `npm run deploy:cf` inklusive AMS-DCLs ausgerollt wird.
@@ -1749,10 +1747,10 @@ Die Holiday-API wird produktiv über Destination + Connectivity konsumiert; loka
 
 ---
 
-### 7.5 CI/CD Workflow-Übersicht
+### 7.5 CI/CD Workflow Overview
 
 - **`test.yaml` (CI/CD Tests & Build):** Läuft auf Push/PR zu `develop`, `main` und `feature/**`. Lint- und Test-Jobs brechen frühzeitig ab; nur bei Erfolg startet der Build (`cds-typer`, `npm run build`) und liefert Artefakte (`gen/`, `@cds-models/`) sowie Coverage/JUnit.
-- **`release-please.yaml`:** Wird über `workflow_run` ausgelöst, sobald der `main`-Build erfolgreich war. Die Action aktualisiert den Release-PR, erzeugt Tags erst nach dessen Merge (siehe [ADR-0017](ADR/0017-release-automation-mit-release-please.md)) und hängt das im CI erzeugte `gen/mta.mtar` als `cap-fiori-timetracking_<version>.mtar` an das GitHub-Release.
+- **`release-please.yaml`:** Triggered via `workflow_run` once `main` build succeeds. The action updates the release PR, creates tags only after its merge (see [ADR-0017](ADR/0017-release-automation-mit-release-please.md)) and attaches the `gen/mta.mtar` created in CI as `cap-fiori-timetracking_<version>.mtar` to the GitHub release.
 - **`cf.yaml` + Composite Action `cf-setup`:** Automatisiertes Staging-Deployment nach erfolgreichem `develop`-Build, Production-Rollout nach erfolgreicher Release-Automation oder manueller Auslösung. Beide Jobs nutzen GitHub-Environments (`Staging`, `Production`) für Governance & Approvals und installieren cf/mbt/MultiApps-Pakete.
 
 ```mermaid
@@ -1775,11 +1773,11 @@ flowchart TD
     N --> O["Production Environment (Approval)"]
 ```
 
-> Die gleiche Toolchain (`cf`, MultiApps-Plugin, `mbt`) ist lokal erforderlich, um die in README/Getting Started beschriebenen Deployments auszuführen.
+> The same toolchain (`cf`, MultiApps plugin, `mbt`) is locally required to execute the deployments described in README / Getting Started.
 
 ---
 
-## 8. Querschnittliche Konzepte
+## 8. Cross-Cutting Concepts
 
 ### 8.1 Dependency Injection (ServiceContainer Pattern)
 
@@ -1949,7 +1947,7 @@ logger.error('Database error', error, context);
 
 ### 8.5 Internationalisierung (i18n)
 
-**3-Ebenen-Ansatz:**
+**3-Layer Approach:**
 
 1. **CDS Annotations** (`@title`, `@description`)
 
@@ -2185,7 +2183,7 @@ sequenceDiagram
 - **Transport Management Service (TMS):** Optionale Freigabe von Role Collections, Destinations und Application-Frontend-Service-Konfigurationen zwischen Subaccounts (Dev → QA → Prod).
 - **ADR & Reviews:** Sicherheitsrelevante Änderungen (z. B. XSUAA → AMS Migration) erhalten eigene ADRs + Security Review.
 
-> Zusammengefasst: Security ist kein Add-on, sondern ein integriertes Querschnittsthema – von der UI über CAP bis zum Betrieb in der BTP. Die beschriebenen Bausteine stellen sicher, dass Authentifizierung, Autorisierung, Mandantentrennung und Secret-Handling in jeder Umgebung konsistent und auditierbar bleiben.
+> In summary: Security is not an add-on, but an integrated cross-cutting concern – from the UI via CAP to operation in BTP. The described components ensure that authentication, authorization, tenant isolation, and secret handling remain consistent and auditable in every environment.
 
 ### 8.11 AI Assistance & Prompt Catalog
 
@@ -2193,7 +2191,7 @@ Der Einsatz von LLMs wird bewusst orchestriert, um **Requirements Engineering**,
 
 **Ziele & Qualitätsleitplanken**
 
-- **Domänenfokus:** Prompts arbeiten mit fachlichen Begriffen (TimeEntries, Balance, Holiday Integration) und leiten Nutzer:innen dazu an, Business-Kontext zu präzisieren, bevor technische Lösungen entstehen.
+- **Domain Focus:** Prompts work with business terms (TimeEntries, Balance, Holiday Integration) and guide users to clarify business context before technical solutions arise.
 - **Architektur-Alignment:** Antworten verankern Maßnahmen in den Layern (Handlers, Commands, Services, Repositories, Infrastructure) und prüfen Auswirkungen auf DI-Container, Annotations und CDS-Modelle.
 - **Qualitätsziele spiegeln:** Maintainability, Testability, Performance und Usability werden explizit in den Dialog eingebunden.
 - **Dokumentations-Pflege:** Prompts erinnern daran, Änderungen in README, ARCHITECTURE, ADRs oder i18n/Annotationen nachzuführen.
@@ -2205,7 +2203,7 @@ Der Einsatz von LLMs wird bewusst orchestriert, um **Requirements Engineering**,
 | ------------------------- | -------------------------------------------------- | ---------------------------------------------------------------- |
 | Product Owner – Discovery | `product-owner-feature-brief`                      | Bedarf verstehen, Qualitätsziele sichern, Scope definieren       |
 | Product Owner – Delivery  | `product-owner-story-outline`                      | Story, Akzeptanzkriterien, Artefakt-Impact, Test-/Doku-Tasks     |
-| Code Review & QA          | `review-coach`, `test-strategy-designer`           | Findings priorisieren, Testplan erstellen, Risiken dokumentieren |
+| Code Review & QA          | `review-coach`, `test-strategy-designer`           | Prioritize findings, create test plan, document risks |
 | Architektur & Governance  | `architecture-deep-dive`, `adr-drafting-assistant` | Architektur-Exploration, Entscheidungsdokumentation              |
 | Betrieb & Kommunikation   | `bug-triage-investigator`, `release-notes-curator` | Incident-Analyse, Workarounds, Release Notes                     |
 
@@ -2246,11 +2244,11 @@ Die CAP Console ergänzt REST Client, Swagger UI und AI Prompts als zentrales We
 - **Ökosystem:** Neben dem CAP Team liefern BTP-Service-Teams, SAP-Produkte, Partner und Community neue Plugins. Übersicht: [CAP Plugins Directory](https://cap.cloud.sap/docs/plugins/).
 - **Governance:** Evaluierte Plugins dokumentieren wir in ADRs/Docs (z. B. Attachments, Logging). Neue Add-ons folgen denselben Qualitäts-Gates (Tests, DI, Observability) wie unsere Kernkomponenten.
 
-> Motto: „Start small, grow as you go“ – CAP + Calesi erlauben es, Enterprise-Features iterativ nachzurüsten, ohne in technische Schulden zu geraten.
+> Motto: "Start small, grow as you go" – CAP + Calesi allow enterprise features to be iteratively added without incurring technical debt.
 
 ---
 
-## 9. Architekturentscheidungen
+## 9. Architecture Decisions
 
 Alle Architekturentscheidungen sind als ADRs dokumentiert unter `docs/ADR/`:
 
@@ -2278,11 +2276,11 @@ Alle Architekturentscheidungen sind als ADRs dokumentiert unter `docs/ADR/`:
 
 ---
 
-## 10. Qualitätsanforderungen
+## 10. Quality Requirements
 
 ### 10.1 Test-Strategie & Coverage
 
-Das Projekt folgt einer **modularen Test-Pyramide** mit drei Ebenen, die alle Qualitätsaspekte abdecken:
+The project follows a **modular test pyramid** with three levels covering all quality aspects:
 
 #### Test-Struktur
 
@@ -2318,7 +2316,8 @@ tests/
 
 #### Test-Befehle (package.json)
 
-| Befehl                     | Beschreibung                                         | Verwendung               |
+| Command                    | Description                                          | Usage                    |
+| ------ --------- | ----- --------------|
 | -------------------------- | ---------------------------------------------------- | ------------------------ |
 | `npm test`                 | Führt alle Tests aus (unit + integration + security) | CI/CD Pipeline           |
 | `npm run test:unit`        | Nur Unit Tests (isoliert, schnell)                   | Lokale Entwicklung       |
@@ -2460,9 +2459,9 @@ System-Qualität
 
 ### 10.3 Qualitätsszenarien
 
-**Szenario QS-1: Neue Balance-Berechnung hinzufügen (Wartbarkeit)**
+**Scenario QS-1: Add New Balance Calculation (Maintainability)**
 
-| Aspekt        | Beschreibung                                                       |
+| Aspect        | Description                                                       |
 | ------------- | ------------------------------------------------------------------ |
 | **Stimulus**  | Anforderung: "Gleitzeit-Saldo" berechnen                           |
 | **Quelle**    | Product Owner                                                      |
@@ -2483,7 +2482,7 @@ System-Qualität
 
 ---
 
-**Szenario QS-2: Unit-Test für TimeEntryValidator (Testbarkeit)**
+**Scenario QS-2: Unit Test for TimeEntryValidator (Testability)**
 
 | Aspekt        | Beschreibung                                                      |
 | ------------- | ----------------------------------------------------------------- |
@@ -2530,7 +2529,7 @@ describe('TimeEntryValidator - Unit Tests', () => {
 
 ---
 
-**Szenario QS-3: Jahresgenerierung Performance (Performance)**
+**Scenario QS-3: Yearly Generation Performance (Performance)**
 
 | Aspekt        | Beschreibung                                  |
 | ------------- | --------------------------------------------- |
@@ -2579,7 +2578,7 @@ const entry: TimeEntry = { workDate: '2025-01-01' }; // ❌ Property 'workDate' 
 
 ---
 
-**Szenario QS-5: Neue Zeitbuchung erstellen (Usability)**
+**Scenario QS-5: Create New Time Entry (Usability)**
 
 | Aspekt        | Beschreibung                                   |
 | ------------- | ---------------------------------------------- |
@@ -2613,7 +2612,7 @@ const entry: TimeEntry = { workDate: '2025-01-01' }; // ❌ Property 'workDate' 
 
 ---
 
-## 11. Risiken und technische Schulden
+## 11. Risks and Technical Debt
 
 ### 11.1 Risiken
 
@@ -2660,7 +2659,7 @@ Auswirkung
 
 ---
 
-## 12. Glossar
+## 12. Glossary
 
 ### A-C
 
