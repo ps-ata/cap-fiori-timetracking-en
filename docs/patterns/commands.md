@@ -1,18 +1,18 @@
 # 🎯 3. Command Pattern (10 Commands!)
 
-**Dateien:** `srv/handler/commands/*.ts`
+**Files:** `srv/handler/commands/*.ts`
 
-Commands kapseln komplexe Business Operations:
+commands encapsulate complex business operations:
 
-| Command                      | Zweck                                          |
+| Command                      | Purpose                                        |
 | ---------------------------- | ---------------------------------------------- |
-| `CreateTimeEntryCommand`     | Validierung, User-Lookup, Factory, Calculation |
-| `UpdateTimeEntryCommand`     | Change Detection, Recalculation                |
-| `GenerateMonthlyCommand`     | Monat generieren mit Stats                     |
-| `GenerateYearlyCommand`      | Jahr mit Feiertagen                            |
-| `GetDefaultParamsCommand`    | Default-Parameter für Generierung              |
-| `GetMonthlyBalanceCommand`   | Monatssaldo mit Criticality                    |
-| `GetCurrentBalanceCommand`   | Kumulierter Gesamtsaldo                        |
-| `GetRecentBalancesCommand`   | Historische Balances (6 Monate)                |
-| `GetVacationBalanceCommand`  | Urlaubssaldo-Berechnung                        |
-| `GetSickLeaveBalanceCommand` | Krankheitsstand-Berechnung                     |
+| `CreateTimeEntryCommand`     | validation, user lookup, factory, calculation  |
+| `UpdateTimeEntryCommand`     | change detection, recalculation                |
+| `GenerateMonthlyCommand`     | generate month with stats                      |
+| `GenerateYearlyCommand`      | generate year with holidays                    |
+| `GetDefaultParamsCommand`    | default parameters for generation              |
+| `GetMonthlyBalanceCommand`   | monthly balance with criticality               |
+| `GetCurrentBalanceCommand`   | cumulative total balance                       |
+| `GetRecentBalancesCommand`   | historical balances (6 months)                 |
+| `GetVacationBalanceCommand`  | vacation balance calculation                   |
+| `GetSickLeaveBalanceCommand` | sick leave calculation                         |
