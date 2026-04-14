@@ -1,52 +1,56 @@
-# 📋 HandlerRegistry Pattern
+# 🏭 Factory Pattern (2 Factories!)
 
-**File:** `srv/handler/registry/HandlerRegistry.ts`
+## **TimeEntryFactory** – domain object creation
 
-structured event-handler registration with **before/on/after** support:
+**File:** `srv/handler/factories/TimeEntryFactory.ts`
+
+knows all business rules and creates perfectly calculated TimeEntry objects:
 
 ```typescript
-registry.register({
-  type: 'before',
-  event: 'CREATE',
-  entity: TimeEntries,
-  handler: handlers.handleCreate.bind(handlers),
-  description: 'Validate and enrich time entry before creation',
-});
+const factory = container.getFactory<TimeEntryFactory>('timeEntry');
 
-registry.apply(service);
+// work time data (used in commands)
+const workData = await factory.createWorkTimeData(userService, tx, userId, startTime, endTime, breakMin);
+// → calculates automatically: gross, net, overtime, undertime, uses customizing fallbacks
+
+// non-work time data (vacation, sick leave)
+const nonWorkData = await factory.createNonWorkTimeData(userService, tx, userId);
+
+// complete entries for generation (use customizing defaults)
+const workEntry = factory.createDefaultEntry(userId, date, user);
+const weekendEntry = factory.createWeekendEntry(userId, date);
+const holidayEntry = factory.createHolidayEntry(userId, date, 'New Year');
 ```
 
-# 📋 Registrar Pattern
+## **HandlerFactory** – handler instance creation
 
-**File:** `srv/handler/registry/HandlerRegistrar.ts`
+**File:** `srv/handler/factories/HandlerFactory.ts`
 
-separates registration logic from business logic:
+creates handler instances with dependencies from the ServiceContainer:
 
 ```typescript
-class HandlerRegistrar {
-  constructor(private registry: HandlerRegistry) {}
+class HandlerFactory {
+  constructor(private container: ServiceContainer) {}
 
-  registerTimeEntryHandlers(handlers: TimeEntryHandlers): void {
-    this.registry.register({
-      type: 'before',
-      event: 'CREATE',
-      entity: TimeEntries,
-      handler: handlers.handleCreate.bind(handlers),
-      description: 'Validate and enrich time entry before creation',
-    });
-    // ... more registrations
+  createTimeEntryHandlers(): TimeEntryHandlers {
+    return new TimeEntryHandlers(
+      this.container.getCommand<CreateTimeEntryCommand>('createTimeEntry'),
+      this.container.getCommand<UpdateTimeEntryCommand>('updateTimeEntry'),
+    );
   }
 
-  registerAllHandlers(handlers: { ... }): void {
-    this.registerTimeEntryHandlers(handlers.timeEntry);
-    this.registerGenerationHandlers(handlers.generation);
-    this.registerBalanceHandlers(handlers.balance);
+  createAllHandlers() {
+    return {
+      timeEntry: this.createTimeEntryHandlers(),
+      generation: this.createGenerationHandlers(),
+      balance: this.createBalanceHandlers(),
+    };
   }
 }
 ```
 
 **Features:**
 
-- 📋 structured registration
-- 🎯 separation of concerns
-- 🔄 reusable
+- 🏭 encapsulates handler instantiation
+- 🔗 resolves dependencies from container
+- 🧪 perfect for unit tests
