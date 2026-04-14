@@ -1,12 +1,12 @@
 # 📋 Strategy Pattern
 
-**Dateien:** `srv/handler/strategies/*.ts`
+**Files:** `srv/handler/strategies/*.ts`
 
-Das **Strategy Pattern** ermöglicht austauschbare Algorithmen für unterschiedliche Generierungsszenarien. Jede Strategy kapselt einen spezifischen Algorithmus und ist unabhängig austauschbar:
+The **Strategy Pattern** enables interchangeable algorithms for different generation scenarios. Each strategy encapsulates a specific algorithm and is independently exchangeable:
 
 ```typescript
 /**
- * MonthlyGenerationStrategy - Generiert alle Arbeitstage eines Monats
+ * MonthlyGenerationStrategy - generates all working days of a month
  */
 export class MonthlyGenerationStrategy {
   constructor(
@@ -24,7 +24,7 @@ export class MonthlyGenerationStrategy {
     for (let day = 1; day <= monthData.daysInMonth; day++) {
       const currentDate = new Date(monthData.year, monthData.month, day);
 
-      // Skip Wochenenden & existierende Einträge
+      // skip weekends & existing entries
       if (!DateUtils.isWorkingDay(currentDate, workingDaysPerWeek)) {
         continue;
       }
@@ -32,7 +32,7 @@ export class MonthlyGenerationStrategy {
       const dateString = DateUtils.toLocalDateString(currentDate);
       if (existingDates.has(dateString)) continue;
 
-      // Factory erstellt perfekt berechnete Entries
+      // factory creates perfectly calculated entries
       const entry = this.timeEntryFactory.createDefaultEntry(userID, currentDate, user);
       newEntries.push(entry);
     }
@@ -44,8 +44,8 @@ export class MonthlyGenerationStrategy {
 
 **Features:**
 
-- 🔄 Austauschbare Algorithmen ohne Code-Änderung
-- 🎯 Jede Strategy kennt ihre spezifische Business-Logik
-- 🏭 Nutzt Factory für konsistente Entry-Erstellung
-- 📅 Weekend-Detection und Date-Utilities
-- ⚡ Performance-optimiert mit Sets für Lookup
+- 🔄 interchangeable algorithms without code changes
+- 🎯 each strategy knows its specific business logic
+- 🏭 utilizes factory for consistent entry creation
+- 📅 weekend detection and date utilities
+- ⚡ performance-optimized with sets for lookup
