@@ -1,86 +1,86 @@
-# ADR 0011: Test-Strategie für CAP Services mit Jest und REST Client
+# ADR 0011: Test Strategy for CAP Services with Jest and REST Client
 
 ## Status
 
-Akzeptiert - Test-Infrastruktur-Setup (Iteration 6)
+Accepted - Test infrastructure setup (Iteration 6)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Das Projekt benötigte eine automatisierte Test-Strategie für die CAP Services, um folgende Anforderungen zu erfüllen:
+The project required an automated test strategy for CAP services to meet the following requirements:
 
-1. **Automatisierte Tests**: Lokale Entwicklung und CI/CD-Pipeline sollen Tests automatisch ausführen.
-2. **OData/HTTP API Testing**: TimeEntries CRUD, Actions (Generation, Recalculate), Functions (Balance-Berechnungen) müssen getestet werden.
-3. **Business-Logik-Validierung**: Commands, Validators, Factories und Services benötigen Unit/Integration-Tests.
-4. **Multi-User-Szenarien**: Tests mit verschiedenen Mock-Usern (Max, Erika) für User-spezifische Features.
-5. **Schnelles Feedback**: Entwickler sollen sofort Feedback über kaputte Funktionalität erhalten.
-6. **CI/CD-Integration**: Tests müssen in GitHub Actions laufen und bei Failures den Build abbrechen.
-7. **Manuelle Ad-hoc-Tests**: Entwickler sollen einzelne HTTP-Requests schnell ausführen können während der Entwicklung.
+1. **Automated tests**: Local development and CI/CD pipelines must run tests automatically.
+2. **OData/HTTP API testing**: TimeEntries CRUD, Actions (Generation, Recalculate), Functions (balance calculations) must be tested.
+3. **Business logic validation**: Commands, validators, factories, and services need unit/integration tests.
+4. **Multi-user scenarios**: Tests with different mock users (Max, Erika) for user-specific features.
+5. **Fast feedback**: Developers should get immediate feedback on broken functionality.
+6. **CI/CD integration**: Tests must run in GitHub Actions and fail the build on failures.
+7. **Manual ad-hoc tests**: Developers should be able to execute individual HTTP requests quickly during development.
 
-Ohne Test-Strategie entstanden folgende Probleme:
+Without a test strategy, the following problems occurred:
 
-- **Manuelle Regressions-Tests**: Jede Änderung musste manuell durch UI-Clicks oder Postman-Requests getestet werden.
-- **Fehlende Coverage**: Keine Sichtbarkeit, welche Code-Bereiche getestet sind.
-- **Langsame Fehleridentifikation**: Bugs wurden erst spät in Production oder durch User-Feedback entdeckt.
-- **Schwierige Refactorings**: Änderungen an Business-Logik erforderten aufwändige manuelle Tests.
+- **Manual regression testing**: Every change had to be tested manually via UI clicks or Postman requests.
+- **Missing coverage**: No visibility into which code areas were tested.
+- **Slow bug detection**: Bugs were discovered late in production or via user feedback.
+- **Difficult refactorings**: Business logic changes required expensive manual tests.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **CAP-Native Integration**: Test-Framework soll CAP's `cds.test()` nutzen für nahtlose Integration.
-- **TypeScript-Support**: Tests sollen in TypeScript geschrieben werden und typsichere APIs nutzen.
-- **Test-Runner-Flexibilität**: Sowohl Jest als auch Mocha sollen unterstützt werden.
-- **Authentication-Integration**: Mock-User aus `package.json` sollen in Tests wiederverwendbar sein.
-- **HTTP + Service API Testing**: Beide Ebenen (HTTP OData und programmatic Service API) sollen testbar sein.
-- **Einfacher Setup**: Minimaler Boilerplate, schneller Einstieg für neue Entwickler.
-- **IDE-Integration**: VS Code REST Client für manuelle Tests ohne Postman.
-- **CI/CD-Ready**: Tests sollen in GitHub Actions ohne zusätzliche Konfiguration laufen.
+- **CAP-native integration**: The test framework should use CAP's `cds.test()` for seamless integration.
+- **TypeScript support**: Tests should be written in TypeScript and use type-safe APIs.
+- **Test runner flexibility**: Both Jest and Mocha should be supported.
+- **Authentication integration**: Mock users from `package.json` should be reusable in tests.
+- **HTTP + service API testing**: Both layers (HTTP OData and programmatic service API) should be testable.
+- **Easy setup**: Minimal boilerplate, fast onboarding for new developers.
+- **IDE integration**: VS Code REST Client for manual tests without Postman.
+- **CI/CD ready**: Tests should run in GitHub Actions without extra configuration.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Nur manuelle Tests mit Postman
+### Option A - Manual Tests with Postman Only
 
-- Manuelle HTTP-Requests in Postman Collections.
-- Vorteil: Keine Test-Framework-Setup, sofort nutzbar.
-- Nachteil: Keine Automatisierung, kein CI/CD, keine Coverage, schwierige Team-Collaboration (Postman-Collections müssen geteilt werden).
+- Manual HTTP requests in Postman collections.
+- Pros: No test framework setup, immediately usable.
+- Cons: No automation, no CI/CD, no coverage, difficult team collaboration (Postman collections must be shared).
 
-### Option B - Supertest ohne CAP-Integration
+### Option B - Supertest without CAP Integration
 
-- HTTP-Tests mit Supertest direkt gegen Express-Server.
-- Vorteil: Flexibel, viele Beispiele in der Community.
-- Nachteil: Keine CAP-Native Integration, kein `cds.test()`, manuelle Mock-User-Verwaltung, aufwändigeres Setup.
+- HTTP tests with Supertest directly against the Express server.
+- Pros: Flexible, many community examples.
+- Cons: No CAP-native integration, no `cds.test()`, manual mock user handling, more complex setup.
 
-### Option C - CAP Native Testing mit cds.test() + Jest
+### Option C - CAP Native Testing with cds.test() + Jest
 
-- Nutzung von CAP's `cds.test()` für HTTP und Service API Tests.
-- Jest als Test-Runner (alternativ Mocha).
-- Chai für Assertions (kompatibel mit Jest und Mocha).
-- Mock-User aus `package.json` für Authentication.
-- Vorteil: CAP-native, TypeScript-Support, einfaches Setup, CI/CD-ready, flexible Test-Runner-Wahl.
-- Nachteil: Zusätzliche Dependencies (Jest, Chai, @types).
+- Use CAP's `cds.test()` for HTTP and service API tests.
+- Jest as test runner (alternatively Mocha).
+- Chai for assertions (compatible with Jest and Mocha).
+- Mock users from `package.json` for authentication.
+- Pros: CAP-native, TypeScript support, easy setup, CI/CD-ready, flexible test runner choice.
+- Cons: Additional dependencies (Jest, Chai, @types).
 
-### Option D - REST Client für manuelle Tests + Jest für Automatisierung (Hybrid)
+### Option D - REST Client for Manual Tests + Jest for Automation (Hybrid)
 
-- **Automatisierte Tests**: Jest + `cds.test()` für CI/CD und Regression-Tests.
-- **Manuelle Tests**: VS Code REST Client (`.http` Dateien) für Ad-hoc-Tests während Entwicklung.
-- Vorteil: Beste aus beiden Welten - Automatisierung + schnelle manuelle Tests, keine Postman-Abhängigkeit.
-- Nachteil: Zwei Test-Systeme zu pflegen (aber mit geringer Überlappung).
+- **Automated tests**: Jest + `cds.test()` for CI/CD and regression tests.
+- **Manual tests**: VS Code REST Client (`.http` files) for ad-hoc tests during development.
+- Pros: Best of both worlds - automation + fast manual tests, no Postman dependency.
+- Cons: Two test systems to maintain (but with low overlap).
 
-## Entscheidung
+## Decision
 
-Wir wählen **Option D** - Hybrid-Ansatz mit Jest für automatisierte Tests und REST Client für manuelle Tests. Dies bietet optimale Balance zwischen Automatisierung und Developer-Experience.
+We choose **Option D** - a hybrid approach with Jest for automated tests and REST Client for manual tests. This provides an optimal balance between automation and developer experience.
 
-### 1. Automatisierte Tests mit Jest + cds.test()
+### 1. Automated Tests with Jest + cds.test()
 
-#### Test-Struktur
+#### Test Structure
 
 ```
 test/
-├── track-service.test.ts    # Integration Tests für TrackService
-├── commands/                # Unit Tests für Commands (optional)
-├── validators/              # Unit Tests für Validators (optional)
-└── services/                # Unit Tests für Services (optional)
+├── track-service.test.ts    # Integration tests for TrackService
+├── commands/                # Unit tests for commands (optional)
+├── validators/              # Unit tests for validators (optional)
+└── services/                # Unit tests for services (optional)
 ```
 
-#### Jest-Konfiguration (`jest.config.js`)
+#### Jest configuration (`jest.config.js`)
 
 ```javascript
 module.exports = {
@@ -238,79 +238,79 @@ jobs:
           name: cap-fiori-timetracking-coverage
 ```
 
-## Konsequenzen
+## Consequences
 
-### Positiv
+### Positive
 
-- **Automatisierte Regression-Tests**: Alle CRUD-Operationen, Actions und Functions werden bei jedem Commit getestet.
-- **Schnelles Feedback**: Entwickler erhalten sofort Feedback über kaputte Funktionalität (lokal + CI/CD).
-- **Code Coverage**: Jest generiert Coverage-Reports, die zeigen, welche Code-Bereiche getestet sind.
-- **CAP-Native Integration**: `cds.test()` nutzt CAP's interne Test-Utilities, was nahtlose Integration ermöglicht.
-- **TypeScript-Typsicherheit**: Tests nutzen typisierte APIs aus `#cds-models/*`, was Compile-Zeit-Fehler verhindert.
-- **Mock-User-Wiederverwendung**: Existierende Mock-User aus `package.json` werden in Tests wiederverwendet.
-- **Flexible Test-Runner-Wahl**: Jest oder Mocha können genutzt werden (portable Tests mit Chai).
-- **Manuelle Tests ohne Postman**: REST Client in VS Code ermöglicht Ad-hoc-Tests ohne externe Tools.
-- **CI/CD-Integration**: GitHub Actions führt Tests automatisch aus und bricht Build bei Failures ab.
-- **Team-Collaboration**: `.http` Dateien können im Git-Repository geteilt werden (vs. Postman-Collections).
+- **Automated regression tests**: All CRUD operations, actions, and functions are tested on every commit.
+- **Fast feedback**: Developers get immediate feedback on broken functionality (local + CI/CD).
+- **Code coverage**: Jest generates coverage reports that show which code areas are tested.
+- **CAP-native integration**: `cds.test()` uses CAP's internal test utilities for seamless integration.
+- **TypeScript type safety**: Tests use typed APIs from `#cds-models/*`, preventing compile-time errors.
+- **Mock user reuse**: Existing mock users from `package.json` are reused in tests.
+- **Flexible test runner choice**: Jest or Mocha can be used (portable tests with Chai).
+- **Manual tests without Postman**: REST Client in VS Code enables ad-hoc tests without external tools.
+- **CI/CD integration**: GitHub Actions runs tests automatically and fails the build on failures.
+- **Team collaboration**: `.http` files can be shared in the Git repository (vs. Postman collections).
 
-### Negativ
+### Negative
 
-- **Zusätzliche Dependencies**: Jest, Chai, @types erhöhen `node_modules` Größe (ca. 50 MB).
-- **Initiale Lernkurve**: Entwickler müssen `cds.test()` API und Chai-Assertions lernen.
-- **Test-Wartung**: Tests müssen bei API-Änderungen aktualisiert werden (Trade-off für Automatisierung).
-- **Längere CI/CD-Laufzeit**: Tests verlängern Build-Zeit um ca. 30-60 Sekunden.
-- **Zwei Test-Systeme**: REST Client und Jest müssen parallel gepflegt werden (aber mit geringer Überlappung - manuelle vs. automatisierte Tests).
+- **Additional dependencies**: Jest, Chai, @types increase `node_modules` size (approx. 50 MB).
+- **Initial learning curve**: Developers must learn the `cds.test()` API and Chai assertions.
+- **Test maintenance**: Tests must be updated when the API changes (trade-off for automation).
+- **Longer CI/CD runtime**: Tests increase build time by approx. 30-60 seconds.
+- **Two test systems**: REST Client and Jest must be maintained in parallel (but with low overlap - manual vs. automated tests).
 
 ### Trade-offs
 
-Wir akzeptieren die zusätzlichen Dependencies und Test-Wartung zugunsten von Automatisierung, schnellem Feedback und Code Coverage. Die initiale Lernkurve wird durch Beispiel-Tests und ADR-Dokumentation kompensiert.
+We accept the additional dependencies and test maintenance in favor of automation, fast feedback, and code coverage. The initial learning curve is offset by sample tests and ADR documentation.
 
-## Test-Pyramide für das Projekt
+## Test Pyramid for the Project
 
-Das Projekt folgt einer klassischen Test-Pyramide mit Fokus auf Integration-Tests:
+The project follows a classic test pyramid with a focus on integration tests:
 
-### 1. Integration Tests (70%) - **Primär mit Jest**
+### 1. Integration Tests (70%) - **Primarily with Jest**
 
-- **Zweck**: Testen von OData HTTP APIs, Actions, Functions
+- **Purpose**: Test OData HTTP APIs, actions, functions
 - **Framework**: Jest + `cds.test()`
 - **Location**: `test/track-service.test.ts`
-- **Coverage**: TimeEntries CRUD, Generation, Balance-Berechnungen
-- **Beispiel**: Create TimeEntry → Validierung → Berechnung → Speichern
+- **Coverage**: TimeEntries CRUD, generation, balance calculations
+- **Example**: Create TimeEntry → validation → calculation → persist
 
 ### 2. Unit Tests (20%) - **Optional**
 
-- **Zweck**: Testen isolierter Business-Logik (Commands, Validators, Factories)
-- **Framework**: Jest mit Mocks
+- **Purpose**: Test isolated business logic (commands, validators, factories)
+- **Framework**: Jest with mocks
 - **Location**: `test/commands/*.test.ts`, `test/validators/*.test.ts`
-- **Coverage**: Zeitberechnungen, Validierungsregeln
-- **Beispiel**: TimeCalculationService.calculateWorkingHours()
+- **Coverage**: time calculations, validation rules
+- **Example**: TimeCalculationService.calculateWorkingHours()
 
-### 3. E2E Tests (10%) - **OPA5 (bereits vorhanden)**
+### 3. E2E Tests (10%) - **OPA5 (already in place)**
 
-- **Zweck**: Testen der UI-Flows
+- **Purpose**: Test UI flows
 - **Framework**: OPA5 (Fiori Elements)
 - **Location**: `app/timetable/webapp/test/integration/`
-- **Coverage**: UI-Navigation, Create-Flow, Filter
-- **Beispiel**: User öffnet App → Erstellt Entry → Speichert → Sieht Entry in Liste
+- **Coverage**: UI navigation, create flow, filter
+- **Example**: User opens app → creates entry → saves → sees entry in list
 
-## Workflow für Entwickler
+## Developer Workflow
 
-### Lokale Entwicklung
+### Local Development
 
-1. **Tests schreiben**: Neue Tests in `test/` anlegen
-2. **Tests ausführen**: `npm test` (alle Tests) oder `npm run test:watch` (Watch-Mode)
-3. **Coverage prüfen**: `npm run test:coverage` → öffne `coverage/index.html`
-4. **Manuelle Tests**: Öffne `test/track-service.http` → klicke "Send Request"
+1. **Write tests**: Add new tests in `test/`
+2. **Run tests**: `npm test` (all tests) or `npm run test:watch` (watch mode)
+3. **Check coverage**: `npm run test:coverage` → open `coverage/index.html`
+4. **Manual tests**: Open `test/track-service.http` → click "Send Request"
 
 ### CI/CD
 
-1. **Push zu GitHub**: Tests laufen automatisch in GitHub Actions
-2. **Pull Request**: Tests müssen grün sein, bevor PR gemerged werden kann
-3. **Coverage-Report**: Codecov zeigt Coverage-Änderungen im PR-Comment
+1. **Push to GitHub**: Tests run automatically in GitHub Actions
+2. **Pull request**: Tests must be green before the PR can be merged
+3. **Coverage report**: Codecov shows coverage changes in the PR comment
 
-## Beispiel-Tests im Projekt
+## Example Tests in the Project
 
-Das Projekt enthält umfassende Beispiel-Tests in `test/track-service.test.ts`:
+The project includes comprehensive example tests in `test/track-service.test.ts`:
 
 ### CRUD-Tests
 
@@ -341,44 +341,44 @@ Das Projekt enthält umfassende Beispiel-Tests in `test/track-service.test.ts`:
 
 - ✅ Read Users, Projects, ActivityTypes, EntryTypes
 
-## Manuelle Test-Szenarien (REST Client)
+## Manual Test Scenarios (REST Client)
 
-Die `test/track-service.http` Datei enthält über 50 vordefinierte HTTP-Requests:
+The `test/track-service.http` file contains more than 50 predefined HTTP requests:
 
 ### CRUD Operations
 
-- Get All TimeEntries (mit Expand, Filter, OrderBy)
+- Get All TimeEntries (with $expand, $filter, $orderby)
 - Create TimeEntry (Work, Vacation, Sick, Business Trip)
 - Update TimeEntry
 - Delete TimeEntry
 
 ### Generation & Balance
 
-- Generate Monthly/Yearly Entries
-- Get Balances (Monthly, Current, Recent, Vacation, Sick)
+- Generate monthly/yearly entries
+- Get balances (monthly, current, recent, vacation, sick)
 
 ### OData Query Options
 
 - $select, $filter, $orderby, $top, $count, $expand
-- Error Scenarios (Duplicate, Invalid Time Range)
+- Error scenarios (duplicate, invalid time range)
 
-## Verweise
+## References
 
-- `test/track-service.test.ts` - Beispiel-Tests mit Jest + cds.test()
-- `test/track-service.http` - REST Client Requests für manuelle Tests
-- `jest.config.js` - Jest-Konfiguration
-- `.github/workflows/test.yml` - CI/CD-Pipeline
-- `package.json` - npm Scripts und Dependencies
+- `test/track-service.test.ts` - example tests with Jest + cds.test()
+- `test/track-service.http` - REST Client requests for manual tests
+- `jest.config.js` - Jest configuration
+- `.github/workflows/test.yml` - CI/CD pipeline
+- `package.json` - npm scripts and dependencies
 
-## Hinweise für Entwickler
+## Notes for Developers
 
 ### Test-Driven Development (TDD)
 
-1. **Red**: Test schreiben, der fehlschlägt (neue Feature noch nicht implementiert)
-2. **Green**: Feature implementieren, bis Test grün ist
-3. **Refactor**: Code verbessern, Tests bleiben grün
+1. **Red**: Write a test that fails (new feature not implemented yet)
+2. **Green**: Implement the feature until the test passes
+3. **Refactor**: Improve the code while keeping tests green
 
-### Test schreiben
+### Writing Tests
 
 ```typescript
 it('should calculate overtime correctly', async () => {
@@ -389,7 +389,7 @@ it('should calculate overtime correctly', async () => {
       workDate: '2025-10-14',
       entryType_code: 'W',
       startTime: '08:00:00',
-      endTime: '18:00:00', // 10h - 2h Überstunden
+      endTime: '18:00:00', // 10h - 2h overtime
       breakMin: 60,
     },
     maxUser,
@@ -400,13 +400,13 @@ it('should calculate overtime correctly', async () => {
 });
 ```
 
-### REST Client nutzen
+### Using the REST Client
 
-1. VS Code Extension "REST Client" installieren
-2. `test/track-service.http` öffnen
-3. CAP Server starten: `npm run watch`
-4. Klicke "Send Request" über jeder `###` Zeile
-5. Variablen anpassen (z.B. `@server`, `@maxAuth`)
+1. Install the VS Code extension "REST Client"
+2. Open `test/track-service.http`
+3. Start the CAP server: `npm run watch`
+4. Click "Send Request" above any `###` section
+5. Adjust variables as needed (e.g. `@server`, `@maxAuth`)
 
 ### CI/CD debuggen
 
