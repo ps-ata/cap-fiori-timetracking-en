@@ -1,78 +1,78 @@
 # 🚀 Getting Started - CAPture Time
 
-Willkommen! Diese Anleitung hilft dir, die Time Tracking App schnell zum Laufen zu bringen.
+Welcome! This guide will help you get the Time Tracking App up and running quickly.
 
 ---
 
-## 🎯 Wähle deine Entwicklungsumgebung
+## 🎯 Choose Your Development Environment
 
-### ⚡ Option 1: GitHub Codespaces (Empfohlen für schnellen Start)
+### ⚡ Option 1: GitHub Codespaces (Recommended for quick start)
 
-**Zero-Config Development in der Cloud - Perfekt für:**
-- Neue Contributors ohne lokales Setup
-- Quick Prototyping & Testing
-- Teams mit heterogenen Entwicklungsumgebungen
-- Remote Work ohne leistungsstarke Hardware
+**Zero-Config Development in the Cloud - Perfect for:**
+- New contributors without local setup
+- Quick prototyping & testing
+- Teams with heterogeneous development environments
+- Remote work without powerful hardware
 
-**Start in 3 Schritten:**
+**Get started in 3 steps:**
 
-1. **Klicke auf den Badge:**
+1. **Click the badge:**
 
    [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=nimble-123/cap-fiori-timetracking)
 
-2. **Warte auf Setup** (~3-5 Minuten beim ersten Start)
-   - Container wird automatisch gebaut
-   - Alle Tools werden installiert (Node, Java, SAP Tools)
-   - Dependencies werden installiert
-   - TypeScript-Typen werden generiert
+2. **Wait for setup** (~3-5 minutes on first start)
+   - Container is automatically built
+   - All tools are installed (Node, Java, SAP Tools)
+   - Dependencies are installed
+   - TypeScript types are generated
 
 3. **Start Development Server:**
    ```bash
    npm run watch
    ```
 
-4. **Zugriff auf App:**
-   - VS Code zeigt automatisch Port-Forward-Benachrichtigung
-   - Klicke auf "Open in Browser" oder navigiere zur URL
+4. **Access the app:**
+   - VS Code automatically shows port forward notification
+   - Click "Open in Browser" or navigate to the URL
    - Format: `https://[codespace-name]-4004.app.github.dev`
 
 **Features:**
-- ✅ Alle Tools vorinstalliert (Node 22, Java 17, cds-dk, mbt, cf CLI)
-- ✅ VS Code Extensions automatisch aktiviert
-- ✅ Port-Forwarding mit HTTPS-URLs
-- ✅ 60 Std/Monat gratis (2-core machine)
-- ✅ Secrets-Management für CF-Credentials
+- ✅ All tools pre-installed (Node 22, Java 17, cds-dk, mbt, cf CLI)
+- ✅ VS Code extensions automatically activated
+- ✅ Port forwarding with HTTPS URLs
+- ✅ 60 hours/month free (2-core machine)
+- ✅ Secrets management for CF credentials
 
-**Mehr Infos:**
+**More info:**
 - 📖 [Devcontainer README](.devcontainer/README.md)
 - 📋 [ADR-0021: Devcontainer & Codespaces](docs/ADR/0021-devcontainer-github-codespaces.md)
 
 ---
 
-### 💻 Option 2: VS Code Dev Containers (Lokal mit Docker)
+### 💻 Option 2: VS Code Dev Containers (Local with Docker)
 
-**Container-basierte Entwicklung auf deinem Rechner - Perfekt für:**
-- Entwickler mit Docker Desktop
-- Offline-Entwicklung
-- Volle Kontrolle über Ressourcen
-- Kein Codespaces-Limit
+**Container-based development on your machine - Perfect for:**
+- Developers with Docker Desktop
+- Offline development
+- Full control over resources
+- No Codespaces limit
 
 **Prerequisites:**
-- Docker Desktop installiert und gestartet
-- VS Code mit "Dev Containers" Extension
+- Docker Desktop installed and running
+- VS Code with "Dev Containers" extension
 
-**Start in 4 Schritten:**
+**Get started in 4 steps:**
 
-1. **Clone Repository:**
+1. **Clone repository:**
    ```bash
    git clone https://github.com/nimble-123/cap-fiori-timetracking.git
    cd cap-fiori-timetracking
    ```
 
 2. **Open in Container:**
-   - Öffne Projekt in VS Code
+   - Open project in VS Code
    - `F1` → "Dev Containers: Reopen in Container"
-   - Warte auf Setup (~3-5 Minuten)
+   - Wait for setup (~3-5 minutes)
 
 3. **Start Development:**
    ```bash
@@ -83,108 +83,108 @@ Willkommen! Diese Anleitung hilft dir, die Time Tracking App schnell zum Laufen 
 
 ---
 
-### 🛠️ Option 3: Manuelle Lokale Installation (Klassisch)
+### 🛠️ Option 3: Manual Local Installation (Classic)
 
-**Traditionelle lokale Entwicklung - Perfekt für:**
-- Maximale Flexibilität
-- Keine Docker-Abhängigkeit
-- Entwickler mit bestehender Tool-Landschaft
+**Traditional local development - Perfect for:**
+- Maximum flexibility
+- No Docker dependency
+- Developers with existing tool landscape
 
 ---
 
-## 📋 Prerequisites (für Option 3: Manuelle Installation)
+## 📋 Prerequisites (for Option 3: Manual Installation)
 
-Stelle sicher, dass folgende Software installiert ist:
+Make sure the following software is installed:
 
-### Erforderlich
+### Required
 
-| Tool           | Version                                 | Download                            | Zweck                    |
+| Tool           | Version                                 | Download                            | Purpose                  |
 | -------------- | --------------------------------------- | ----------------------------------- | ------------------------ |
-| **Node.js**    | ≥22.x (laut `.nvmrc` 22.20.0)           | [nodejs.org](https://nodejs.org/)   | Runtime für CAP & UI5    |
-| **npm**        | ≥10.x                                   | (kommt mit Node.js)                 | Package Manager          |
-| **Java (JDK)** | ≥17 (Temurin empfohlen)                 | [Adoptium](https://adoptium.net/)   | Build von `@sap/ams-dev` |
+| **Node.js**    | ≥22.x (per `.nvmrc` 22.20.0)           | [nodejs.org](https://nodejs.org/)   | Runtime for CAP & UI5    |
+| **npm**        | ≥10.x                                   | (comes with Node.js)                | Package Manager          |
+| **Java (JDK)** | ≥17 (Temurin recommended)              | [Adoptium](https://adoptium.net/)   | Build of `@sap/ams-dev`  |
 | **TypeScript** | ≥5.0                                    | `npm install -g typescript`         | Compiler                 |
 | **Git**        | Latest                                  | [git-scm.com](https://git-scm.com/) | Version Control          |
 
-> Tipp: Falls du `nvm` verwendest, kannst du mit `nvm use` automatisch die in `.nvmrc` definierte Node-Version (22.20.0) aktivieren. Bei Bedarf installiert `nvm install` die Version einmalig. Für das Java-Requirement empfiehlt sich Temurin 17 (Adoptium); die GitHub Actions richten dieselbe Version via `actions/setup-java` ein.
+> Tip: If you use `nvm`, you can use `nvm use` to automatically activate the Node version defined in `.nvmrc` (22.20.0). If needed, `nvm install` will install the version once. For the Java requirement, Temurin 17 (Adoptium) is recommended; GitHub Actions sets up the same version via `actions/setup-java`.
 
-#### Zusatz-Tools für SAP BTP Deployments
+#### Additional Tools for SAP BTP Deployments
 
-| Tool                         | Version | Installationsschritt                                                              | Zweck                              |
-| ---------------------------- | ------- | --------------------------------------------------------------------------------- | ---------------------------------- |
-| **Cloud Foundry CLI (`cf`)** | ≥8.8    | [docs.cloudfoundry.org](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) | Deployments, Service-Management    |
-| **CF MultiApps Plugin**      | Latest  | `cf install-plugin multiapps`                                                     | `cf deploy` für MTA-Unterstützung  |
-| **MBT (`mbt`)**              | Latest  | `npm install -g mbt`                                                              | Baut `.mtar` für Multi-Target Apps |
+| Tool                         | Version | Installation Step                                                             | Purpose                              |
+| ---------------------------- | ------- | ----------------------------------------------------------------------------- | ------------------------------------ |
+| **Cloud Foundry CLI (`cf`)** | ≥8.8    | [docs.cloudfoundry.org](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) | Deployments, Service Management    |
+| **CF MultiApps Plugin**      | Latest  | `cf install-plugin multiapps`                                                 | `cf deploy` for MTA support        |
+| **MBT (`mbt`)**              | Latest  | `npm install -g mbt`                                                          | Builds `.mtar` for Multi-Target Apps |
 
-### Empfohlen
+### Recommended
 
-| Tool                         | Version | Download                                                | Zweck                   |
-| ---------------------------- | ------- | ------------------------------------------------------- | ----------------------- |
-| **VS Code**                  | Latest  | [code.visualstudio.com](https://code.visualstudio.com/) | IDE                     |
+| Tool                         | Version | Download                                                | Purpose             |
+| ---------------------------- | ------- | ------------------------------------------------------- | ------------------- |
+| **VS Code**                  | Latest  | [code.visualstudio.com](https://code.visualstudio.com/) | IDE                 |
 | **SAP CDS Language Support** | Latest  | VS Code Extension                                       | CDS Syntax Highlighting |
-| **ESLint**                   | Latest  | VS Code Extension                                       | Linting                 |
-| **Prettier**                 | Latest  | VS Code Extension                                       | Code Formatting         |
+| **ESLint**                   | Latest  | VS Code Extension                                       | Linting             |
+| **Prettier**                 | Latest  | VS Code Extension                                       | Code Formatting     |
 
-### Prüfen der Installation
+### Verify Installation
 
 ```bash
-node --version    # sollte v22.x.x sein
-npm --version     # sollte 10.x.x oder höher sein
-tsc --version     # sollte Version 5.x.x oder höher sein
-git --version     # sollte installiert sein
-cf --version      # sollte installiert sein
-mbt --version     # sollte installiert sein
+node --version    # should be v22.x.x
+npm --version     # should be 10.x.x or higher
+tsc --version     # should be version 5.x.x or higher
+git --version     # should be installed
+cf --version      # should be installed
+mbt --version     # should be installed
 ```
 
 ---
 
 ## 📦 Installation
 
-### 1. Repository klonen
+### 1. Clone repository
 
 ```bash
 git clone https://github.com/nimble-123/cap-fiori-timetracking.git
 cd cap-fiori-timetracking
 ```
 
-### 2. Dependencies installieren
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-Dies installiert:
+This installs:
 
 - **CAP Framework** (`@sap/cds`)
-- **TypeScript** Tooling (`typescript`, `@cap-js/cds-typer`)
+- **TypeScript** tooling (`typescript`, `@cap-js/cds-typer`)
 - **UI5 Tooling** (`@sap/ux-ui5-tooling`, `cds-plugin-ui5`)
 - **Dev Tools** (`prettier`, `eslint`, `@sap/dev-cap-tools`)
-- Alle Frontend-App-Dependencies (via Workspaces)
+- All frontend app dependencies (via workspaces)
 
-**Hinweis:** Das Projekt nutzt npm Workspaces – `app/timetable` und `app/timetracking` werden automatisch verlinkt.
+**Note:** The project uses npm workspaces – `app/timetable` and `app/timetracking` are automatically linked.
 
-> Dank `.npmrc` schlägt die Installation fehl, wenn deine Node-Version nicht zu den definierten Engines passt (`engine-strict=true`) – so bleiben alle Umgebungen konsistent. `npm audit` ist dabei standardmäßig aktiv.
+> Thanks to `.npmrc`, installation fails if your Node version doesn't match the defined engines (`engine-strict=true`) – this keeps all environments consistent. `npm audit` is active by default.
 
-### 3. Environment konfigurieren
+### 3. Configure environment
 
-Kopiere das Beispiel und passe Werte bei Bedarf an (für lokale Entwicklung reichen die Default-Werte):
+Copy the example and adjust values if needed (default values are sufficient for local development):
 
 ```bash
 cp .env.example .env
 ```
 
-**Wichtige Variablen:**
+**Important variables:**
 
-- `NODE_ENV`, `CDS_LOG_LEVELS_TRACK_SERVICE`, `CDS_LOG_FORMAT` – steuern Logging und Laufzeitverhalten.
-- `HOLIDAY_API_BASE_URL`, `HOLIDAY_API_TIMEOUT_MS` – Konfiguration für die Feiertags-API.
-- `CAP_AUTH_STRATEGY` – legt die lokale Authentifizierungsstrategie fest (Standard: `mocked`).
+- `NODE_ENV`, `CDS_LOG_LEVELS_TRACK_SERVICE`, `CDS_LOG_FORMAT` – control logging and runtime behavior.
+- `HOLIDAY_API_BASE_URL`, `HOLIDAY_API_TIMEOUT_MS` – configuration for the holiday API.
+- `CAP_AUTH_STRATEGY` – sets the local authentication strategy (default: `mocked`).
 
-Alle Variablen sind optional. Nicht gesetzte Werte fallen auf die Defaults aus `Customizing` bzw. den Services zurück.
+All variables are optional. Unset values fall back to defaults from `Customizing` or services.
 
-### 4. TypeScript-Typen & Entry Points
+### 4. TypeScript types & entry points
 
-- **Typen:** `@cap-js/cds-typer` läuft automatisch (über `npm run watch`, `npm run build` oder `cds-typer --watch`) und aktualisiert `@cds-models/*` bei jeder `.cds`-Änderung – kein manueller Befehl erforderlich.
-- **Optionale Entry Points:** Falls du `dev-cap-tools` Skripte nutzt (z. B. für CLI-Aufrufe), kannst du optional `npm run generate-entry-point` ausführen, um aktualisierte Entry Points zu erzeugen. Das beeinflusst die generierten Typen nicht.
+- **Types:** `@cap-js/cds-typer` runs automatically (via `npm run watch`, `npm run build` or `cds-typer --watch`) and updates `@cds-models/*` on every `.cds` change – no manual command required.
+- **Optional Entry Points:** If you use `dev-cap-tools` scripts (e.g., for CLI calls), you can optionally run `npm run generate-entry-point` to generate updated entry points. This doesn't affect the generated types.
 
 ---
 
