@@ -188,41 +188,41 @@ All variables are optional. Unset values fall back to defaults from `Customizing
 
 ---
 
-## 🧭 Repository-Guidelines & Meta-Dateien
+## 🧭 Repository Guidelines & Meta Files
 
-Damit alle Contributors dieselben Standards nutzen, bringt das Projekt mehrere Meta-Dateien mit:
+To ensure all contributors follow the same standards, the project includes several meta files:
 
-- `.nvmrc` – definiert Node.js 22.20.0. `nvm use` stellt sicher, dass du exakt diese Version nutzt.
-- `.npmrc` – erzwingt kompatible Node-Versionen (`engine-strict=true`) und aktiviert Sicherheitsprüfungen (`audit=true`).
-- `.editorconfig` – legt Formatierungsregeln fest (2 Spaces, LF, keine trailing spaces), passend zu Prettier.
-- `.env.example` – Beispielkonfiguration für lokale Umgebungsvariablen. Kopiere sie wie oben beschrieben nach `.env`.
-- `@cap-js/console` – aktiviert das CAP-Console-Plugin für Monitoring & Log-Level-Switches innerhalb der [SAP CAP Console](https://cap.cloud.sap/docs/tools/console) (Desktop-App).
-- `CODE_OF_CONDUCT.md` & `SECURITY.md` – beschreiben Verhaltensregeln sowie den Ablauf für Sicherheitsmeldungen.
-- `.github/ISSUE_TEMPLATE/*`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/dependabot.yml`, `.github/CODEOWNERS` – sorgen für saubere Issues/PRs, automatische Dependency-Updates und klar zugewiesene Reviews.
-- `release-please-config.json` & `.release-please-manifest.json` – steuern die automatisierte Release-PR-Erstellung; vor produktiven Läufen empfiehlt sich ein lokaler Dry-Run (`npx release-please release-pr --config-file release-please-config.json --manifest-file .release-please-manifest.json --dry-run`, Details in der README). Die Versionsnummern der UI5-Apps werden dabei über `extra-files` mitgezogen.
+- `.nvmrc` – defines Node.js 22.20.0. `nvm use` ensures you use exactly this version.
+- `.npmrc` – enforces compatible Node versions (`engine-strict=true`) and activates security checks (`audit=true`).
+- `.editorconfig` – sets formatting rules (2 spaces, LF, no trailing spaces), consistent with Prettier.
+- `.env.example` – example configuration for local environment variables. Copy it to `.env` as described above.
+- `@cap-js/console` – activates the CAP Console plugin for monitoring & log level switches within the [SAP CAP Console](https://cap.cloud.sap/docs/tools/console) (desktop app).
+- `CODE_OF_CONDUCT.md` & `SECURITY.md` – describe code of conduct rules and security reporting procedures.
+- `.github/ISSUE_TEMPLATE/*`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/dependabot.yml`, `.github/CODEOWNERS` – ensure clean issues/PRs, automatic dependency updates, and clearly assigned reviews.
+- `release-please-config.json` & `.release-please-manifest.json` – control automated release PR creation; before production runs, a local dry-run is recommended (`npx release-please release-pr --config-file release-please-config.json --manifest-file .release-please-manifest.json --dry-run`, see README for details). UI5 app version numbers are pulled along via `extra-files`.
 
-Bitte beachte diese Richtlinien, bevor du einen PR erstellst.
+Please follow these guidelines before creating a PR.
 
 ---
 
 ## 🤖 AI Prompts & LLM Workflows
 
-Das Repository enthält kuratierte Prompts für GitHub Models & CoPilot (`.github/prompts/*.prompt.yml`), um Product Owner, Entwickler:innen und QA bei CAP-spezifischen Aufgaben zu unterstützen.
+The repository contains curated prompts for GitHub Models & CoPilot (`.github/prompts/*.prompt.yml`) to support Product Owners, Developers, and QA with CAP-specific tasks.
 
-### Nutzung
+### Usage
 
-1. **Prompt auswählen:** Inhalte der YAML-Dateien lesen (z. B. `product-owner-feature-brief.prompt.yml`) und an dein Vorhaben anpassen (`{{...}}` Placeholder ersetzen).
-2. **LLM starten:** Prompt in GitHub Models UI, GitHub CLI (`gh models`), oder kompatible IDE-Integrationen laden.
-3. **Kontext teilen:** Relevante Artefakte/Änderungen als Input beschreiben (Summary, Diff, Incident etc.).
-4. **Ergebnisse prüfen:** Output durchgehen, offene Punkte klären und Entscheidungen dokumentieren (README, ARCHITECTURE, ADRs).
+1. **Select prompt:** Read the YAML file contents (e.g., `product-owner-feature-brief.prompt.yml`) and adapt to your needs (replace `{{...}}` placeholders).
+2. **Start LLM:** Load prompt into GitHub Models UI, GitHub CLI (`gh models`), or compatible IDE integrations.
+3. **Share context:** Describe relevant artifacts/changes as input (summary, diff, incident, etc.).
+4. **Review results:** Review output, clarify open points, and document decisions (README, ARCHITECTURE, ADRs).
 
-### Typische Workflows
+### Typical Workflows
 
-- **Discovery (Product Owner):** `product-owner-feature-brief` für Anforderungs-Gathering → `product-owner-story-outline` für Story-Bundle.
-- **Code Review:** `review-coach` für Findings, Test-Impact und Doku-Hinweise.
-- **Architecture Enablement:** `architecture-deep-dive` erklärt Module/Flows; `adr-drafting-assistant` unterstützt neue Entscheidungen.
-- **Support & Releases:** `bug-triage-investigator` strukturiert Fehlermeldungen, `release-notes-curator` erstellt Stakeholder-Updates.
-- **Qualitätssicherung:** `test-strategy-designer` definiert Testpakete (Unit, CAP-Integration, UI5 E2E, Performance).
+- **Discovery (Product Owner):** `product-owner-feature-brief` for requirements gathering → `product-owner-story-outline` for story bundles.
+- **Code Review:** `review-coach` for findings, test impact, and documentation hints.
+- **Architecture Enablement:** `architecture-deep-dive` explains modules/flows; `adr-drafting-assistant` supports new decisions.
+- **Support & Releases:** `bug-triage-investigator` structures bug reports, `release-notes-curator` creates stakeholder updates.
+- **Quality Assurance:** `test-strategy-designer` defines test packages (unit, CAP integration, UI5 E2E, performance).
 
 ### MCP-Server & Wissensquellen
 
@@ -238,20 +238,20 @@ Das Repository enthält kuratierte Prompts für GitHub Models & CoPilot (`.githu
 
 ---
 
-## 🏃 Development Server starten
+## 🏃 Starting the Development Server
 
-### Variante 1: Watch Mode (empfohlen für Development)
+### Option 1: Watch Mode (recommended for development)
 
 ```bash
 npm run watch
 ```
 
-Dieser Befehl:
+This command:
 
-- Startet CAP Server mit **Auto-Reload**
-- Nutzt `cds-tsx` (TypeScript ohne Kompilierung)
-- Überwacht Änderungen in `srv/`, `db/`, `app/`
-- Öffnet automatisch Browser auf `http://localhost:4004`
+- Starts CAP server with **auto-reload**
+- Uses `cds-tsx` (TypeScript without compilation)
+- Watches for changes in `srv/`, `db/`, `app/`
+- Automatically opens browser at `http://localhost:4004`
 
 **Server Output:**
 
@@ -268,58 +268,58 @@ Dieser Befehl:
 [cds] - launched at 16/10/2025, 10:23:45, version: 9.x.x, in: 1.234s
 ```
 
-### Variante 2: Build & Serve (für Production-Check)
+### Option 2: Build & Serve (for production check)
 
 ```bash
 npm run build
 npm start
 ```
 
-### Swagger UI & OpenAPI (nur Entwicklung)
+### Swagger UI & OpenAPI (development only)
 
-Beim Start über `npm run watch` oder `cds watch` registriert das Plugin `cds-swagger-ui-express` automatisch eine Swagger UI für den TrackService:
+When starting via `npm run watch` or `cds watch`, the `cds-swagger-ui-express` plugin automatically registers a Swagger UI for the TrackService:
 
 - **Swagger UI:** `http://localhost:4004/$api-docs/odata/v4/track/`
 - **OpenAPI JSON:** `http://localhost:4004/$api-docs/odata/v4/track/openapi.json`
 
-Die Oberfläche ist ausschließlich für lokale Entwicklung gedacht und wird nicht im produktiven Build ausgeliefert.
+The interface is intended for local development only and is not included in the production build.
 
 ---
 
-## 🧪 Test-User verwenden
+## 🧪 Using Test Users
 
-Die App nutzt **Mocked Authentication** für lokale Entwicklung. Drei Test-User mit den produktiven Rollennamen sind vorkonfiguriert:
+The app uses **mocked authentication** for local development. Three test users with production role names are pre-configured:
 
 ### User 1: Max Mustermann
 
 - **E-Mail:** `max.mustermann@test.de`
-- **Passwort:** `max`
-- **Rollen:** `TimeTrackingUser`, `TimeTrackingAdmin`
+- **Password:** `max`
+- **Roles:** `TimeTrackingUser`, `TimeTrackingAdmin`
 
 ### User 2: Erika Musterfrau
 
-- **E-Mail:** `erika.musterfrau@test.de`
-- **Passwort:** `erika`
-- **Rolle:** `TimeTrackingUser`
+- **Email:** `erika.musterfrau@test.de`
+- **Password:** `erika`
+- **Role:** `TimeTrackingUser`
 
 ### User 3: Frank Genehmiger
 
-- **E-Mail:** `frank.genehmiger@test.de`
-- **Passwort:** `frank`
-- **Rollen:** `TimeTrackingUser`, `TimeTrackingApprover`
+- **Email:** `frank.genehmiger@test.de`
+- **Password:** `frank`
+- **Roles:** `TimeTrackingUser`, `TimeTrackingApprover`
 
-**Login-Flow:**
+**Login Flow:**
 
-1. Öffne `http://localhost:4004/`
-2. Wähle eine der beiden Apps:
-   - `timetable/` - Fiori Elements List Report
-   - `timetracking/` - Custom UI5 Dashboard
-3. Logge dich mit einem der Test-User ein
+1. Open `http://localhost:4004/`
+2. Select one of the apps:
+   - `timetable/` - Fiori Elements list report
+   - `timetracking/` - Custom UI5 dashboard
+3. Log in with one of the test users
 
-**Alternative:** Direkter OData-Zugriff ohne UI:
+**Alternative:** Direct OData access without UI:
 
 ```bash
-# GET Requests (im Browser oder mit curl)
+# GET requests (in browser or with curl)
 http://localhost:4004/odata/v4/track/TimeEntries
 http://localhost:4004/odata/v4/track/Users
 http://localhost:4004/odata/v4/track/Projects
@@ -327,12 +327,12 @@ http://localhost:4004/odata/v4/track/Projects
 
 ---
 
-## 📂 Projekt-Struktur (Kurzübersicht)
+## 📂 Project Structure (Quick Overview)
 
 ```
 cap-fiori-timetracking/
 ├── app/                      # 📱 UI5 Frontend Apps
-│   ├── timetable/            # Fiori Elements (Annotations-basiert)
+│   ├── timetable/            # Fiori Elements (annotation-based)
 │   └── timetracking/         # Custom UI5 (TypeScript)
 ├── db/                       # 💾 Data Model & CSV Test Data
 │   ├── data-model.cds
@@ -342,16 +342,16 @@ cap-fiori-timetracking/
 │       ├── track-service.ts  # Service Orchestrator
 │       ├── handler/          # Commands, Validators, Services
 │       └── annotations/      # UI Annotations
-├── docs/                     # 📚 Dokumentation
-│   ├── ARCHITECTURE.md       # arc42 Architektur-Dokumentation
+├── docs/                     # 📚 Documentation
+│   ├── ARCHITECTURE.md       # arc42 Architecture Documentation
 │   └── ADR/                  # Architecture Decision Records
 ├── .github/                  # 🤖 Templates, Dependabot, CODEOWNERS
-├── @cds-models/              # 🔧 Generierte TypeScript-Typen
+├── @cds-models/              # 🔧 Generated TypeScript Types
 ├── test/                     # 🧪 Tests (Jest + REST Client)
-├── .env.example              # ⚙️ Beispiel-Umgebungsvariablen
-├── .editorconfig             # 🧹 Formatierungsregeln (2 Spaces, LF)
-├── .nvmrc                    # 🟦 Node-Version 22.20.0
-├── .npmrc                    # 📦 npm Richtlinien (engine-strict, audit)
+├── .env.example              # ⚙️ Example Environment Variables
+├── .editorconfig             # 🧹 Formatting Rules (2 Spaces, LF)
+├── .nvmrc                    # 🟦 Node Version 22.20.0
+├── .npmrc                    # 📦 npm Guidelines (engine-strict, audit)
 ├── CODE_OF_CONDUCT.md        # 🤝 Community Guidelines
 ├── SECURITY.md               # 🔐 Responsible Disclosure
 └── package.json              # npm Scripts & Dependencies
@@ -359,46 +359,46 @@ cap-fiori-timetracking/
 
 ---
 
-## 🛠️ Wichtige npm Scripts
+## 🛠️ Important npm Scripts
 
-| Befehl                         | Zweck                                | Wann verwenden?                 |
-| ------------------------------ | ------------------------------------ | ------------------------------- |
-| `npm run watch`                | Dev-Server mit Auto-Reload           | **Hauptbefehl für Development** |
-| `npm run build`                | TypeScript kompilieren               | Vor Commit (prüft Syntax)       |
-| `npm run format`               | Prettier Formatierung                | **Vor jedem Commit (Pflicht!)** |
-| `npm run generate-entry-point` | Service Entry Points (dev-cap-tools) | Optional bei neuen Services     |
-| `npm test`                     | Jest Tests ausführen                 | Nach Code-Änderungen            |
-| `npm start`                    | Production-like Serve                | Finaler Check vor Deployment    |
+| Command                        | Purpose                                | When to Use?                    |
+| ------------------------------ | -------------------------------------- | ------------------------------- |
+| `npm run watch`                | Dev server with auto-reload            | **Main command for development** |
+| `npm run build`                | Compile TypeScript                     | Before commit (syntax check)    |
+| `npm run format`               | Prettier formatting                    | **Before every commit (required!)** |
+| `npm run generate-entry-point` | Service entry points (dev-cap-tools)   | Optional for new services       |
+| `npm test`                     | Run Jest tests                         | After code changes              |
+| `npm start`                    | Production-like serve                  | Final check before deployment   |
 
-### Typischer Development-Workflow
+### Typical Development Workflow
 
 ```bash
-# 1. Server starten
+# 1. Start server
 npm run watch
 
-# 2. In anderem Terminal: Code ändern
-# ... editiere Dateien in srv/, db/, app/ ...
+# 2. In another terminal: edit code
+# ... edit files in srv/, db/, app/ ...
 
-# 3. Vor Commit: Code formatieren
+# 3. Before commit: format code
 npm run format
 
-# 4. TypeScript-Check
+# 4. TypeScript check
 npm run build
 
-# 5. Optional: Tests
+# 5. Optional: tests
 npm test
 
-# 6. Commit & Push
+# 6. Commit & push
 git add .
-git commit -m "feat: neue Feature XYZ"
+git commit -m "feat: new feature XYZ"
 git push
 ```
 
 ---
 
-## 🎯 Erste Schritte nach Installation
+## First Steps After Installation
 
-### 1. Backend erkunden (CAP Service)
+### 1. Explore the Backend (CAP Service)
 
 **Service Endpoints:**
 
@@ -407,9 +407,9 @@ git push
 - **Service Metadata:** http://localhost:4004/odata/v4/track/$metadata
 - **Fiori Preview:** http://localhost:4004/fiori.html
 
-**Tipp:** Öffne `test/track-service.http` in VS Code (benötigt REST Client Extension) für vorgefertigte HTTP-Requests.
+**Tip:** Open `test/track-service.http` in VS Code (requires REST Client extension) for pre-configured HTTP requests.
 
-### 2. Frontend Apps testen
+### 2. Test Frontend Apps
 
 **Fiori Elements Timetable:**
 
@@ -417,7 +417,7 @@ git push
 http://localhost:4004/io.nimble.timetable/index.html
 ```
 
-Features: List Report, Object Page, Drafts, F4 Value Helps
+Features: list report, object page, drafts, F4 value helps
 
 **Manage Activity Types (Fiori Elements Basic V4):**
 
@@ -425,7 +425,7 @@ Features: List Report, Object Page, Drafts, F4 Value Helps
 http://localhost:4004/io.nimble.manageactivitytypes/index.html
 ```
 
-Features: Stammdatenpflege der Activity Types, Tabellenfilter, Inline-Edit; alternativ über Launchpad-Vorschau `http://localhost:4004/fiori.html` erreichbar.
+Features: master data maintenance of activity types, table filters, inline editing; alternatively accessible via launchpad preview `http://localhost:4004/fiori.html`.
 
 **Custom UI5 Dashboard:**
 
@@ -433,15 +433,15 @@ Features: Stammdatenpflege der Activity Types, Tabellenfilter, Inline-Edit; alte
 http://localhost:4004/io.nimble.timetracking/index.html
 ```
 
-Features: Dashboard, SinglePlanningCalendar, Charts
+Features: dashboard, single planning calendar, charts
 
-### 3. Datenbank inspizieren
+### 3. Inspect the Database
 
 **SQLite In-Memory DB:**
 
-Die App nutzt per Default eine **In-Memory-Datenbank**. Daten gehen beim Server-Neustart verloren. Test-Daten werden aus `db/data/*.csv` automatisch geladen.
+The app uses an **in-memory database** by default. Data is lost when the server restarts. Test data is automatically loaded from `db/data/*.csv`.
 
-**Persistente DB (optional):**
+**Persistent DB (optional):**
 
 ```json
 // package.json → cds.requires.db
@@ -453,91 +453,91 @@ Die App nutzt per Default eine **In-Memory-Datenbank**. Daten gehen beim Server-
 }
 ```
 
-Dann:
+Then:
 
 ```bash
 cds deploy --to sqlite:db.sqlite
 npm run watch
 ```
 
-### 4. Code-Änderungen testen
+### 4. Test Code Changes
 
-**Beispiel: Neue Validierung hinzufügen**
+**Example: Add a new validation**
 
-1. Öffne `srv/track-service/handler/validators/TimeEntryValidator.ts`
-2. Füge neue Regel hinzu
-3. Server lädt automatisch neu (Watch Mode!)
-4. Teste mit `test/track-service.http`
+1. Open `srv/track-service/handler/validators/TimeEntryValidator.ts`
+2. Add new rule
+3. Server automatically reloads (watch mode!)
+4. Test with `test/track-service.http`
 
 ---
 
-### 5. SAP CAP Console einrichten
+### 5. Set Up SAP CAP Console
 
-Die [SAP CAP Console](https://cap.cloud.sap/docs/tools/console) ist eine native Desktop-App (Windows/macOS), inspiriert vom CAP Developer Dashboard & OpenLens, die lokale Entwicklung, BTP-Deployments und Monitoring in einer Oberfläche bündelt.
+The [SAP CAP Console](https://cap.cloud.sap/docs/tools/console) is a native desktop app (Windows/macOS), inspired by the CAP Developer Dashboard & OpenLens, that bundles local development, BTP deployments, and monitoring in one interface.
 
 1. **Download & Installation**
-   Lade die Anwendung über [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole) herunter und installiere sie. Vor dem Start unseres Projekts optional `npm run watch`, damit die Konsole das lokale CAP-Backend erkennt.
+   Download the application from [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole) and install it. Before starting our project, optionally run `npm run watch` so the console can detect the local CAP backend.
 
-2. **Projekt hinzufügen**
-   Beim Start scannt die Konsole laufende CAP-Prozesse (Java/JS). Unser Projekt erscheint automatisch in der Liste; über das Menü (`…`) kannst du „Remember Project“ wählen, um es dauerhaft anzuzeigen. Alternativ `Add Project` → Root-Ordner wählen.
+2. **Add Project**
+   On startup, the console scans running CAP processes (Java/JS). Our project will appear automatically in the list; from the menu (`…`) you can select "Remember Project" to keep it displayed permanently. Alternatively, choose `Add Project` → select root folder.
 
-3. **Monitoring & Struktur**
-   Die App visualisiert die `mta.yaml`, zeigt pro Modul Status, CPU/RAM und Live-Logs. Durch das im Projekt installierte Plugin `@cap-js/console` lassen sich Log-Level ohne Neustart anpassen. Ohne laufenden Service fallen die Live-Metriken weg, aber Metadaten bleiben sichtbar.
+3. **Monitoring & Structure**
+   The app visualizes the `mta.yaml`, shows status, CPU/RAM, and live logs for each module. Through the `@cap-js/console` plugin installed in the project, log levels can be adjusted without restarting. Without a running service, live metrics are unavailable, but metadata remains visible.
 
 4. **Environments & Deployment**
-   Environment-Konfigurationen liegen als `.cds/*.yaml` in deinem Projekt (siehe Beispiel `.cds/trial.yaml.example`). Wechsel per Top-Bar zwischen `local`, `dev`, `prod`. Für Cloud Foundry Deployments führt ein Wizard durch Authentifizierung, Entitlement-Check und Service-Anlage – wahlweise komplett „In-App“ (mit gebundleten CLIs) oder als Befehlssammlung für dein Terminal.
+   Environment configurations are stored as `.cds/*.yaml` in your project (see example `.cds/trial.yaml.example`). Switch between `local`, `dev`, `prod` via the top bar. For Cloud Foundry deployments, a wizard guides you through authentication, entitlement checks, and service creation – either completely "in-app" (with bundled CLIs) or as a command collection for your terminal.
 
 5. **Security & SSH**
-   Für Plugin-Features in BTP erzeugt die Konsole bei Bedarf einen SSH-Tunnel zum Applikations-Container. Stelle sicher, dass du und dein Team die Implikationen kennen (siehe „Security“-Kapitel in der Produktdoku) und SSH nur so lange aktiviert ist wie nötig.
+   For plugin features in BTP, the console creates an SSH tunnel to the application container when needed. Ensure you and your team understand the implications (see "Security" chapter in the product documentation) and enable SSH only as long as necessary.
 
-> Hinweis: Derzeit unterstützt die CAP Console keine µ-Services, kein MTX und keine Kyma-Deployments. Fokus liegt auf CAP-Projekten Richtung SAP BTP Cloud Foundry.
+> Note: Currently, CAP Console does not support µ-services, MTX, or Kyma deployments. The focus is on CAP projects targeting SAP BTP Cloud Foundry.
 
 ---
 
-## ☁️ Attachments auf SAP BTP konfigurieren (optional)
+## ☁️ Configure Attachments on SAP BTP (optional)
 
-Standardmäßig speichert das Attachments Plugin (`@cap-js/attachments`) Binärdaten in der angebundenen Datenbank. Für produktive Szenarien mit größeren Dateien oder Compliance-Anforderungen kannst du zusätzliche SAP BTP Services anbinden:
+By default, the attachments plugin (`@cap-js/attachments`) stores binary data in the connected database. For production scenarios with larger files or compliance requirements, you can connect additional SAP BTP services:
 
-1. **SAP Object Store** – lagert die Dateien in ein S3-kompatibles Storage aus.
-2. **SAP Malware Scanning Service** – prüft Uploads automatisiert auf Viren/Malware.
+1. **SAP Object Store** – stores files in S3-compatible storage.
+2. **SAP Malware Scanning Service** – automatically scans uploads for viruses/malware.
 
-**Beispielhafte Schritte (Cloud Foundry):**
+**Sample Steps (Cloud Foundry):**
 
 ```bash
-# Object Store für Attachments
+# Object store for attachments
 cf create-service objectstore standard cap-fiori-timetracking-attachments
 
-# Malware Scanner für Uploads
+# Malware scanner for uploads
 cf create-service malwarescanning standard cap-fiori-timetracking-malware-scanner
 
-# Application Logging Service für zentrale Logs
+# Application logging service for centralized logs
 cf create-service application-logs standard cap-fiori-timetracking-logging
 
-# Service-Bindings übernimmt die mta.yaml beim cf deploy
+# Service bindings are handled by mta.yaml during cf deploy
 
-# Connectivity + Destination für Holiday API
+# Connectivity + destination for holiday API
 cf create-service connectivity lite cap-fiori-timetracking-connectivity
 cf create-service destination lite cap-fiori-timetracking-destination
 ```
 
-> Konkrete Konfigurationsdetails (Binding-Names, Destinations, Environment Variables) findest du in der offiziellen Plugin-Dokumentation: [SAP Object Store](https://github.com/cap-js/attachments#using-sap-object-store) und [Malware Scanning Service](https://github.com/cap-js/attachments#using-sap-malware-scanning-service).
+> For detailed configuration information (binding names, destinations, environment variables), see the official plugin documentation: [SAP Object Store](https://github.com/cap-js/attachments#using-sap-object-store) and [Malware Scanning Service](https://github.com/cap-js/attachments#using-sap-malware-scanning-service).
 
 ---
 
-## ☁️ Deploy auf SAP BTP (Cloud Foundry)
+## ☁️ Deploy to SAP BTP (Cloud Foundry)
 
-1. **Voraussetzungen:** Installiere das Cloud Foundry CLI mit MultiApps Plugin (`cf install-plugin multiapps`) sowie das Cloud MTA Build Tool (`npm install -g mbt` oder via Binary).
-2. **Services vorbereiten:** Lege einmalig pro Subaccount die Services aus dem Abschnitt oben an (`hana`, `objectstore`, `malwarescanning`, `application-logs`, `connectivity`, `destination`) **plus** `identity` (IAS) und `identity-authorization` (AMS). Benenne sie gemäß `mta.yaml` (`cap-fiori-timetracking-ias`, `cap-fiori-timetracking-ams`).
-3. **IAS konfigurieren:** Erzeuge ein Service-Key für `cap-fiori-timetracking-ias`, aktiviere `xsuaa-cross-consumption` und lege Role-Collections an, die die Templates aus `xs-security.json` referenzieren.
-4. **AMS vorbereiten:** Vergib die Rolle `Identity_Provisioner` für dein technisches Deployment-User und stelle sicher, dass die AMS-API erreichbar ist (Service-Key für `cap-fiori-timetracking-ams`). Policies werden später vom Deployer-Modul hochgeladen.
-5. _(Optional)_ **Aufräumen:** `npm run clean` entfernt vorhandene Build-Artefakte (`gen/`, `mta_archives/`, UI5-`dist/`) vor einem frischen Build.
-6. **Build ausführen:** `npm run build:mta` (setzt voraus, dass vorher `npm ci` aufgerufen wurde). Das erzeugte MTAR findest du anschließend als `gen/mta.mtar`.
+1. **Prerequisites:** Install the Cloud Foundry CLI with MultiApps plugin (`cf install-plugin multiapps`) and the Cloud MTA Build Tool (`npm install -g mbt` or via binary).
+2. **Prepare Services:** Create the services from the section above once per subaccount (`hana`, `objectstore`, `malwarescanning`, `application-logs`, `connectivity`, `destination`) **plus** `identity` (IAS) and `identity-authorization` (AMS). Name them according to `mta.yaml` (`cap-fiori-timetracking-ias`, `cap-fiori-timetracking-ams`).
+3. **Configure IAS:** Create a service key for `cap-fiori-timetracking-ias`, enable `xsuaa-cross-consumption`, and create role collections that reference the templates from `xs-security.json`.
+4. **Prepare AMS:** Assign the `Identity_Provisioner` role to your technical deployment user and ensure the AMS API is reachable (service key for `cap-fiori-timetracking-ams`). Policies are deployed later by the deployer module.
+5. _(Optional)_ **Clean Up:** `npm run clean` removes existing build artifacts (`gen/`, `mta_archives/`, UI5 `dist/`) before a fresh build.
+6. **Run Build:** `npm run build:mta` (assumes `npm ci` was called beforehand). The generated MTAR is located at `gen/mta.mtar`.
 7. **Deploy:** `npm run deploy:cf`
-8. **Bindings prüfen:** `cf services` sollte zeigen, dass `cap-fiori-timetracking-srv` an DB, Attachments, Malware-Scanner, Connectivity, Destination, Application Logging **sowie** IAS & AMS gebunden ist. Zusätzlich erscheint das Task-Modul `cap-fiori-timetracking-ams-policies-deployer`, das die DCL-Dateien (`ams/dcl`) automatisiert ausrollt.
+8. **Verify Bindings:** `cf services` should show that `cap-fiori-timetracking-srv` is bound to DB, attachments, malware scanner, connectivity, destination, application logging **as well as** IAS & AMS. Additionally, the task module `cap-fiori-timetracking-ams-policies-deployer` appears, which automatically deploys the DCL files (`ams/dcl`).
 
-> Tipp: `npm run build:mta` erzeugt standardmäßig einen Produktions-Build. Für schnelle Iterationen kannst du bei Bedarf `npx mbt build -p cf --dev -t gen --mtar mta.mtar` ausführen, um Optimierungen zu überspringen.
+> Tip: `npm run build:mta` creates a production build by default. For quick iterations, you can optionally run `npx mbt build -p cf --dev -t gen --mtar mta.mtar` to skip optimizations.
 
-Durch die Kombination aus `mta.yaml`, klar getrennten Build-/Run-Phasen und externen Service-Bindings erfüllt die Lösung zentrale [12-Factor-Prinzipien](https://12factor.net/) und lässt sich als cloud-native Applikation klassifizieren.
+Through the combination of `mta.yaml`, clearly separated build/run phases, and external service bindings, the solution fulfills central [12-factor principles](https://12factor.net/) and can be classified as a cloud-native application.
 
 ---
 
@@ -545,21 +545,21 @@ Durch die Kombination aus `mta.yaml`, klar getrennten Build-/Run-Phasen und exte
 
 ### Problem: `Cannot find module '#cds-models/TrackService'`
 
-**Lösung:**
+**Solution:**
 
-> TypeScript-Typen werden durch `@cap-js/cds-typer` beim Speichern/Build automatisch erzeugt. `npm run generate-entry-point` ist nur erforderlich, wenn Tooling (z. B. dev-cap-tools) neue Entry Points benötigt.
+> TypeScript types are automatically generated by `@cap-js/cds-typer` on save/build. `npm run generate-entry-point` is only required if tooling (e.g., dev-cap-tools) needs new entry points.
 
 ---
 
-### Problem: Port 4004 bereits belegt
+### Problem: Port 4004 is already in use
 
-**Lösung 1: Anderen Port verwenden**
+**Solution 1: Use a different port**
 
 ```bash
 PORT=4005 npm run watch
 ```
 
-**Lösung 2: Bestehenden Prozess killen**
+**Solution 2: Kill existing process**
 
 ```bash
 # Windows
@@ -572,18 +572,18 @@ lsof -ti:4004 | xargs kill -9
 
 ---
 
-### Problem: TypeScript-Fehler im Editor
+### Problem: TypeScript errors in editor
 
-**Symptome:**
+**Symptoms:**
 
-- Rote Wellenlinien in `.ts`-Dateien
-- "Cannot find module" Errors
+- Red squiggly lines in `.ts` files
+- "Cannot find module" errors
 
-**Lösung:**
+**Solution:**
 
-1. VS Code neustarten: `Ctrl+Shift+P` → "Reload Window"
-2. TypeScript-Server neustarten: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
-3. Dependencies neu installieren:
+1. Restart VS Code: `Ctrl+Shift+P` → "Reload Window"
+2. Restart TypeScript server: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
+3. Reinstall dependencies:
 
 ```bash
 rm -rf node_modules package-lock.json
@@ -592,38 +592,38 @@ npm install
 
 ---
 
-### Problem: UI5 Apps laden nicht
+### Problem: UI5 apps won't load
 
-**Symptome:**
+**Symptoms:**
 
-- Blank page oder 404 bei `/timetable/` oder `/timetracking/`
+- Blank page or 404 at `/timetable/` or `/timetracking/`
 
-**Lösung:**
+**Solution:**
 
 ```bash
-# UI5 Workspaces neu installieren
+# Reinstall UI5 workspaces
 npm install --workspaces
 
-# Server neu starten
+# Restart server
 npm run watch
 ```
 
 ---
 
-### Problem: CDS-Fehler "Cannot load model"
+### Problem: CDS error "Cannot load model"
 
-**Symptome:**
+**Symptoms:**
 
 ```
 [cds] - failed to load model from db/data-model.cds
 Syntax error: Unexpected token...
 ```
 
-**Lösung:**
+**Solution:**
 
-1. Prüfe CDS-Syntax in `db/data-model.cds` oder `srv/track-service/track-service.cds`
-2. Nutze CDS Language Support Extension für Syntax-Highlighting
-3. Teste mit:
+1. Check CDS syntax in `db/data-model.cds` or `srv/track-service/track-service.cds`
+2. Use CDS Language Support extension for syntax highlighting
+3. Test with:
 
 ```bash
 cds compile db/data-model.cds
@@ -631,18 +631,18 @@ cds compile db/data-model.cds
 
 ---
 
-### Problem: Prettier formatiert nicht
+### Problem: Prettier not formatting
 
-**Lösung:**
+**Solution:**
 
 ```bash
-# Prettier global installieren
+# Install Prettier globally
 npm install -g prettier
 
-# Manuell formatieren
+# Format manually
 npm run format
 
-# VS Code: Format on Save aktivieren
+# VS Code: Enable format on save
 # settings.json:
 {
   "editor.formatOnSave": true,
@@ -652,43 +652,43 @@ npm run format
 
 ---
 
-### Problem: Login-Loop / 401 Unauthorized
+### Problem: Login loop / 401 Unauthorized
 
-**Symptome:**
+**Symptoms:**
 
-- Endlos-Redirect zu Login-Seite
-- "401 Unauthorized" bei OData-Requests
+- Endless redirect to login page
+- "401 Unauthorized" on OData requests
 
-**Lösung:**
+**Solution:**
 
-Prüfe `package.json` → `cds.requires.auth`:
+Check `package.json` → `cds.requires.auth`:
 
 ```json
 "auth": {
-  "kind": "mocked",  // MUSS "mocked" sein für lokale Dev
+  "kind": "mocked",  // MUST be "mocked" for local development
   "users": { ... }
 }
 ```
 
-Wenn `"kind": "xsuaa"` oder `"jwt"` → auf `"mocked"` ändern und Server neu starten.
+If `"kind": "xsuaa"` or `"jwt"` → change to `"mocked"` and restart server.
 
 ---
 
 ## 📚 Weiterführende Ressourcen
 
-### Interne Dokumentation
+### Internal Documentation
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Vollständige arc42-Architekturdokumentation
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guidelines für Contributors
-- **[ADR-Verzeichnis](docs/ADR/)** - Alle Architekturentscheidungen (11 ADRs)
-- **[README.md](README.md)** - Executive Summary & Features
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Complete arc42 architecture documentation
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guidelines for contributors
+- **[ADR Directory](docs/ADR/)** - All architecture decisions (11 ADRs)
+- **[README.md](README.md)** - Executive summary & features
 
-### Externe Links
+### External Links
 
-- **[SAP CAP Documentation](https://cap.cloud.sap)** - Offizielles CAP Framework
-- **[SAPUI5 SDK](https://ui5.sap.com)** - UI5 API Reference
-- **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** - TypeScript Docs
-- **[Feiertage-API](https://feiertage-api.de)** - Genutzte Holiday API
+- **[SAP CAP Documentation](https://cap.cloud.sap)** - Official CAP framework
+- **[SAPUI5 SDK](https://ui5.sap.com)** - UI5 API reference
+- **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** - TypeScript documentation
+- **[Feiertage API](https://feiertage-api.de)** - Used holiday API
 
 ### Video Tutorials (extern)
 
@@ -697,23 +697,23 @@ Wenn `"kind": "xsuaa"` oder `"jwt"` → auf `"mocked"` ändern und Server neu st
 
 ---
 
-## ✅ Quick Checklist - Ist alles bereit?
+## ✅ Quick Checklist - Is Everything Ready?
 
-Prüfe diese Punkte, bevor du mit Development startest:
+Review these items before starting development:
 
-- [ ] Node.js ≥22.x installiert (`node --version`)
-- [ ] Java ≥17 installiert (`java -version`)
-- [ ] npm ≥10.x installiert (`npm --version`)
-- [ ] Repository geklont
-- [ ] `npm install` erfolgreich durchgelaufen
-- [ ] Optional: `npm run generate-entry-point` (falls dev-cap-tools Entry Points benötigt)
-- [ ] `npm run watch` läuft ohne Fehler
-- [ ] Browser öffnet `http://localhost:4004`
-- [ ] Login mit Test-User funktioniert
-- [ ] Fiori Apps erreichbar (`/io.nimble.timetable/`, `/io.nimble.timetracking/`, `/io.nimble.manageactivitytypes/`)
-- [ ] VS Code Extensions installiert (CDS, ESLint, Prettier)
+- [ ] Node.js ≥22.x installed (`node --version`)
+- [ ] Java ≥17 installed (`java -version`)
+- [ ] npm ≥10.x installed (`npm --version`)
+- [ ] Repository cloned
+- [ ] `npm install` completed successfully
+- [ ] Optional: `npm run generate-entry-point` (if dev-cap-tools needs entry points)
+- [ ] `npm run watch` runs without errors
+- [ ] Browser opens `http://localhost:4004`
+- [ ] Login with test user works
+- [ ] Fiori apps accessible (`/io.nimble.timetable/`, `/io.nimble.timetracking/`, `/io.nimble.manageactivitytypes/`)
+- [ ] VS Code extensions installed (CDS, ESLint, Prettier)
 
-**Alles ✅? Perfekt! Du bist bereit zu starten!** 🚀
+**All set ✅? Perfect! You're ready to go!** 🚀
 
 ---
 
@@ -721,30 +721,30 @@ Prüfe diese Punkte, bevor du mit Development startest:
 
 ## 🔁 Inner Loop Checklist
 
-| Schritt                           | Ziel                                 | Empfehlung / Command                                  |
+| Step                           | Goal                                 | Empfehlung / Command                                  |
 | --------------------------------- | ------------------------------------ | ----------------------------------------------------- |
-| **1. Watch starten**              | CAP + UI5 Hot Reload, lokale Mocks   | `npm run watch` nutzt `cds watch` (Mock Auth, SQLite) |
-| **2. Coding & Docs**              | Feature bauen, ADR prüfen            | Editor + `docs/ARCHITECTURE.md`/ADRs im Blick         |
-| **3. Tests ausführen**            | Regression vermeiden                 | `npm test` oder `npm run test:watch`                  |
-| **4. Lint & Format**              | Style & Quality sichern              | `npx eslint …`, `npx prettier --check …`              |
+| **1. Start watch**              | CAP + UI5 hot reload, local mocks   | `npm run watch` uses `cds watch` (mock auth, SQLite) |
+| **2. Coding & docs**            | Feature build, review ADR            | Editor + `docs/ARCHITECTURE.md`/ADRs in view         |
+| **3. Run tests**              | Prevent regression                   | `npm test` or `npm run test:watch`                  |
+| **4. Lint & Format**              | Ensure style & quality               | `npx eslint …`, `npx prettier --check …`              |
 | **5. Manual Check / CAP Console** | UI/Service Smoke-Test, Monitoring    | REST Client (`tests/*.http`), Swagger UI, CAP Console |
-| **6. Optional Entry Points**      | Dev-Tool Generierung (dev-cap-tools) | `npm run generate-entry-point` bei Bedarf             |
-| **7. Commit & PR**                | Änderung teilen                      | Conventional Commit, PR Template nutzen               |
+| **6. Optional Entry Points**      | Dev-tool generation (dev-cap-tools)  | `npm run generate-entry-point` if needed             |
+| **7. Commit & PR**                | Share change                      | Conventional commit, use PR template               |
 
-> Tipp: Halte die inner loop Schleife klein (<15 Minuten). Erst wenn Code & Tests lokal stabil sind, geht’s in den äußeren Loop (PR, Review, CI, Deployment).
+> Tip: Keep the inner loop small (<15 minutes). Only move to the outer loop (PR, review, CI, deployment) once code & tests are stable locally.
 
 ---
 
-## 🆘 Hilfe benötigt?
+## 🆘 Need Help?
 
-Wenn du hier nicht weitergekommen bist:
+If you get stuck:
 
-1. **Prüfe Known Issues:** [docs/ARCHITECTURE.md → Kapitel 11](docs/ARCHITECTURE.md#11-risiken-und-technische-schulden)
-2. **Erstelle ein GitHub Issue:** [GitHub Issues](https://github.com/nimble-123/cap-fiori-timetracking/issues)
+1. **Check known issues:** [docs/ARCHITECTURE.md → Chapter 11](docs/ARCHITECTURE.md#11-risks-and-technical-debt)
+2. **Create a GitHub issue:** [GitHub Issues](https://github.com/nimble-123/cap-fiori-timetracking/issues)
 3. **SAP Community:** [SAP Community - CAP Forum](https://community.sap.com)
 
 ---
 
 **Happy Coding! 🎉**
 
-_Nächster Schritt: Lies die [Architektur-Dokumentation](docs/ARCHITECTURE.md) für Deep-Dive._
+_Next step: Read the [Architecture Documentation](docs/ARCHITECTURE.md) for deep dive._
