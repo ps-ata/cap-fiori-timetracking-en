@@ -1,47 +1,47 @@
-# ADR 0004: Durchgaengiges TypeScript-Tooling und Developer-Workflow
+# ADR 0004: Consistent TypeScript Tooling and Developer Workflow
 
 ## Status
 
-Akzeptiert - Migration auf vollstaendiges TypeScript
+Accepted - Migration to full TypeScript
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Das Projekt startete mit Mischbetrieb aus CAP-JavaScript-Beispielen und neuem TypeScript-Code. Ohne verbindliche Toolchain kam es zu fehlenden Typinformationen, manuellen Anpassungen in `gen/` und fehlerhaften Importen. Wir brauchten einen Workflow, der Typsicherheit, Generierung und Formatierung automatisiert liefert und gleichzeitig UI5-Workspaces bedient.
+The project started with a mixed setup of CAP JavaScript examples and new TypeScript code. Without a binding toolchain, there were missing type informations, manual edits in `gen/`, and broken imports. We needed a workflow that automates type safety, generation, and formatting while also supporting UI5 workspaces.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Automatische Typgenerierung aus CDS ohne direkte Abhaengigkeit auf `gen/`.
-- Hot-Reload fuer Service-Entwicklung mit TypeScript-Transpile.
-- Einheitliche Formatierung vor Commits.
-- Kompatibilitaet mit UI5-Subprojekten (Workspaces in `app/*`).
+- Automatic type generation from CDS without a direct dependency on `gen/`.
+- Hot reload for service development with TypeScript transpile.
+- Consistent formatting before commits.
+- Compatibility with UI5 subprojects (workspaces in `app/*`).
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Minimal-Setup mit `cds watch` und manuellem Typing
+### Option A - Minimal setup with `cds watch` and manual typing
 
-- Direkt `cds watch` ohne Typer, Imports aus `gen/`.
-- Keine zentralen Format- oder Build-Skripte.
+- Direct `cds watch` without typer, imports from `gen/`.
+- No centralized format or build scripts.
 
-### Option B - Script-basierter Workflow mit Typer und Tooling
+### Option B - Script-based workflow with typer and tooling
 
-- `npm run watch` startet `cds-tsx w` fuer TypeScript-Hot-Reload (`package.json`).
-- `@cap-js/cds-typer` generiert Modelle unter `@cds-models` automatisch bei `.cds`-Aenderungen; Pfad-Alias in `tsconfig.json` und `package.json` (`imports` Sektion).
-- `npm run format` laeuft Prettier ueber relevante Verzeichnisse.
-- `npm run generate-entry-point` (dev-cap-tools) dient als optionales Hilfsskript, um Entry Points/CLI-Wrapper neu zu erzeugen.
+- `npm run watch` starts `cds-tsx w` for TypeScript hot reload (`package.json`).
+- `@cap-js/cds-typer` generates models under `@cds-models` automatically on `.cds` changes; path alias in `tsconfig.json` and `package.json` (`imports` section).
+- `npm run format` runs Prettier over relevant directories.
+- `npm run generate-entry-point` (dev-cap-tools) is an optional helper script to regenerate entry points/CLI wrappers.
 
-## Entscheidung
+## Decision
 
-Wir verfolgen Option B. Der Workspace setzt `@cap-js/cds-typer` als Dev-Dependency ein und importiert Typen via `import { TimeEntry } from '#cds-models/TrackService';`. `npm run watch` ist der Standardbefehl fuer lokale Entwicklung, da er Transpile und Service-Neustart kombiniert. UI5-Apps bleiben als Yarn/NPM Workspaces eingebunden und koennen parallel gestartet werden.
+We choose Option B. The workspace uses `@cap-js/cds-typer` as a dev dependency and imports types via `import { TimeEntry } from '#cds-models/TrackService';`. `npm run watch` is the standard command for local development because it combines transpile and service restart. UI5 apps remain integrated as Yarn/NPM workspaces and can be started in parallel.
 
-## Konsequenzen
+## Consequences
 
-- Positiv: Typsichere Handler, Commands und Services ohne direkte Nutzung von `gen/`.
-- Positiv: Developer folgen klaren Skripten (`watch`, `build`, `format`, optional `generate-entry-point` fuer CLI-Wrapper).
-- Positiv: Pfad-Alias `#cds-models/*` vermeidet fragile Relativpfade.
-- Negativ: Dev-CAP-Tools setzen bei Nutzung von `generate-entry-point` einen aktuellen CLI-Stand voraus; ansonsten keine manuellen Schritte fuer Typen notwendig.
-- Negativ: Neue Entwickler muessen Tooling (cds-tsx, dev-cap-tools) installieren, bevor sie starten koennen.
+- Positive: Type-safe handlers, commands, and services without direct use of `gen/`.
+- Positive: Developers follow clear scripts (`watch`, `build`, `format`, optional `generate-entry-point` for CLI wrappers).
+- Positive: The path alias `#cds-models/*` avoids fragile relative paths.
+- Negative: Dev CAP tools require an up-to-date CLI version when using `generate-entry-point`; otherwise no manual steps for types are needed.
+- Negative: New developers must install tooling (`cds-tsx`, `dev-cap-tools`) before they can start.
 
-## Verweise
+## References
 
 - `package.json`
 - `tsconfig.json`
