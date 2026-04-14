@@ -1,90 +1,90 @@
-# 🏗️ CAPture Time - Architekturdokumentation (arc42)
+# 🏗️ CAPture Time - Architecture Documentation (arc42)
 
-Zeiterfassungsanwendung auf Basis von SAP Cloud Application Programming Model mit TypeScript Backend und Fiori UI5 Frontend. Dokumentiert nach arc42-Template.
+Time tracking application based on SAP Cloud Application Programming Model with TypeScript backend and Fiori UI5 frontend. Documented according to arc42 template.
 
 ---
 
-## 📑 Inhaltsverzeichnis
+## 📑 Table of Contents
 
-### [1. Einführung und Ziele](#1-einführung-und-ziele-1)
+### [1. Introduction and Goals](#1-introduction-and-goals-1)
 
-- [1.1 Aufgabenstellung](#11-aufgabenstellung)
-- [1.2 Qualitätsziele](#12-qualitätsziele)
-- [1.3 Stakeholder](#13-stakeholder)
+- [1.1 Problem Statement](#11-problem-statement)
+- [1.2 Quality Goals](#12-quality-goals)
+- [1.3 Stakeholders](#13-stakeholders)
 
-### [2. Randbedingungen](#2-randbedingungen-1)
+### [2. Constraints](#2-constraints-1)
 
-- [2.1 Technische Randbedingungen](#21-technische-randbedingungen)
-- [2.2 Organisatorische Randbedingungen](#22-organisatorische-randbedingungen)
-- [2.3 Konventionen](#23-konventionen)
+- [2.1 Technical Constraints](#21-technical-constraints)
+- [2.2 Organizational Constraints](#22-organizational-constraints)
+- [2.3 Conventions](#23-conventions)
 
-### [3. Kontextabgrenzung](#3-kontextabgrenzung-1)
+### [3. System Scope and Context](#3-system-scope-and-context-1)
 
-- [3.1 Fachlicher Kontext](#31-fachlicher-kontext)
-- [3.2 Technischer Kontext](#32-technischer-kontext)
+- [3.1 Business Context](#31-business-context)
+- [3.2 Technical Context](#32-technical-context)
 
-### [4. Lösungsstrategie](#4-lösungsstrategie-1)
+### [4. Solution Strategy](#4-solution-strategy-1)
 
-- [4.1 Zentrale Architektur-Ansätze](#41-zentrale-architektur-ansätze)
-- [4.2 Wichtigste Design-Entscheidungen](#42-wichtigste-design-entscheidungen)
-- [4.3 Qualitätssicherung](#43-qualitätssicherung)
+- [4.1 Central Architecture Approaches](#41-central-architecture-approaches)
+- [4.2 Key Design Decisions](#42-key-design-decisions)
+- [4.3 Quality Assurance](#43-quality-assurance)
 - [4.4 Inner Loop Development & Airplane Mode](#44-inner-loop-development--airplane-mode)
 
-### [5. Bausteinsicht](#5-bausteinsicht-1)
+### [5. Building Block View](#5-building-block-view-1)
 
-- [5.1 Ebene 1: Gesamtsystem (Whitebox)](#51-ebene-1-gesamtsystem-whitebox)
-- [5.2 Ebene 2: Application Layer (Whitebox TrackService)](#52-ebene-2-application-layer-whitebox-trackservice)
+- [5.1 Level 1: Overall System (Whitebox)](#51-level-1-overall-system-whitebox)
+- [5.2 Level 2: Application Layer (Whitebox TrackService)](#52-level-2-application-layer-whitebox-trackservice)
 - [5.2a Application Layer: AdminService (Generic Provider)](#52a-application-layer-adminservice-generic-provider)
-- [5.3 Ebene 3: Business Logic Layer (Whitebox Commands)](#53-ebene-3-business-logic-layer-whitebox-commands)
-- [5.4 Ebene 4: Datenmodell (Domain Model)](#54-ebene-4-datenmodell-domain-model)
-- [5.5 Ebene 5: Infrastruktur Layer (ServiceContainer & HandlerRegistry)](#55-ebene-5-infrastruktur-layer-servicecontainer--handlerregistry)
-- [5.6 Ebene 6: User Interface Layer (Fiori Elements & Freestyle Apps)](#56-ebene-6-user-interface-layer-fiori-elements--freestyle-apps)
+- [5.3 Level 3: Business Logic Layer (Whitebox Commands)](#53-level-3-business-logic-layer-whitebox-commands)
+- [5.4 Level 4: Data Model (Domain Model)](#54-level-4-data-model-domain-model)
+- [5.5 Level 5: Infrastructure Layer (ServiceContainer & HandlerRegistry)](#55-level-5-infrastructure-layer-servicecontainer--handlerregistry)
+- [5.6 Level 6: User Interface Layer (Fiori Elements & Freestyle Apps)](#56-level-6-user-interface-layer-fiori-elements--freestyle-apps)
 
-### [6. Laufzeitsicht](#6-laufzeitsicht-1)
+### [6. Runtime View](#6-runtime-view-1)
 
-- [6.1 Szenario 1: TimeEntry erstellen (CREATE)](#61-szenario-1-timeentry-erstellen-create)
-- [6.2 Szenario 2: Jahresgenerierung (Yearly Generation)](#62-szenario-2-jahresgenerierung-yearly-generation)
+- [6.1 Scenario 1: Create TimeEntry (CREATE)](#61-scenario-1-create-timeentry-create)
+- [6.2 Scenario 2: Yearly Generation (Yearly Generation)](#62-scenario-2-yearly-generation-yearly-generation)
 
-### [7. Verteilungssicht](#7-verteilungssicht-1)
+### [7. Deployment View](#7-deployment-view-1)
 
-- [7.1 Infrastruktur Level 1: Entwicklungsumgebung](#71-infrastruktur-level-1-entwicklungsumgebung)
-- [7.2 Infrastruktur Level 2: Produktionsumgebung (SAP BTP)](#72-infrastruktur-level-2-produktionsumgebung-sap-btp)
-- [7.3 Deployment-Szenarien](#73-deployment-szenarien)
+- [7.1 Infrastructure Level 1: Development Environment](#71-infrastructure-level-1-development-environment)
+- [7.2 Infrastructure Level 2: Production Environment (SAP BTP)](#72-infrastructure-level-2-production-environment-sap-btp)
+- [7.3 Deployment Scenarios](#73-deployment-scenarios)
 - [7.4 Secret Management & Transport](#74-secret-management--transport)
-- [7.5 CI/CD Workflow-Übersicht](#75-cicd-workflow-übersicht)
+- [7.5 CI/CD Workflow Overview](#75-cicd-workflow-overview)
 
-### [8. Querschnittliche Konzepte](#8-querschnittliche-konzepte-1)
+### [8. Cross-Cutting Concepts](#8-cross-cutting-concepts-1)
 
 - [8.1 Dependency Injection (ServiceContainer Pattern)](#81-dependency-injection-servicecontainer-pattern)
-- [8.2 Validierung (7 Validators)](#82-validierung-7-validators)
-- [8.3 Zeitberechnungen](#83-zeitberechnungen)
+- [8.2 Validation (7 Validators)](#82-validation-7-validators)
+- [8.3 Time Calculations](#83-time-calculations)
 - [8.4 Error Handling & Logging](#84-error-handling--logging)
-- [8.5 Internationalisierung (i18n)](#85-internationalisierung-i18n)
+- [8.5 Internationalization (i18n)](#85-internationalization-i18n)
 - [8.6 Caching](#86-caching)
-- [8.7 Performance-Optimierungen](#87-performance-optimierungen)
-- [8.8 Dokumentanhänge (Attachments Plugin)](#88-dokumentanhänge-attachments-plugin)
+- [8.7 Performance Optimizations](#87-performance-optimizations)
+- [8.8 Document Attachments (Attachments Plugin)](#88-document-attachments-attachments-plugin)
 - [8.9 OpenAPI & Swagger UI](#89-openapi--swagger-ui)
 - [8.10 Security & Compliance](#810-security--compliance)
 - [8.11 AI Assistance & Prompt Catalog](#811-ai-assistance--prompt-catalog)
 - [8.12 Developer Experience: SAP CAP Console](#812-developer-experience-sap-cap-console)
 - [8.13 CAP Plugins & Calesi Pattern](#813-cap-plugins--calesi-pattern)
 
-### [9. Architekturentscheidungen](#9-architekturentscheidungen-1)
+### [9. Architecture Decisions](#9-architecture-decisions-1)
 
-### [10. Qualitätsanforderungen](#10-qualitätsanforderungen-1)
+### [10. Quality Requirements](#10-quality-requirements-1)
 
-- [10.1 Test-Strategie & Coverage](#101-test-strategie--coverage)
-- [10.2 Qualitätsbaum](#102-qualitätsbaum)
-- [10.3 Qualitätsszenarien](#103-qualitätsszenarien)
-- [10.4 Qualitätsattribute: Trade-Offs](#104-qualitätsattribute-trade-offs)
+- [10.1 Test Strategy & Coverage](#101-test-strategy--coverage)
+- [10.2 Quality Tree](#102-quality-tree)
+- [10.3 Quality Scenarios](#103-quality-scenarios)
+- [10.4 Quality Attributes: Trade-Offs](#104-quality-attributes-trade-offs)
 
-### [11. Risiken und technische Schulden](#11-risiken-und-technische-schulden-1)
+### [11. Risks and Technical Debt](#11-risks-and-technical-debt-1)
 
-- [11.1 Risiken](#111-risiken)
-- [11.2 Technische Schulden](#112-technische-schulden)
+- [11.1 Risks](#111-risks)
+- [11.2 Technical Debt](#112-technical-debt)
 - [11.3 Known Issues](#113-known-issues)
 
-### [12. Glossar](#12-glossar-1)
+### [12. Glossary](#12-glossary-1)
 
 ---
 
