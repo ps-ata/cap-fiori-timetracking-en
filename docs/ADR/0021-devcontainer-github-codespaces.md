@@ -1,283 +1,283 @@
-# ADR 0021: Devcontainer und GitHub Codespaces Integration
+# ADR 0021: Dev Containers and GitHub Codespaces Integration
 
 ## Status
 
-**Akzeptiert** – Implementiert als vollständige Entwicklungsumgebung für Cloud-native Entwicklung
+**Accepted** – implemented as a complete development environment for cloud-native development
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Die CAP Fiori Time Tracking Anwendung hat komplexe Entwicklungsanforderungen:
+The CAP Fiori Time Tracking application has complex development requirements:
 
-- **Node.js 22.20.0** (spezifische Version aus `.nvmrc`)
-- **Java 17** (Temurin) für `@sap/ams-dev` Builds
-- **SAP-spezifische Tools** (`@sap/cds-dk`, `mbt`, Cloud Foundry CLI)
-- **TypeScript-Tooling** mit Auto-Generierung von CDS-Typen
-- **Multiple UI5-Apps** mit Workspace-Struktur
+- **Node.js 22.20.0** (specific version from `.nvmrc`)
+- **Java 17** (Temurin) for `@sap/ams-dev` builds
+- **SAP-specific tools** (`@sap/cds-dk`, `mbt`, Cloud Foundry CLI)
+- **TypeScript tooling** with auto-generation of CDS types
+- **Multiple UI5 apps** with workspace structure
 
-**Herausforderungen für neue Entwickler:**
+**Challenges for new developers:**
 
-1. ⏱️ **Time-to-First-Commit**: 30-60 Minuten Setup-Zeit für lokale Umgebung
-2. 🔧 **Tool-Versionen**: Unterschiedliche Node/Java-Versionen auf Entwickler-Rechnern
-3. 📦 **Dependency Hell**: Komplexe Installation von `cf` CLI, `mbt`, MultiApps Plugin
-4. 🐛 **"Works on my machine"**: Inkonsistente Entwicklungsumgebungen
-5. 🆕 **Onboarding**: Hohe Einstiegshürde für neue Contributors
-6. 🌍 **Remote Work**: Keine Cloud-IDE-Option für Remote-Entwicklung
+1. ⏱️ **Time-to-first-commit**: 30-60 minutes setup time for local environment
+2. 🔧 **Tool versions**: Different Node/Java versions on developer machines
+3. 📦 **Dependency hell**: complex installation of `cf` CLI, `mbt`, MultiApps plugin
+4. 🐛 **"Works on my machine"**: inconsistent development environments
+5. 🆕 **Onboarding**: high entry barrier for new contributors
+6. 🌍 **Remote work**: no cloud IDE option for remote development
 
-**Betroffene Stakeholder:**
+**Affected stakeholders:**
 
-- Neue Contributors (höchste Priorität)
-- Externe Entwickler ohne SAP-Tooling-Erfahrung
-- Teams mit heterogenen Entwicklungsumgebungen
-- Remote-Teams ohne Zugriff auf leistungsstarke lokale Hardware
+- new contributors (highest priority)
+- external developers without SAP tooling experience
+- teams with heterogeneous development environments
+- remote teams without access to powerful local hardware
 
-## Entscheidungsfaktoren
+## Decision Factors
 
 1. **Developer Experience (DX)**
-   - Onboarding-Zeit: < 5 Minuten bis "Hello World"
-   - Zero-Config: Keine manuellen Installationsschritte
-   - Consistency: Identische Umgebung für alle Entwickler
+   - onboarding time: < 5 minutes to "hello world"
+   - zero-config: no manual installation steps
+   - consistency: identical environment for all developers
 
-2. **Tool-Vollständigkeit**
-   - Alle SAP CAP Dependencies
-   - Cloud Foundry CLI + MultiApps Plugin
-   - VS Code Extensions für optimale IDE-Erfahrung
+2. **Tool completeness**
+   - all SAP CAP dependencies
+   - Cloud Foundry CLI + MultiApps plugin
+   - VS Code extensions for optimal IDE experience
 
-3. **Wartbarkeit**
-   - Deklarative Konfiguration (Infrastructure as Code)
-   - Versionskontrolle für Dev-Umgebung
-   - Einfache Updates bei Dependency-Changes
+3. **Maintainability**
+   - declarative configuration (Infrastructure as Code)
+   - version control for dev environment
+   - easy updates when dependencies change
 
 4. **Performance**
-   - Schnelle Container-Builds (< 5 Minuten)
-   - Caching von Node-Modules
-   - Port-Forwarding für lokales Testing
+   - fast container builds (< 5 minutes)
+   - caching of node modules
+   - port forwarding for local testing
 
-5. **Kosteneffizienz**
-   - GitHub Codespaces: 60 Stunden/Monat gratis (2-core)
-   - VS Code Dev Containers: Vollständig kostenlos (lokal)
+5. **Cost efficiency**
+   - GitHub Codespaces: 60 hours/month free (2-core)
+   - VS Code Dev Containers: completely free (local)
 
-6. **Security & Compliance**
-   - Secrets-Management via GitHub Codespaces Secrets
-   - Keine Credentials in Container-Images
-   - Isolierte Entwicklungsumgebungen
+6. **Security & compliance**
+   - secrets management via GitHub Codespaces Secrets
+   - no credentials in container images
+   - isolated development environments
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – Ausführliche Dokumentation (Status Quo)
+### Option A – comprehensive documentation (status quo)
 
-**Beschreibung**: Manuelle Installation aller Tools gemäß `GETTING_STARTED.md`
+**Description**: manual installation of all tools according to `GETTING_STARTED.md`
 
-**Vorteile**:
+**Pros**:
 
-- ✅ Keine zusätzliche Infrastruktur
-- ✅ Volle Kontrolle über lokale Umgebung
-- ✅ Bereits dokumentiert
+- ✅ no additional infrastructure
+- ✅ full control over local environment
+- ✅ already documented
 
-**Nachteile**:
+**Cons**:
 
-- ❌ 30-60 Minuten Setup-Zeit
-- ❌ Plattform-spezifische Probleme (Windows/macOS/Linux)
-- ❌ Versionskonflikte (Node 20 vs. 22, Java 11 vs. 17)
-- ❌ "Works on my machine" Syndrome
-- ❌ Hohe Einstiegshürde für Contributors
+- ❌ 30-60 minutes setup time
+- ❌ platform-specific issues (Windows/macOS/Linux)
+- ❌ version conflicts (Node 20 vs. 22, Java 11 vs. 17)
+- ❌ "works on my machine" syndrome
+- ❌ high entry barrier for contributors
 
 ### Option B – Docker Compose
 
-**Beschreibung**: `docker-compose.yml` für vollständigen Stack (CAP + DB + Tools)
+**Description**: `docker-compose.yml` for complete stack (CAP + DB + tools)
 
-**Vorteile**:
+**Pros**:
 
-- ✅ Reproduzierbare Umgebung
-- ✅ Production-ähnliches Setup
-- ✅ Multi-Container für Services
+- ✅ reproducible environment
+- ✅ production-like setup
+- ✅ multi-container for services
 
-**Nachteile**:
+**Cons**:
 
-- ❌ Komplexere Orchestrierung
-- ❌ Keine IDE-Integration (VS Code Extensions fehlen)
-- ❌ Kein Hot-Reload für Code-Änderungen
-- ❌ Networking-Probleme bei Port-Forwarding
-- ❌ Overhead für einfache Entwicklungsaufgaben
+- ❌ more complex orchestration
+- ❌ no IDE integration (VS Code extensions missing)
+- ❌ no hot-reload for code changes
+- ❌ networking issues with port forwarding
+- ❌ overhead for simple development tasks
 
-### Option C – GitHub Codespaces + VS Code Dev Containers (Gewählt)
+### Option C – GitHub Codespaces + VS Code Dev Containers (chosen)
 
-**Beschreibung**: `.devcontainer/devcontainer.json` mit:
+**Description**: `.devcontainer/devcontainer.json` with:
 
-- Base Image: `mcr.microsoft.com/devcontainers/typescript-node:22-bookworm`
-- Features: Node 22.20.0, Java 17 (Temurin)
-- Tools: `cds-dk`, `mbt`, `cf` CLI, TypeScript, Prettier
-- VS Code Extensions: CDS, ESLint, Prettier, REST Client
-- Automatisches Setup via `setup.sh` (postCreateCommand)
+- base image: `mcr.microsoft.com/devcontainers/typescript-node:22-bookworm`
+- features: Node 22.20.0, Java 17 (Temurin)
+- tools: `cds-dk`, `mbt`, `cf` CLI, TypeScript, Prettier
+- VS Code extensions: CDS, ESLint, Prettier, REST Client
+- automatic setup via `setup.sh` (postCreateCommand)
 
-**Vorteile**:
+**Pros**:
 
-- ✅ **Zero-Config**: 1-Click-Start in Codespaces
-- ✅ **Consistency**: Identische Umgebung für alle Entwickler
-- ✅ **IDE-Integration**: Native VS Code Extensions
-- ✅ **Performance**: Caching + Pre-builds möglich
-- ✅ **Dual-Use**: Lokal (Dev Containers) + Cloud (Codespaces)
-- ✅ **Hot-Reload**: `npm run watch` funktioniert out-of-the-box
-- ✅ **Port-Forwarding**: Automatische HTTPS-URLs für Testing
-- ✅ **Secrets**: GitHub Codespaces Secrets für CF-Credentials
+- ✅ **zero-config**: 1-click start in Codespaces
+- ✅ **consistency**: identical environment for all developers
+- ✅ **IDE integration**: native VS Code extensions
+- ✅ **performance**: caching + pre-builds possible
+- ✅ **dual-use**: local (Dev Containers) + cloud (Codespaces)
+- ✅ **hot-reload**: `npm run watch` works out-of-the-box
+- ✅ **port forwarding**: automatic HTTPS URLs for testing
+- ✅ **secrets**: GitHub Codespaces Secrets for CF credentials
 
-**Nachteile**:
+**Cons**:
 
-- ⚠️ Codespaces: 60 Std/Monat gratis, danach kostenpflichtig
-- ⚠️ Erfordert Docker Desktop für lokale Dev Containers
-- ⚠️ Container-Build: ~3-5 Minuten beim ersten Start
+- ⚠️ Codespaces: 60 hrs/month free, then paid
+- ⚠️ requires Docker Desktop for local Dev Containers
+- ⚠️ container build: ~3-5 minutes on first start
 
 ### Option D – GitPod
 
-**Beschreibung**: Alternative Cloud-IDE mit `.gitpod.yml`
+**Description**: alternative cloud IDE with `.gitpod.yml`
 
-**Vorteile**:
+**Pros**:
 
-- ✅ Ähnliche Features wie Codespaces
-- ✅ 50 Stunden/Monat gratis
+- ✅ similar features to Codespaces
+- ✅ 50 hours/month free
 
-**Nachteile**:
+**Cons**:
 
-- ❌ Weniger GitHub-Integration
-- ❌ Separate Plattform-Vendor-Lock-in
-- ❌ Keine native VS Code Dev Containers Unterstützung
+- ❌ less GitHub integration
+- ❌ separate platform vendor lock-in
+- ❌ no native VS Code Dev Containers support
 
-## Entscheidung
+## Decision
 
-**Wir wählen Option C: GitHub Codespaces + VS Code Dev Containers**
+**We choose Option C: GitHub Codespaces + VS Code Dev Containers**
 
-### Begründung
+### Rationale
 
-1. **Developer Experience First**: Neue Contributors können innerhalb von **3-5 Minuten** produktiv arbeiten
-2. **Best of Both Worlds**: Lokale Entwicklung (Dev Containers) + Cloud-IDE (Codespaces)
-3. **GitHub-native**: Perfekte Integration mit unserem Git-Workflow
-4. **Industry Standard**: Devcontainer Spec ist offen und wird von Microsoft, GitHub, GitLab unterstützt
-5. **Maintainability**: Deklarative Konfiguration in `devcontainer.json` (IaC-Prinzip)
-6. **Cost-Effective**: 60 Std/Monat Codespaces gratis ausreichend für meiste Contributors
+1. **developer experience first**: new contributors can be productive within **3-5 minutes**
+2. **best of both worlds**: local development (Dev Containers) + cloud IDE (Codespaces)
+3. **GitHub-native**: perfect integration with our git workflow
+4. **industry standard**: devcontainer spec is open and supported by Microsoft, GitHub, GitLab
+5. **maintainability**: declarative configuration in `devcontainer.json` (IaC principle)
+6. **cost-effective**: 60 hrs/month Codespaces free sufficient for most contributors
 
-### Implementierung
+### Implementation
 
-**Verzeichnisstruktur**:
+**directory structure**:
 
 ```
 .devcontainer/
-├── devcontainer.json    # Hauptkonfiguration
-├── setup.sh             # Automatisches Setup-Skript
-└── README.md            # Devcontainer-Dokumentation
+├── devcontainer.json    # main configuration
+├── setup.sh             # automatic setup script
+└── README.md            # dev container documentation
 ```
 
-**Kernkomponenten**:
+**core components**:
 
-1. **Base Image**: `typescript-node:22-bookworm` mit Node 22.20.0
-2. **Features**:
-   - `java:1` (Version 17, Temurin Distribution)
-   - `node:1` (Version 22.20.0)
-   - `git:1` (Latest)
-   - `github-cli:1` (Latest)
+1. **base image**: `typescript-node:22-bookworm` with Node 22.20.0
+2. **features**:
+   - `java:1` (version 17, Temurin distribution)
+   - `node:1` (version 22.20.0)
+   - `git:1` (latest)
+   - `github-cli:1` (latest)
 
-3. **Post-Create Setup** (`setup.sh`):
+3. **post-create setup** (`setup.sh`):
 
    ```bash
    - npm install -g @sap/cds-dk typescript tsx mbt prettier @cap-js/mcp-server
-   - cf CLI v8 Installation + MultiApps Plugin
-   - npm ci (Project Dependencies)
-   - .env Creation (from .env.example)
-   - cds-typer Type Generation
+   - cf CLI v8 installation + MultiApps plugin
+   - npm ci (project dependencies)
+   - .env creation (from .env.example)
+   - cds-typer type generation
    ```
 
-4. **Port Forwarding**:
-   - `4004`: CAP Server (Auto-notify)
-   - `8080`: UI Testing (Silent)
+4. **port forwarding**:
+   - `4004`: CAP server (auto-notify)
+   - `8080`: UI testing (silent)
 
-5. **VS Code Extensions** (Auto-Install):
-   - `SAPSE.vscode-cds` - SAP CDS Language Support
+5. **VS Code extensions** (auto-install):
+   - `SAPSE.vscode-cds` - SAP CDS language support
    - `dbaeumer.vscode-eslint` - ESLint
    - `esbenp.prettier-vscode` - Prettier
-   - `humao.rest-client` - REST Client
+   - `humao.rest-client` - REST client
    - `eamodio.gitlens` - GitLens
    - `ms-azuretools.vscode-docker` - Docker
 
-6. **Editor Settings**:
-   - Format on Save: Enabled
-   - Default Formatter: Prettier
-   - ESLint Auto-fix: On Save
-   - Line Endings: LF (Unix-Style)
+6. **editor settings**:
+   - format on save: enabled
+   - default formatter: Prettier
+   - ESLint auto-fix: on save
+   - line endings: LF (Unix-style)
 
-## Konsequenzen
+## Consequences
 
-### Positive Effekte
+### Positive effects
 
-1. ✅ **Onboarding**: Zeit von 60min → **3-5min** für neue Contributors
-2. ✅ **Consistency**: "Works on my machine" Probleme eliminiert
-3. ✅ **Documentation**: Setup-Prozess ist Code (IaC)
-4. ✅ **Remote-First**: Teams können komplett remote entwickeln
-5. ✅ **CI/CD Alignment**: Container-Setup ähnelt GitHub Actions Runner
-6. ✅ **Accessibility**: Niedrigere Hardware-Anforderungen (Codespaces in Cloud)
+1. ✅ **onboarding**: time from 60min → **3-5min** for new contributors
+2. ✅ **consistency**: "works on my machine" problems eliminated
+3. ✅ **documentation**: setup process is code (IaC)
+4. ✅ **remote-first**: teams can develop completely remote
+5. ✅ **CI/CD alignment**: container setup similar to GitHub Actions runner
+6. ✅ **accessibility**: lower hardware requirements (Codespaces in cloud)
 
-### Negative Effekte / Risiken
+### Negative effects / risks
 
-1. ⚠️ **Container Overhead**: 3-5min beim ersten Start
-   - **Mitigation**: Pre-builds in Codespaces aktivieren (Repository Settings)
+1. ⚠️ **container overhead**: 3-5min on first start
+   - **mitigation**: activate pre-builds in Codespaces (repository settings)
 
-2. ⚠️ **Codespaces Limits**: 60 Std/Monat gratis
-   - **Mitigation**: Lokale Dev Containers als Fallback
-   - **Mitigation**: Codespaces automatisch stoppen nach 30min Inaktivität
+2. ⚠️ **Codespaces limits**: 60 hrs/month free
+   - **mitigation**: local Dev Containers as fallback
+   - **mitigation**: Codespaces auto-stop after 30min inactivity
 
-3. ⚠️ **Wartungsaufwand**: Devcontainer bei Major-Updates pflegen
-   - **Mitigation**: Versionierung in `devcontainer.json` (Node, Java)
-   - **Mitigation**: Setup-Skript testen bei Dependency-Updates
+3. ⚠️ **maintenance effort**: maintain dev containers for major updates
+   - **mitigation**: versioning in `devcontainer.json` (Node, Java)
+   - **mitigation**: test setup script on dependency updates
 
-4. ⚠️ **Docker Requirement**: Lokale Dev Containers benötigen Docker Desktop
-   - **Mitigation**: Weiterhin vollständige Doku in `GETTING_STARTED.md`
+4. ⚠️ **Docker requirement**: local Dev Containers require Docker Desktop
+   - **mitigation**: keep full docs in `GETTING_STARTED.md`
 
-5. ⚠️ **Network Dependencies**: Setup benötigt Internetzugang
-   - **Mitigation**: Caching von npm-Paketen (`node_modules` Volume)
+5. ⚠️ **network dependencies**: setup requires internet access
+   - **mitigation**: caching npm packages (`node_modules` volume)
 
-### Nachgelagerte Aufgaben
+### follow-up tasks
 
-1. **Dokumentation**:
-   - [x] `.devcontainer/README.md` mit Troubleshooting
-   - [x] `README.md` Update mit Codespaces-Badge
-   - [x] `GETTING_STARTED.md` mit Codespaces-Anleitung
-   - [x] `ARCHITECTURE.md` Update (Kap. 7: Verteilungssicht)
+1. **documentation**:
+   - [x] `.devcontainer/README.md` with troubleshooting
+   - [x] `README.md` update with Codespaces badge
+   - [x] `GETTING_STARTED.md` with Codespaces guide
+   - [x] `ARCHITECTURE.md` update (ch. 7: distribution view)
 
-2. **Optimierung**:
-   - [ ] Pre-builds aktivieren in Repository Settings (nach Merge)
-   - [ ] `.dockerignore` für schnellere Builds
-   - [ ] Caching-Strategie für npm-Dependencies
+2. **optimization**:
+   - [ ] activate pre-builds in repository settings (after merge)
+   - [ ] `.dockerignore` for faster builds
+   - [ ] caching strategy for npm dependencies
 
-3. **Testing**:
-   - [ ] Frischer Codespace erstellen und alle Workflows testen
-   - [ ] Lokale Dev Container mit Docker Desktop testen
-   - [ ] `npm run watch` → `npm test` → `npm run build:mta` Flow verifizieren
+3. **testing**:
+   - [ ] create fresh Codespace and test all workflows
+   - [ ] test local Dev Containers with Docker Desktop
+   - [ ] verify `npm run watch` → `npm test` → `npm run build:mta` flow
 
-4. **Governance**:
-   - [ ] Devcontainer-Updates in CONTRIBUTING.md dokumentieren
-   - [ ] ADR-Referenzen in relevanten Docs hinzufügen
+4. **governance**:
+   - [ ] document dev container updates in CONTRIBUTING.md
+   - [ ] add ADR references in relevant docs
 
-## Verweise
+## References
 
-### Projektdateien
+### Project files
 
-- `.devcontainer/devcontainer.json` - Hauptkonfiguration
-- `.devcontainer/setup.sh` - Setup-Skript
-- `.devcontainer/README.md` - Devcontainer-Dokumentation
-- `.nvmrc` - Node-Version (Quelle für Container)
-- `package.json` → `engines` - Tool-Versions-Requirements
+- `.devcontainer/devcontainer.json` - main configuration
+- `.devcontainer/setup.sh` - setup script
+- `.devcontainer/README.md` - dev container documentation
+- `.nvmrc` - Node version (source for container)
+- `package.json` → `engines` - tool version requirements
 
-### Externe Dokumentation
+### External documentation
 
 - [VS Code Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers)
 - [GitHub Codespaces Docs](https://docs.github.com/en/codespaces)
 - [Dev Container Specification](https://containers.dev/)
 - [Dev Container Features](https://containers.dev/features)
 
-### Verwandte ADRs
+### Related ADRs
 
-- [ADR-0004: TypeScript Tooling und Workflow](0004-typescript-tooling-und-workflow.md)
-- [ADR-0016: Repository Meta-Dateien und Governance](0016-repository-meta-dateien-und-governance.md)
+- [ADR-0004: TypeScript Tooling and Workflow](0004-typescript-tooling-und-workflow.md)
+- [ADR-0016: Repository Meta Files and Governance](0016-repository-meta-dateien-und-governance.md)
 - [ADR-0018: MTA Deployment Cloud Foundry](0018-mta-deployment-cloud-foundry.md)
 
 ### GitHub Issues/PRs
 
-- Initial Implementation: PR #[TBD]
-- Pre-builds Activation: Issue #[TBD]
+- initial implementation: PR #[TBD]
+- pre-builds activation: Issue #[TBD]
