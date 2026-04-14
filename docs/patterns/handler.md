@@ -1,12 +1,12 @@
-# 🎭 Handler Pattern (3 Handler-Klassen)
+# 🊭 Handler Pattern (3 handler classes)
 
-**Dateien:** `srv/handler/handlers/*.ts`
+**Files:** `srv/handler/handlers/*.ts`
 
-Das **Handler Pattern** trennt Event-Handling von Business-Logik. Handler sind die "Orchestratoren" die auf CAP-Events reagieren und die eigentliche Arbeit an Commands delegieren:
+the **Handler Pattern** separates event handling from business logic. handlers are the "orchestrators" that react to CAP events and delegate the actual work to commands:
 
 ```typescript
 /**
- * TimeEntryHandlers - Handler für TimeEntry CRUD-Operationen
+ * TimeEntryHandlers – handlers for TimeEntry CRUD operations
  */
 export class TimeEntryHandlers {
   constructor(
@@ -15,16 +15,16 @@ export class TimeEntryHandlers {
   ) {}
 
   /**
-   * Handler: TimeEntry erstellen (before CREATE)
-   * Delegiert Business Logic an Command
+   * Handler: create time entry (before CREATE)
+   * delegates business logic to command
    */
   async handleCreate(req: any): Promise<void> {
     try {
       const tx = cds.transaction(req) as any;
       const calculatedData = await this.createCommand.execute(tx, req.data);
 
-      // Berechnete Daten in Request übernehmen
-      // CAP Framework macht dann automatisch den INSERT
+      // transfer calculated data to request
+      // CAP framework then automatically performs the INSERT
       Object.assign(req.data, calculatedData);
     } catch (error: any) {
       req.reject(error.code || 400, error.message);
@@ -32,7 +32,7 @@ export class TimeEntryHandlers {
   }
 
   /**
-   * Handler: TimeEntry aktualisieren (before UPDATE)
+   * Handler: update time entry (before UPDATE)
    */
   async handleUpdate(req: any): Promise<void> {
     try {
@@ -48,14 +48,14 @@ export class TimeEntryHandlers {
 
 **Features:**
 
-- 🎭 Klare Trennung: Handler = Orchestration, Command = Business Logic
-- 🔗 Dependency Injection der Commands
-- 🛡️ Zentrales Error Handling
-- 📋 Gruppierung nach Domäne (CRUD / Generation / Balance)
-- 🎯 Thin Layer - nur Delegation, keine Business Logic
+- 🊭 clear separation: handler = orchestration, command = business logic
+- 🔗 dependency injection of commands
+- 🛡️ central error handling
+- 📋 grouping by domain (CRUD / generation / balance)
+- 🎯 thin layer – only delegation, no business logic
 
-**Unsere 3 Handler-Klassen:**
+**Our 3 handler classes:**
 
-- `TimeEntryHandlers` - CRUD Operations (CREATE/UPDATE/DELETE)
-- `GenerationHandlers` - Bulk-Generierung (Monthly/Yearly)
-- `BalanceHandlers` - Balance-Abfragen (Monthly/Current/Recent)
+- `TimeEntryHandlers` – CRUD operations (CREATE/UPDATE/DELETE)
+- `GenerationHandlers` – bulk generation (monthly/yearly)
+- `BalanceHandlers` – balance queries (monthly/current/recent)
