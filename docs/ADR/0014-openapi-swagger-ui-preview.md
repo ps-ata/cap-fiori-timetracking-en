@@ -1,70 +1,70 @@
-# ADR 0014: Swagger UI Preview für TrackService
+# ADR 0014: Swagger UI Preview for TrackService
 
 ## Status
 
-Akzeptiert – Iteration 10 (Developer Experience Improvements)
+Accepted – Iteration 10 (Developer Experience Improvements)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Die OData-APIs des TrackService werden sowohl vom Fiori Frontend als auch von Integrationspartnern genutzt. Bisher fehlte eine leicht zugängliche, stets aktuelle API-Dokumentation. Testdaten konnten nur über REST Client Dateien oder manuelle Requests nachvollzogen werden, was die Onboarding-Zeit für neue Teammitglieder verlängerte und in der Qualitätsdokumentation als technische Schuld (TD-3) markiert war.
+The TrackService OData APIs are used by both the Fiori frontend and integration partners. Until now, there was no easily accessible, always-current API documentation. Test data could only be traced via REST Client files or manual requests, which increased onboarding time for new team members and was documented as technical debt (TD-3).
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Aktualität:** API-Beschreibung muss automatisch aus den CDS-Modellen generiert werden (kein manueller Pflegeaufwand).
-- **Entwickler-Produktivität:** Neue Teammitglieder sollen die Endpunkte schnell explorieren können.
-- **Wartbarkeit:** Lösung soll ohne zusätzlichen Custom-Code in den CAP-Server integrierbar sein.
-- **Scope-Kontrolle:** Bereitstellung nur im Development, damit keine unauthentifizierten API-Dokumente in produktiven Umgebungen veröffentlicht werden.
+- **Freshness:** API description must be generated automatically from the CDS models (no manual maintenance).
+- **Developer productivity:** New team members should be able to explore endpoints quickly.
+- **Maintainability:** The solution should integrate into the CAP server without additional custom code.
+- **Scope control:** Provide only in development so unauthenticated API docs are not exposed in production.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – `cds-swagger-ui-express` Plugin **(gewählt)**
+### Option A – `cds-swagger-ui-express` plugin **(chosen)**
 
-- **Vorteile:**
-  - Nahtlose Integration in den CAP-Server über den `serving`-Hook.
-  - Generiert OpenAPI-Spezifikationen on-the-fly via `@cap-js/openapi`.
-  - Stellt eine interaktive Swagger UI inklusive Diagramm bereit (`/$api-docs/...`).
-  - Zero-Config: Default-Einstellungen reichen für lokale Entwicklung.
-- **Nachteile:**
-  - Läuft ausschließlich zur Entwicklungszeit; produktive Bereitstellung müsste separat abgesichert werden.
+- **Pros:**
+  - Seamless integration into the CAP server via the `serving` hook.
+  - Generates OpenAPI specifications on the fly via `@cap-js/openapi`.
+  - Provides an interactive Swagger UI including diagrams (`/$api-docs/...`).
+  - Zero-config: default settings are sufficient for local development.
+- **Cons:**
+  - Runs only during development; production deployment would need separate protection.
 
-### Option B – Manuelle OpenAPI-Generierung via `cds compile`
+### Option B – manual OpenAPI generation via `cds compile`
 
-- **Vorteile:**
-  - Liefert ein statisches OpenAPI-JSON, das versioniert werden kann.
-  - Keine zusätzlichen Runtime-Abhängigkeiten.
-- **Nachteile:**
-  - Kein UI; zusätzliche Tools notwendig (Postman, Stoplight, etc.).
-  - Erfordert Skripte/Automation, um Spezifikationen aktuell zu halten.
-  - Kein schneller Zugang für Nicht-Entwickler.
+- **Pros:**
+  - Produces a static OpenAPI JSON that can be versioned.
+  - No additional runtime dependencies.
+- **Cons:**
+  - No UI; requires extra tools (Postman, Stoplight, etc.).
+  - Requires scripts/automation to keep specs current.
+  - No fast access for non-developers.
 
-### Option C – Postman/REST Client Collections pflegen
+### Option C – maintain Postman/REST Client collections
 
-- **Vorteile:**
-  - Niedrigschwelliger Einstieg für gezielte Testfälle.
-- **Nachteile:**
-  - Kein vollwertiges API-Directory; hoher manueller Pflegeaufwand.
-  - Nicht selbstdokumentierend, keine automatische Modell-Synchronisation.
+- **Pros:**
+  - Low barrier for targeted test cases.
+- **Cons:**
+  - Not a full API directory; high manual maintenance effort.
+  - Not self-documenting, no automatic model synchronization.
 
-## Entscheidung
+## Decision
 
-Wir integrieren Option A (`cds-swagger-ui-express`) als Dev Dependency. Beim Start über `npm run watch` registriert sich das Plugin automatisch und stellt die Swagger UI unter `http://localhost:4004/$api-docs/odata/v4/track/` bereit. Die zugrundeliegende OpenAPI-Spezifikation ist zusätzlich als JSON unter `/$api-docs/odata/v4/track/openapi.json` verfügbar. Damit erfüllen wir die dokumentierte technische Schuld TD-3 und verbessern das Onboarding neuer Entwickler sowie die Zusammenarbeit mit Integrationspartnern.
+We integrate Option A (`cds-swagger-ui-express`) as a dev dependency. On startup via `npm run watch`, the plugin registers automatically and exposes Swagger UI at `http://localhost:4004/$api-docs/odata/v4/track/`. The underlying OpenAPI specification is also available as JSON at `/$api-docs/odata/v4/track/openapi.json`. This resolves the documented technical debt TD-3 and improves onboarding for new developers as well as collaboration with integration partners.
 
-## Konsequenzen
+## Consequences
 
-**Positiv**
+**Positive**
 
-- Interaktive API-Dokumentation ohne zusätzlichen Pflegeaufwand.
-- Konsistenz zwischen CDS-Modell und bereitgestellter Spezifikation.
-- Schnellere Abstimmung mit UI- und Integrations-Teams dank Swagger UI.
+- Interactive API documentation with no additional maintenance overhead.
+- Consistency between the CDS model and the exposed specification.
+- Faster alignment with UI and integration teams thanks to Swagger UI.
 
-**Negativ**
+**Negative**
 
-- Bisher keine produktive Bereitstellung; für externe Konsumenten wäre ein abgesichertes Swagger-Hosting notwendig.
-- Zusätzliche Dev Dependency, die lokal installiert werden muss.
+- No production deployment yet; secure Swagger hosting would be needed for external consumers.
+- Additional dev dependency that must be installed locally.
 
-## Verweise
+## References
 
-- `package.json` – Dev Dependency `cds-swagger-ui-express`
-- `README.md` – Abschnitt „Highlights“ & Quick Start (Swagger UI Hinweis)
-- `GETTING_STARTED.md` – Kapitel „Swagger UI & OpenAPI (nur Entwicklung)“
-- `docs/ARCHITECTURE.md` – Abschnitt [8.9 OpenAPI & Swagger UI](../ARCHITECTURE.md#89-openapi--swagger-ui) & aktualisierte technische Schuld TD-3
+- `package.json` – dev dependency `cds-swagger-ui-express`
+- `README.md` – section “Highlights” & Quick Start (Swagger UI note)
+- `GETTING_STARTED.md` – chapter “Swagger UI & OpenAPI (development only)”
+- `docs/ARCHITECTURE.md` – section [8.9 OpenAPI & Swagger UI](../ARCHITECTURE.md#89-openapi--swagger-ui) & updated technical debt TD-3
