@@ -2,46 +2,46 @@
 
 ## Status
 
-Akzeptiert – November 2025
+Accepted – November 2025
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Die Feiertags-API (feiertage-api.de) wird für die automatische Jahresgenerierung von Zeiteinträgen benötigt, um deutsche Feiertage korrekt zu erkennen und als nicht-arbeitende Tage zu markieren. Lokal erfolgt der Zugriff per direktem HTTP-Call via `fetch()`, produktiv soll die Integration über SAP BTP Destination + Connectivity Service erfolgen.
+The holiday API (feiertage-api.de) is needed for automatic annual generation of time entries to correctly recognize German holidays and mark them as non-working days. Locally, access is performed via direct HTTP call using `fetch()`, while production integration should be done via SAP BTP Destination + Connectivity Service.
 
-Die zentrale Frage war: Wie integrieren wir eine externe REST-API sowohl in der lokalen Entwicklung als auch in der BTP-Produktionsumgebung, ohne Credentials im Code zu speichern und gleichzeitig eine einfache Developer Experience zu gewährleisten?
+The central question was: how do we integrate an external REST API both in local development and in the BTP production environment without storing credentials in code, while still providing a simple developer experience?
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Security: Keine hardcoded URLs oder Credentials in Code oder Repository
-- Ops-Friendly: URL-Änderungen ohne Code-Deployment möglich
-- Developer Experience: Lokale Entwicklung ohne BTP-Setup funktionsfähig
-- Cloud-Native: Nutzung von SAP BTP Standard-Services (Destination, Connectivity)
-- Proxy-Support: Corporate Firewalls und On-Premise-Integration über Connectivity Service
-- Audit Trail: Logging aller externen API-Calls in BTP
+- Security: no hardcoded URLs or credentials in code or repository
+- Ops-friendly: URL changes possible without code deployment
+- Developer experience: local development works without BTP setup
+- Cloud-native: use SAP BTP standard services (Destination, Connectivity)
+- Proxy support: corporate firewalls and on-premise integration via Connectivity Service
+- Audit trail: logging of all external API calls in BTP
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - Direct Fetch überall
+### Option A – direct fetch everywhere
 
-- Direkter HTTP-Call via `fetch()` in allen Umgebungen
-- URL-Konfiguration über Environment Variables (`.env`)
-- Keine BTP-Services notwendig
+- direct HTTP call via `fetch()` in all environments
+- URL configuration via environment variables (`.env`)
+- no BTP services required
 
-### Option B - CAP Remote Services
+### Option B – CAP remote services
 
-- Definition der Holiday-API als CAP Remote Service mit OData-Metadaten
-- Nutzung von `cds.requires` für Service-Binding
-- Integration über CAP-Standard-Patterns
+- define the holiday API as a CAP remote service with OData metadata
+- use `cds.requires` for service binding
+- integrate via CAP standard patterns
 
-### Option C - Hybrid-Ansatz mit Destination + Connectivity (gewählt)
+### Option C – hybrid approach with Destination + Connectivity (chosen)
 
-- Lokal: Direct HTTP via `fetch()` mit `HOLIDAY_API_BASE_URL` aus `.env`
-- BTP: Destination-basiert via `@sap-cloud-sdk/connectivity` und `@sap-cloud-sdk/http-client`
-- Environment-Detection über `NODE_ENV` und `VCAP_SERVICES`
+- local: direct HTTP via `fetch()` with `HOLIDAY_API_BASE_URL` from `.env`
+- BTP: destination-based via `@sap-cloud-sdk/connectivity` and `@sap-cloud-sdk/http-client`
+- environment detection via `NODE_ENV` and `VCAP_SERVICES`
 
-## Entscheidung
+## Decision
 
-Wir wählen **Option C** – einen Hybrid-Ansatz mit zwei Code-Pfaden im `HolidayService`:
+We choose **Option C** – a hybrid approach with two code paths in `HolidayService`:
 
 ```typescript
 async getHolidays(year: number, stateCode: string): Promise<Map<string, Holiday>> {
@@ -57,84 +57,84 @@ private isProduction(): boolean {
 }
 ```
 
-### Implementierung
+### Implementation
 
-#### Lokal (Development)
+#### Local (Development)
 
-- Direct HTTP-Call via `fetch()` mit konfigurierter Base-URL
-- URL aus `.env`: `HOLIDAY_API_BASE_URL=https://feiertage-api.de`
-- Timeout: 5 Sekunden via `AbortSignal.timeout(5000)`
+- direct HTTP call via `fetch()` with configured base URL
+- URL from `.env`: `HOLIDAY_API_BASE_URL=https://feiertage-api.de`
+- timeout: 5 seconds via `AbortSignal.timeout(5000)`
 
 #### BTP (Production)
 
-- Destination `holiday-api` definiert in `mta.yaml` mit:
+- destination `holiday-api` defined in `mta.yaml` with:
   - URL: `https://feiertage-api.de`
   - ProxyType: `Internet`
   - Authentication: `NoAuthentication`
-- HTTP-Calls via `@sap-cloud-sdk/http-client.executeHttpRequest()`
-- Automatisches Routing über Connectivity Service
+- HTTP calls via `@sap-cloud-sdk/http-client.executeHttpRequest()`
+- automatic routing through Connectivity Service
 
-#### Cache-Strategie
+#### Cache strategy
 
-- Cache pro Jahr + Bundesland (Key: `${year}-${stateCode}`)
-- Lifetime: Service-Runtime (Feiertage sind statisch)
-- Invalidierung: Bei Server-Restart
+- cache per year + federal state (key: `${year}-${stateCode}`)
+- lifetime: service runtime (holidays are static)
+- invalidation: on server restart
 
-#### Error Handling
+#### Error handling
 
-- Graceful Degradation: Bei API-Fehlern wird leere Map zurückgegeben
-- Yearly Generation funktioniert auch ohne Feiertage (markiert alle Werktage als Work-Entries)
-- Strukturiertes Logging via `logger.serviceCall()` und `logger.error()`
+- graceful degradation: returns an empty map on API errors
+- yearly generation works without holidays as well (marks all weekdays as work entries)
+- structured logging via `logger.serviceCall()` and `logger.error()`
 
-## Konsequenzen
+## Consequences
 
-### Positiv
+### Positive
 
-- **Security**: Keine Credentials im Code – Destination wird in BTP Cockpit verwaltet
-- **Ops-Friendly**: URL-Änderungen ohne Deployment (nur Destination-Update im Cockpit)
-- **Developer Experience**: Lokale Entwicklung mit `npm run watch` ohne BTP-Setup
-- **Proxy Support**: Corporate Firewalls und On-Premise-Szenarien via Connectivity Service
-- **Audit Trail**: Alle API-Calls werden in BTP Application Logs erfasst
-- **Testbarkeit**: Unit Tests können beide Code-Pfade über Environment Variables testen
+- **Security**: no credentials in code – destination is managed in the BTP cockpit
+- **Ops-friendly**: URL changes without deployment (destination update in cockpit only)
+- **Developer experience**: local development with `npm run watch` works without BTP setup
+- **Proxy support**: corporate firewalls and on-premise scenarios via Connectivity Service
+- **Audit trail**: all API calls are recorded in BTP application logs
+- **Testability**: unit tests can cover both code paths via environment variables
 
-### Negativ
+### Negative
 
-- **Komplexität**: Zwei Code-Pfade (Direct + Destination) erhöhen Wartungsaufwand
-- **Testing**: Mocking von `executeHttpRequest()` nötig für Unit Tests
-- **Dependencies**: Zusätzliche NPM-Pakete (`@sap-cloud-sdk/connectivity`, `@sap-cloud-sdk/http-client`)
-- **Betriebskosten**: BTP Destination + Connectivity Services (Lite-Plan kostenlos, aber Service-Overhead)
+- **Complexity**: two code paths (direct + destination) increase maintenance effort
+- **Testing**: mocking of `executeHttpRequest()` is required for unit tests
+- **Dependencies**: additional NPM packages (`@sap-cloud-sdk/connectivity`, `@sap-cloud-sdk/http-client`)
+- **Operational cost**: BTP Destination + Connectivity services (lite plan free, but service overhead)
 
 ### Neutral
 
-- **Caching**: Cache-Strategie ist unabhängig von der Fetch-Methode
-- **API-Stabilität**: Feiertags-API ist public und stabil (seit 2015 verfügbar)
+- **Caching**: cache strategy is independent of the fetch method
+- **API stability**: holiday API is public and stable (available since 2015)
 
-## Alternativen und warum verworfen
+## Alternatives and why rejected
 
-### Option A verworfen
+### Option A rejected
 
-- ❌ Keine Unterstützung für Corporate Proxy/Firewall
-- ❌ Credentials/URLs im Code oder Umgebungsvariablen (nicht Cloud-Native)
-- ❌ Keine Audit Logs in BTP
+- ❌ no support for corporate proxy/firewall
+- ❌ credentials/URLs in code or environment variables (not cloud-native)
+- ❌ no audit logs in BTP
 
-### Option B verworfen
+### Option B rejected
 
-- ❌ feiertage-api.de ist REST-API ohne OData-Metadaten
-- ❌ CAP Remote Services sind primär für SAP-OData-Services (S/4HANA, SuccessFactors) konzipiert
-- ❌ Overhead für einfache GET-Requests ohne komplexes Entity-Modell
+- ❌ feiertage-api.de is a REST API without OData metadata
+- ❌ CAP remote services are primarily designed for SAP OData services (S/4HANA, SuccessFactors)
+- ❌ overhead for simple GET requests without a complex entity model
 
-## Verweise
+## References
 
-- `srv/track-service/handler/services/HolidayService.ts` – Hybrid-Implementierung
-- `mta.yaml` – Destination-Konfiguration unter `resources.cap-fiori-timetracking-destination`
-- `tests/track-service.test.js` – Integration Tests für Holiday API (Describe-Block: `TrackService - HolidayService Integration`)
-- `.env.example` – `HOLIDAY_API_BASE_URL` Environment Variable
+- `srv/track-service/handler/services/HolidayService.ts` – hybrid implementation
+- `mta.yaml` – destination configuration under `resources.cap-fiori-timetracking-destination`
+- `tests/track-service.test.js` – integration tests for Holiday API (describe block: `TrackService - HolidayService Integration`)
+- `.env.example` – `HOLIDAY_API_BASE_URL` environment variable
 - [SAP Cloud SDK Connectivity Docs](https://sap.github.io/cloud-sdk/docs/js/features/connectivity/destinations)
-- [Feiertage-API Dokumentation](https://feiertage-api.de)
+- [Feiertage-API documentation](https://feiertage-api.de)
 
-## Erweiterungsmöglichkeiten
+## Extension possibilities
 
-- **Rate Limiting**: Implementierung eines Rate-Limit-Trackers für API-Calls
-- **Fallback auf lokale Daten**: JSON-File mit deutschen Feiertagen 2020-2030 als Offline-Fallback
-- **Multi-Country Support**: Erweiterung auf andere Länder (aktuell nur Deutschland)
-- **Custom Holiday Management**: Admin-UI für manuelle Feiertags-Pflege (Company-specific)
+- **Rate limiting**: implement a rate limit tracker for API calls
+- **Fallback to local data**: JSON file with German holidays 2020-2030 as offline fallback
+- **Multi-country support**: expand to other countries (currently only Germany)
+- **Custom holiday management**: admin UI for manual holiday maintenance (company-specific)
