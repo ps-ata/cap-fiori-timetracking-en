@@ -1,12 +1,12 @@
 # ✅ Validator Pattern (7 Validators)
 
-**Dateien:** `srv/handler/validators/*.ts`
+**Files:** `srv/handler/validators/*.ts`
 
-Das **Validator Pattern** kapselt komplexe Validierungslogik in wiederverwendbare Klassen. Jeder Validator fokussiert sich auf eine spezifische Domäne und folgt dem **Single Responsibility Principle**:
+The **Validator Pattern** encapsulates complex validation logic in reusable classes. Each validator focuses on a specific domain and follows the **Single Responsibility Principle**:
 
 ```typescript
 /**
- * ProjectValidator - Validiert Project-Referenzen
+ * ProjectValidator - validates project references
  */
 export class ProjectValidator {
   constructor(private projectRepository: ProjectRepository) {}
@@ -14,13 +14,13 @@ export class ProjectValidator {
   async validateActive(tx: Transaction, projectId: string): Promise<void> {
     const project = await this.projectRepository.findByIdActive(tx, projectId);
     if (!project) {
-      throw new Error('Projekt ist ungültig oder inaktiv.');
+      throw new Error('Project is invalid or inactive.');
     }
   }
 }
 
 /**
- * ActivityTypeValidator - Validiert Activity-Codes
+ * ActivityTypeValidator - validates activity codes
  */
 export class ActivityTypeValidator {
   constructor(private activityTypeRepository: ActivityTypeRepository) {}
@@ -28,13 +28,13 @@ export class ActivityTypeValidator {
   async validateExists(tx: Transaction, code: string): Promise<void> {
     const activity = await this.activityTypeRepository.findByCode(tx, code);
     if (!activity) {
-      throw new Error('Ungültiger Activity Code.');
+      throw new Error('Invalid activity code.');
     }
   }
 }
 
 /**
- * TimeEntryValidator - Orchestriert Entry-Validierung
+ * TimeEntryValidator - orchestrates entry validation
  */
 export class TimeEntryValidator {
   constructor(
@@ -44,7 +44,7 @@ export class TimeEntryValidator {
   ) {}
 
   async validateReferences(tx: Transaction, entryData: Partial<TimeEntry>): Promise<void> {
-    // Delegiert an spezialisierte Validators
+    // delegates to specialized validators
     if (entryData.project_ID) {
       await this.projectValidator.validateActive(tx, entryData.project_ID);
     }
@@ -57,18 +57,18 @@ export class TimeEntryValidator {
 
 **Features:**
 
-- ✅ **Separation of Concerns** - Jeder Validator eine Verantwortung
-- 🎯 **Domain-spezifische Rules** - TimeEntry, Project, ActivityType, Generation, Balance
-- 🔗 **Validator Composition** - TimeEntryValidator nutzt Project & ActivityType Validators
-- 🛡️ **Konsistente Error Messages** mit Logging
-- 🧪 **Isoliert testbar** - Reine Business Logic ohne CAP Dependencies
+- ✅ **Separation of concerns** – each validator has one responsibility
+- 🎯 **Domain-specific rules** – TimeEntry, Project, ActivityType, Generation, Balance
+- 🔗 **Validator composition** – TimeEntryValidator uses Project & ActivityType validators
+- 🛡️ **Consistent error messages** with logging
+- 🧪 **Isolated testability** – pure business logic without CAP dependencies
 
-**Unsere 7 Validators:**
+**Our 7 validators:**
 
-- `ProjectValidator` - Project-Aktivitäts-Validierung
-- `ActivityTypeValidator` - Activity-Code-Validierung
-- `WorkLocationValidator` - Arbeitsort-Validierung
-- `TravelTypeValidator` - Reiseart-Validierung
-- `TimeEntryValidator` - Entry-Validierung + Change Detection (nutzt Project, ActivityType, WorkLocation, TravelType)
-- `GenerationValidator` - User, StateCode, Year Validierung
-- `BalanceValidator` - Year/Month Plausibilitätsprüfung
+- `ProjectValidator` – project activity validation
+- `ActivityTypeValidator` – activity code validation
+- `WorkLocationValidator` – work location validation
+- `TravelTypeValidator` – travel type validation
+- `TimeEntryValidator` – entry validation + change detection (uses Project, ActivityType, WorkLocation, TravelType)
+- `GenerationValidator` – user, state code, year validation
+- `BalanceValidator` – year/month plausibility check
