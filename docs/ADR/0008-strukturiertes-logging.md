@@ -1,130 +1,130 @@
-# ADR 0008: Strukturiertes Logging mit kategorisierten Methoden
+# ADR 0008: Structured Logging with Categorized Methods
 
 ## Status
 
-Akzeptiert - Logging-Refactoring (Iteration 4)
+Accepted - Logging Refactoring (Iteration 4)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-In frühen Entwicklungsphasen nutzten Handler, Commands und Services inkonsistente Logging-Ansätze:
+In early development phases, handlers, commands, and services used inconsistent logging approaches:
 
-1. **Direkte `console.log`-Aufrufe**: Keine strukturierte Ausgabe, fehlende Log-Levels, keine Filterung.
-2. **Inkonsistente `cds.log`-Nutzung**: Verschiedene Komponenten nutzten unterschiedliche Log-Kategorien (`track-service`, `handler`, `command`), was zentrale Konfiguration unmöglich machte.
-3. **Fehlende Kontextinformationen**: Logs enthielten oft nur Messages ohne strukturierte Kontext-Objekte (z.B. `userId`, `command`, `error.stack`).
-4. **Keine visuellen Unterscheidungen**: Alle Logs sahen gleich aus, was schnelle Identifikation von Command-, Validation- oder Repository-Logs erschwerte.
-5. **Schwierige Debugging-Workflows**: Entwickler mussten manuell nach relevanten Log-Zeilen suchen, da keine Präfixe oder Kategorien existierten.
+1. **Direct `console.log` calls**: No structured output, missing log levels, no filtering.
+2. **Inconsistent `cds.log` usage**: Different components used different log categories (`track-service`, `handler`, `command`), making centralized configuration impossible.
+3. **Missing context information**: Logs often contained only messages without structured context objects (e.g., `userId`, `command`, `error.stack`).
+4. **No visual distinctions**: All logs looked the same, making quick identification of command, validation, or repository logs difficult.
+5. **Difficult debugging workflows**: Developers had to manually search for relevant log lines since no prefixes or categories existed.
 
-Wir benötigten ein zentrales Logging-System, das konsistente Formatierung, strukturierte Kontexte und kategorisierte Methoden bietet, um schnelle Fehlerbehebung und Observability zu ermöglichen.
+We needed a centralized logging system that provides consistent formatting, structured contexts, and categorized methods to enable fast troubleshooting and observability.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Konsistenz**: Alle Komponenten (Handler, Commands, Repositories, Services) sollen die gleiche Logging-API nutzen.
-- **Strukturierte Kontexte**: Logs sollen strukturierte Kontext-Objekte enthalten (z.B. `{ userId, command, error.stack }`), die in JSON-Format exportiert werden können.
-- **Visuelle Unterscheidbarkeit**: Verschiedene Log-Kategorien (Command, Validation, Repository) sollen durch Präfixe und Farben unterscheidbar sein.
-- **CAP-native Integration**: Das System soll `cds.log` unter der Haube nutzen, um CAP-Features wie Log-Level-Konfiguration und JSON-Export zu nutzen.
-- **Performance**: Logging soll minimalen Overhead haben, besonders für Debug-Logs in Production (Lazy Evaluation).
-- **Konfigurierbarkeit**: Log-Levels sollen über `package.json` oder Umgebungsvariablen konfigurierbar sein.
+- **Consistency**: All components (handlers, commands, repositories, services) should use the same logging API.
+- **Structured contexts**: Logs should contain structured context objects (e.g., `{ userId, command, error.stack }`), which can be exported in JSON format.
+- **Visual distinctiveness**: Different log categories (command, validation, repository) should be distinguishable through prefixes and colors.
+- **CAP-native integration**: The system should use `cds.log` under the hood to leverage CAP features like log level configuration and JSON export.
+- **Performance**: Logging should have minimal overhead, especially for debug logs in production (lazy evaluation).
+- **Configurability**: Log levels should be configurable via `package.json` or environment variables.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A - `console.log` mit manuellen Präfixen
+### Option A - `console.log` with manual prefixes
 
-- Handler und Commands rufen `console.log('[COMMAND] CreateTimeEntry started')` auf.
-- Vorteil: Einfach, keine zusätzliche Abstraktion.
-- Nachteil: Keine strukturierten Kontexte, keine Log-Level-Filterung, keine JSON-Export-Option, inkonsistente Formatierung.
+- Handlers and commands call `console.log('[COMMAND] CreateTimeEntry started')`.
+- Advantage: Simple, no additional abstraction.
+- Disadvantage: No structured contexts, no log level filtering, no JSON export option, inconsistent formatting.
 
-### Option B - Direkte `cds.log`-Nutzung mit manuellen Kategorien
+### Option B - Direct `cds.log` usage with manual categories
 
-- Jede Komponente nutzt `cds.log('track-service')` direkt.
-- Vorteil: CAP-native, Log-Level-Konfiguration verfügbar.
-- Nachteil: Inkonsistente Formatierung (jeder Entwickler formatiert anders), keine visuellen Präfixe, schwierige Filterung nach Kategorien.
+- Each component uses `cds.log('track-service')` directly.
+- Advantage: CAP-native, log level configuration available.
+- Disadvantage: Inconsistent formatting (each developer formats differently), no visual prefixes, difficult filtering by categories.
 
-### Option C - Zentraler Logger mit kategorisierten Methoden
+### Option C - Centralized logger with categorized methods
 
-- Eine `TrackLogger`-Klasse kapselt `cds.log('track-service')`.
-- Kategorisierte Methoden für verschiedene Komponenten: `logger.commandStart()`, `logger.validationSuccess()`, `logger.repositoryQuery()`, `logger.serviceCall()`.
-- Automatische Präfixe mit Emojis und ANSI-Farben (deaktiviert bei JSON-Export).
-- Strukturierte Kontexte als zweiter Parameter.
-- Singleton-Pattern für globalen Zugriff.
-- Vorteil: Konsistente API, visuelle Unterscheidbarkeit, strukturierte Kontexte, CAP-Integration.
-- Nachteil: Zusätzliche Abstraktionsschicht, höhere initiale Lernkurve.
+- A `TrackLogger` class encapsulates `cds.log('track-service')`.
+- Categorized methods for different components: `logger.commandStart()`, `logger.validationSuccess()`, `logger.repositoryQuery()`, `logger.serviceCall()`. 
+- Automatic prefixes with emojis and ANSI colors (disabled for JSON export).
+- Structured contexts as a second parameter.
+- Singleton pattern for global access.
+- Advantage: Consistent API, visual distinctiveness, structured contexts, CAP integration.
+- Disadvantage: Additional abstraction layer, higher initial learning curve.
 
-## Entscheidung
+## Decision
 
-Wir wählen **Option C** - einen zentralen Logger mit kategorisierten Methoden. Die Implementierung befindet sich unter `srv/track-service/handler/utils/logger.ts` und exportiert eine Singleton-Instanz `logger`.
+We choose **Option C** - a centralized logger with categorized methods. The implementation is located in `srv/track-service/handler/utils/logger.ts` and exports a singleton instance.
 
-### Logger-Struktur
+### Logger Structure
 
-Der `TrackLogger` bietet 10 Kategorien mit jeweils spezifischen Methoden:
+The `TrackLogger` provides 10 categories, each with specific methods:
 
 #### 1. Service Lifecycle
 
-- `logger.serviceInit(message, context?)` - Service-Initialisierung gestartet
-- `logger.serviceReady(message, context?)` - Service erfolgreich initialisiert
-- `logger.serviceRegistered(component, message, context?)` - Komponente registriert
+- `logger.serviceInit(message, context?)` - Service initialization started
+- `logger.serviceReady(message, context?)` - Service successfully initialized
+- `logger.serviceRegistered(component, message, context?)` - Component registered
 
 #### 2. Command Execution
 
-- `logger.commandStart(command, context?)` - Command-Ausführung gestartet
-- `logger.commandEnd(command, context?)` - Command erfolgreich abgeschlossen
-- `logger.commandInfo(command, message, context?)` - Command-spezifische Info
-- `logger.commandData(command, message, context?)` - Command-Daten (Debug-Level)
+- `logger.commandStart(command, context?)` - Command execution started
+- `logger.commandEnd(command, context?)` - Command successfully completed
+- `logger.commandInfo(command, message, context?)` - Command-specific info
+- `logger.commandData(command, message, context?)` - Command data (debug level)
 
 #### 3. Handler Invocation
 
-- `logger.handlerInvoked(handler, event, context?)` - Handler aufgerufen
-- `logger.handlerCompleted(handler, event, context?)` - Handler abgeschlossen
+- `logger.handlerInvoked(handler, event, context?)` - Handler invoked
+- `logger.handlerCompleted(handler, event, context?)` - Handler completed
 
 #### 4. Validation
 
-- `logger.validationSuccess(entity, message, context?)` - Validierung erfolgreich
-- `logger.validationWarning(entity, message, context?)` - Validierungs-Warnung
-- `logger.validationInfo(entity, message, context?)` - Validierungs-Info
+- `logger.validationSuccess(entity, message, context?)` - Validation successful
+- `logger.validationWarning(entity, message, context?)` - Validation warning
+- `logger.validationInfo(entity, message, context?)` - Validation info
 
 #### 5. Repository Operations
 
-- `logger.repositoryQuery(entity, message, context?)` - Query wird ausgeführt
-- `logger.repositoryResult(entity, message, context?)` - Query-Ergebnis
-- `logger.repositorySave(entity, count, context?)` - Save-Operation
-- `logger.repositoryInfo(entity, message, context?)` - Repository-Info
+- `logger.repositoryQuery(entity, message, context?)` - Query being executed
+- `logger.repositoryResult(entity, message, context?)` - Query result
+- `logger.repositorySave(entity, count, context?)` - Save operation
+- `logger.repositoryInfo(entity, message, context?)` - Repository info
 
 #### 6. External Services
 
-- `logger.serviceCall(service, message, context?)` - Externer Service-Call (z.B. HolidayService)
-- `logger.serviceCacheHit(service, message, context?)` - Cache-Hit
-- `logger.serviceCacheCleared(service, context?)` - Cache geleert
-- `logger.serviceInfo(service, message, context?)` - Service-Info
+- `logger.serviceCall(service, message, context?)` - External service call (e.g., HolidayService)
+- `logger.serviceCacheHit(service, message, context?)` - Cache hit
+- `logger.serviceCacheCleared(service, context?)` - Cache cleared
+- `logger.serviceInfo(service, message, context?)` - Service info
 
 #### 7. Strategy Execution
 
-- `logger.strategyExecute(strategy, message, context?)` - Strategy ausgeführt
-- `logger.strategySkip(strategy, message, context?)` - Element übersprungen
-- `logger.strategyEvent(strategy, message, context?)` - Special Case
-- `logger.strategyInfo(strategy, message, context?)` - Strategy-Info
+- `logger.strategyExecute(strategy, message, context?)` - Strategy executed
+- `logger.strategySkip(strategy, message, context?)` - Element skipped
+- `logger.strategyEvent(strategy, message, context?)` - Special case
+- `logger.strategyInfo(strategy, message, context?)` - Strategy info
 
 #### 8. Factory
 
-- `logger.factoryCreated(factory, instance, context?)` - Instanz erstellt
+- `logger.factoryCreated(factory, instance, context?)` - Instance created
 
 #### 9. Registry
 
-- `logger.registryStart(message, context?)` - Handler-Registrierung gestartet
-- `logger.registrySuccess(handler, event, context?)` - Handler registriert
+- `logger.registryStart(message, context?)` - Handler registration started
+- `logger.registrySuccess(handler, event, context?)` - Handler registered
 
 #### 10. Generic/Utility
 
 - `logger.info(message, context?)` / `logger.debug()` / `logger.warn()` / `logger.error(message, error?, context?)`
-- `logger.userOperation(operation, message, context?)` - User-Operation
-- `logger.calculationResult(type, message, context?)` - Berechnungsergebnis
-- `logger.stats(category, message, context?)` - Statistiken/Metrics
+- `logger.userOperation(operation, message, context?)` - User operation
+- `logger.calculationResult(type, message, context?)` - Calculation result
+- `logger.stats(category, message, context?)` - Statistics/metrics
 
-### Visuelle Formatierung
+### Visual Formatting
 
-Jede Methode fügt automatisch einen farbigen Präfix hinzu (z.B. `🚀 [COMMAND]`, `✅ [VALIDATION:TimeEntry]`, `📅 [REPO:TimeEntry]`). Farben werden via ANSI-Codes hinzugefügt und bei JSON-Export automatisch deaktiviert.
+Each method automatically adds a colored prefix (e.g., `🚀 [COMMAND]`, `✅ [VALIDATION:TimeEntry]`, `📅 [REPO:TimeEntry]`). Colors are added via ANSI codes and disabled for JSON export.
 
-### Konfiguration
+### Configuration
 
-Log-Levels werden über `package.json` konfiguriert:
+Log levels are configured via `package.json`:
 
 ```json
 {
@@ -138,41 +138,41 @@ Log-Levels werden über `package.json` konfiguriert:
 }
 ```
 
-Alternativ via Umgebungsvariablen:
+Alternatively via environment variables:
 
 ```bash
-# Development: Alle Logs (inkl. Debug)
+# Development: All logs (including debug)
 DEBUG=track-service
 
-# Production: Nur Warnings/Errors
+# Production: Only warnings/errors
 CDS_LOG_LEVELS_TRACK_SERVICE=warn
 
-# JSON-Format für Log-Aggregation (z.B. Elasticsearch)
+# JSON format for log aggregation (e.g., Elasticsearch)
 CDS_LOG_FORMAT=json
 ```
 
-## Konsequenzen
+## Consequences
 
-### Positiv
+### Positive
 
-- **Konsistente Formatierung**: Alle Logs folgen dem gleichen Pattern (`Emoji [PREFIX] Message + Context`), was schnelle Identifikation ermöglicht.
-- **Strukturierte Kontexte**: Alle relevanten Daten (z.B. `userId`, `command`, `error.stack`) werden als Objekte übergeben und können in JSON exportiert werden.
-- **Visuelle Unterscheidbarkeit**: Emojis und Farben ermöglichen schnelles Scannen von Log-Outputs (z.B. `🚀 [COMMAND]` vs. `📅 [REPO]`).
-- **CAP-Integration**: Nutzt `cds.log` unter der Haube, wodurch Log-Level-Konfiguration und JSON-Export funktionieren.
-- **Performance**: Debug-Logs können via Log-Level deaktiviert werden, was in Production Performance spart.
-- **Einfache Migration**: Bestehende `console.log`-Aufrufe können schrittweise durch `logger.*`-Methoden ersetzt werden.
+- **Consistent formatting**: All logs follow the same pattern (`Emoji [PREFIX] Message + Context`), enabling quick identification.
+- **Structured contexts**: All relevant data (e.g., `userId`, `command`, `error.stack`) is passed as objects and can be exported in JSON.
+- **Visual distinctiveness**: Emojis and colors enable quick scanning of log outputs (e.g., `🚀 [COMMAND]` vs. `📅 [REPO]`).
+- **CAP integration**: Uses `cds.log` under the hood, allowing log level configuration and JSON export.
+- **Performance**: Debug logs can be disabled via log level, saving performance in production.
+- **Easy migration**: Existing `console.log` calls can be gradually replaced with `logger.*` methods.
 
-### Negativ
+### Negative
 
-- **Zusätzliche Abstraktion**: Entwickler müssen die richtigen Logger-Methoden kennen (z.B. `commandStart` statt `info`).
-- **Höhere Lernkurve**: Neue Entwickler müssen die 10 Kategorien und ihre Methoden lernen.
-- **Boilerplate**: Jeder Log-Aufruf erfordert Methoden-Call mit strukturiertem Context, was mehr Code bedeutet als `console.log`.
+- **Additional abstraction**: Developers need to know the correct logger methods (e.g., `commandStart` instead of `info`).
+- **Higher learning curve**: New developers need to learn the 10 categories and their methods.
+- **Boilerplate**: Each log call requires a method call with structured context, meaning more code than `console.log`.
 
 ### Trade-offs
 
-Wir akzeptieren die zusätzliche Abstraktion und Lernkurve zugunsten von Konsistenz, Observability und strukturierten Logs. Die `.github/copilot-instructions.md` dokumentiert alle Logger-Methoden für schnelle Referenz.
+We accept the additional abstraction and learning curve in favor of consistency, observability, and structured logs. The `.github/copilot-instructions.md` documents all logger methods in the AI development guide.
 
-## Beispiel-Code
+## Example Code
 
 ### Command Logging
 
@@ -184,7 +184,7 @@ class CreateTimeEntryCommand {
     logger.commandStart('CreateTimeEntry', { userId: data.user_ID, workDate: data.workDate });
 
     try {
-      // Business-Logik
+      // Business logic
       const result = await this.process(tx, data);
 
       logger.commandEnd('CreateTimeEntry', { entryId: result.ID });
@@ -232,7 +232,7 @@ export class HolidayService {
     }
 
     logger.serviceCall('Holiday', `Fetching holidays from API for ${year}/${stateCode}`, { year, stateCode });
-    // ... API-Call
+    // ... API call
 
     logger.serviceInfo('Holiday', `Loaded ${holidays.size} holidays`, { year, stateCode, count: holidays.size });
     return holidays;
@@ -251,7 +251,7 @@ export class TimeEntryValidator {
 
     if (!data.user_ID) {
       logger.validationWarning('TimeEntry', 'Missing user_ID', { data });
-      throw new Error('User ID ist erforderlich');
+      throw new Error('User ID is required');
     }
 
     logger.validationSuccess('TimeEntry', 'All fields valid', { userId: data.user_ID });
@@ -259,9 +259,9 @@ export class TimeEntryValidator {
 }
 ```
 
-## Log-Output Beispiel
+### Log Output Example
 
-### Development (mit Farben)
+### Development (with colors)
 
 ```
 🚀 [INIT] Initializing TrackService...
@@ -275,7 +275,7 @@ export class TimeEntryValidator {
 ✅ [COMMAND] CreateTimeEntry completed { entryId: 'abc123' }
 ```
 
-### Production (JSON-Format)
+### Production (JSON format)
 
 ```json
 {"level":"info","time":"2025-10-14T10:00:00.000Z","category":"track-service","message":"[INIT] Initializing TrackService..."}
@@ -283,19 +283,19 @@ export class TimeEntryValidator {
 {"level":"info","time":"2025-10-14T10:00:01.500Z","category":"track-service","message":"[COMMAND] CreateTimeEntry completed","context":{"entryId":"abc123"}}
 ```
 
-## Verweise
+## References
 
-- `srv/track-service/handler/utils/logger.ts` - Logger-Implementierung mit allen Methoden
-- `srv/track-service/handler/commands/time-entry/CreateTimeEntryCommand.ts` - Beispiel für Command-Logging
-- `srv/track-service/handler/repositories/TimeEntryRepository.ts` - Beispiel für Repository-Logging
-- `srv/track-service/handler/services/HolidayService.ts` - Beispiel für Service-Logging
-- `package.json` - Log-Level-Konfiguration unter `cds.log.levels`
-- `.github/copilot-instructions.md` - Logger-Konventionen im AI-Development-Guide
+- `srv/track-service/handler/utils/logger.ts` - Logger implementation with all methods
+- `srv/track-service/handler/commands/time-entry/CreateTimeEntryCommand.ts` - Example for command logging
+- `srv/track-service/handler/repositories/TimeEntryRepository.ts` - Example for repository logging
+- `srv/track-service/handler/services/HolidayService.ts` - Example for service logging
+- `package.json` - Log level configuration under `cds.log.levels`
+- `.github/copilot-instructions.md` - Logger conventions in the AI development guide
 
-## Hinweise für Entwickler
+## Developer Notes
 
-- **Welche Methode nutzen?** Orientiere dich an der Komponenten-Kategorie: Commands → `commandStart/End`, Repositories → `repositoryQuery/Result`, Services → `serviceCall/Info`.
-- **Strukturierte Kontexte**: Übergebe immer relevante Daten als Objekt (z.B. `{ userId, workDate, entryId }`).
-- **Error-Logging**: Nutze `logger.error(message, error, context)` statt `logger.info()`, um Error-Stack zu erfassen.
-- **Debug-Logs**: Nutze Debug-Methoden (z.B. `commandData`, `repositoryQuery`) für detaillierte Logs, die in Production deaktiviert werden können.
-- **Migration von `console.log`**: Ersetze `console.log('[COMMAND] ...')` durch `logger.commandInfo('CommandName', '...')`.
+- **Which method to use?** Refer to the component category: Commands → `commandStart/End`, Repositories → `repositoryQuery/Result`, Services → `serviceCall/Info`.
+- **Structured contexts**: Always pass relevant data as an object (e.g., `{ userId, workDate, entryId }`).
+- **Error logging**: Use `logger.error(message, error, context)` instead of `logger.info()` to capture error stacks.
+- **Debug logs**: Use debug methods (e.g., `commandData`, `repositoryQuery`) for detailed logs that can be disabled in production.
+- **Migration from `console.log`**: Replace `console.log('[COMMAND] ...')` with `logger.commandInfo('CommandName', '...').
