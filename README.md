@@ -1,7 +1,7 @@
 ![CAPtureTime Logo](./docs/assets/CAPtureTime-logo.png)
 
-> **Eine Enterprise-Grade Zeiterfassungsanwendung mit SAP CAP, TypeScript und Fiori UI5 unter dem Namen CAPture Time**</br>
-> Showcase für Clean Architecture, Design Patterns und Best Practices – von Entwickler für Entwickler dokumentiert! 🚀
+> **An Enterprise-Grade Time Tracking Application with SAP CAP, TypeScript, and Fiori UI5 named CAPture Time**</br>
+> Showcase for Clean Architecture, Design Patterns, and Best Practices – documented by developers for developers! 🚀
 
 ![GitHub License](https://img.shields.io/github/license/nimble-123/cap-fiori-timetracking?logo=github&color=blue)
 [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?logo=typescript&color=blue)](https://www.typescriptlang.org/)
@@ -16,20 +16,20 @@
 
 ## ✨ Highlights
 
-- 🎯 **100% TypeScript** - Typsicheres Backend ohne ein einziges JavaScript-File
-- 🏗️ **Clean Architecture** - 5-Tier-Architektur mit 10 Design Patterns (Command, Repository, Factory, Strategy, ...)
+- 🎯 **100% TypeScript** - Type-safe backend without a single JavaScript file
+- 🏗️ **Clean Architecture** - 5-tier architecture with 10 design patterns (Command, Repository, Factory, Strategy, ...)
 - 🎨 **Multi-App UI Strategy** - Fiori Elements Timetable, Custom Dashboard & Manage Activity Types Maintenance App
-- 🧭 **SAP CAP Console** - Native Desktop-App für lokales Dev, BTP Deployment & Monitoring aus einer Oberfläche
-- 🔧 **Production-Ready** - Validierung, Error Handling, strukturiertes Logging + Application Logging Service, Malware-Scanning
-- 🔐 **IAS & AMS Ready** - `xs-security.json`, AMS-Policies & DCL-Deployments für Work Zone / AFS auf SAP BTP
-- ☁️ **Cloud-native Deployment** - `mta.yaml` für SAP BTP (HANA, Attachments, Logging) + 12-Factor-konformes Packaging
-- 📚 **Vollständig dokumentiert** - arc42-Architektur, ADRs, Inline-JSDoc
-- 🧪 **Testbar** - Jest Tests + REST Client für manuelle Tests
-- 📘 **API Discovery** - Swagger UI Preview für TrackService während der Entwicklung
+- 🧭 **SAP CAP Console** - Native desktop app for local dev, BTP deployment & monitoring from one interface
+- 🔧 **Production-Ready** - Validation, error handling, structured logging + Application Logging Service, malware scanning
+- 🔐 **IAS & AMS Ready** - `xs-security.json`, AMS policies & DCL deployments for Work Zone / AFS on SAP BTP
+- ☁️ **Cloud-native Deployment** - `mta.yaml` for SAP BTP (HANA, Attachments, Logging) + 12-factor compliant packaging
+- 📚 **Fully documented** - arc42 architecture, ADRs, inline JSDoc
+- 🧪 **Testable** - Jest tests + REST client for manual tests
+- 📘 **API Discovery** - Swagger UI preview for TrackService during development
 
 ### Screenshot
 
-_Kurzes GIF zeigt List Report und Object Page, während ein TimeEntry live aktualisiert wird._
+_Short GIF showing List Report and Object Page while a TimeEntry is updated live._
 
 ![Timetable Fiori App Screenshot (Placeholder)](docs/assets/timetable-app.gif)
 
@@ -37,18 +37,18 @@ _Kurzes GIF zeigt List Report und Object Page, während ein TimeEntry live aktua
 
 ## 🚀 Quick Start
 
-### Option 1: GitHub Codespaces (Schnellster Start - 1 Click!)
+### Option 1: GitHub Codespaces (Fastest Start - 1 Click!)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=nimble-123/cap-fiori-timetracking)
 
-1. Klicke auf den Badge oben
-2. Warte ~3-5 Minuten für Setup
+1. Click the badge above
+2. Wait ~3-5 minutes for setup
 3. Run: `npm run watch`
-4. Fertig! 🎉
+4. Done! 🎉
 
-Mehr Details: [.devcontainer/README.md](.devcontainer/README.md) | [ADR-0021](docs/ADR/0021-devcontainer-github-codespaces.md)
+More details: [.devcontainer/README.md](.devcontainer/README.md) | [ADR-0021](docs/ADR/0021-devcontainer-github-codespaces.md)
 
-### Option 2: Lokale Installation
+### Option 2: Local Installation
 
 ```bash
 # 1. Clone & Install
@@ -60,17 +60,17 @@ npm install
 npm run watch
 ```
 
-**🌐 Browser öffnet automatisch:** `http://localhost:4004`</br>
-**🔐 Login:** `max.mustermann@test.de` / Passwort: `max`</br>
+**🌐 Browser opens automatically:** `http://localhost:4004`</br>
+**🔐 Login:** `max.mustermann@test.de` / Password: `max`</br>
 **🧭 Swagger UI (Dev):** `http://localhost:4004/$api-docs/odata/v4/track/`
 
-👉 **Ausführliche Installation:** Siehe [GETTING_STARTED.md](GETTING_STARTED.md)
+👉 **Detailed Installation:** See [GETTING_STARTED.md](GETTING_STARTED.md)
 
 ---
 
-## 🏗️ Architektur-Übersicht
+## 🏗️ Architecture Overview
 
-**5-Tier Clean Architecture** mit klarer Separation of Concerns:
+**5-Tier Clean Architecture** with clear separation of concerns:
 
 ```mermaid
 graph TB
@@ -93,10 +93,10 @@ graph TB
     style INFRA fill:#fce4ec,stroke:#c2185b,stroke-width:2px
 ```
 
-**🎯 44 Pattern-Klassen** organisiert in 6 Kategorien:
+**🎯 44 Pattern Classes** organized in 6 categories:
 
 - **Commands** (11) - Business Operations (CRUD, Generation, Balance)
-- **Validators** (7) - Fachliche Validierung
+- **Validators** (7) - Domain-specific validation
 - **Services** (7) - Domain Logic (TimeCalc, User, Holiday, Balance)
 - **Repositories** (7) - Data Access Layer
 - **Strategies** (2) - Generation Algorithms (Monthly, Yearly)
@@ -105,29 +105,29 @@ graph TB
 **+ 1 ServiceContainer (DI), 1 HandlerRegistry, 1 HandlerRegistrar, 1 Builder**
 **+ 1 DateUtil, 1 Logger, 14 Barrel Exports**
 
-📖 **Deep Dive:** [ARCHITECTURE.md](docs/ARCHITECTURE.md) (vollständige arc42-Dokumentation)
+📖 **Deep Dive:** [ARCHITECTURE.md](docs/ARCHITECTURE.md) (complete arc42 documentation)
 
 ---
 
 ## 🧩 Key Features
 
-- 🕐 **Zeiterfassung** - CRUD für TimeEntries mit automatischer Berechnung (Brutto/Netto/Über-/Unterstunden)
-- 📅 **Bulk-Generation** - Monatlich oder Jährlich inkl. Feiertage (API-Integration für 16 Bundesländer)
-- 💰 **Balance-Tracking** - Monatssaldi, kumulierter Gesamtsaldo, Criticality-Indikatoren
-- 🧰 **Customizing Singleton** - Pflege aller globalen Defaults (Arbeitszeiten, EntryTypes, Schwellenwerte, Integrations-URLs)
-- 📎 **Dokumentenanhänge** - Upload & Download via SAP CAP Attachments Plugin (`@cap-js/attachments`) inkl. Fiori Attachment Facet
-- 🔐 **Business Rules** - Validierung, Eindeutigkeit (1 Entry/User/Tag), Change Detection
+- 🕐 **Time Tracking** - CRUD for TimeEntries with automatic calculation (gross/net/overtime/under hours)
+- 📅 **Bulk Generation** - Monthly or yearly including holidays (API integration for 16 federal states)
+- 💰 **Balance Tracking** - Monthly balances, cumulative total balance, criticality indicators
+- 🧰 **Customizing Singleton** - Maintenance of all global defaults (working hours, entry types, thresholds, integration URLs)
+- 📎 **Document Attachments** - Upload & download via SAP CAP Attachments Plugin (`@cap-js/attachments`) including Fiori Attachment Facet
+- 🔐 **Business Rules** - Validation, uniqueness (1 entry/user/day), change detection
 - 🎨 **Multi-App UI** - Timetable & Manage Activity Types (Fiori Elements) plus Custom UI5 Dashboard
 - 🏗️ **10 Design Patterns** - Command, Repository, Factory, Strategy, Validator, Handler, Registry, Registrar, Builder, ServiceContainer (DI)
 
-📖 **Details:** [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Komplette Bausteinsicht, Laufzeitsicht, Qualitätsszenarien
+📖 **Details:** [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Complete building block view, runtime view, quality scenarios
 
 ---
 
 ## 📂 Project Structure
 
 <details>
-<summary>Modulare 5-Tier-Architektur mit klarer Trennung der Verantwortlichkeiten:</summary>
+<summary>Modular 5-tier architecture with clear separation of responsibilities:</summary>
 
 ```
 cap-fiori-timetracking/
@@ -141,7 +141,7 @@ cap-fiori-timetracking/
 │   │   │   └── i18n/                      # Internationalization
 │   │   └── annotations.cds                # UI Annotations
 │   │
-│   ├── manage-activity-types/             # Fiori Elements Basic App für Stammdatenpflege
+│   ├── manage-activity-types/             # Fiori Elements Basic App for master data maintenance
 │   │   └── webapp/                        # UI5 Application (TypeScript, Basic V4)
 │   │
 │   └── timetracking/                      # Custom UI5 Dashboard App
@@ -182,7 +182,7 @@ cap-fiori-timetracking/
 │       │   │   ├── labels.cds
 │       │   │   └── value-helps.cds
 │       │   │
-│       │   └── ui/                        # UI-spezifisch pro Entity
+│       │   └── ui/                        # UI-specific per Entity
 │       │       ├── activities-ui.cds
 │       │       ├── balance-ui.cds
 │       │       ├── projects-ui.cds
@@ -196,26 +196,26 @@ cap-fiori-timetracking/
 │           │
 │           ├── container/                 # 🏗️ Dependency Injection
 │           │   ├── ServiceContainer.ts    # DI Container
-│           │   │   - 6 Kategorien: Repos, Services, Validators, Strategies, Commands, Factories
-│           │   │   - Type-safe Resolution mit Generics
-│           │   │   - Auto-Wiring aller Dependencies
+│           │   │   - 6 Categories: Repos, Services, Validators, Strategies, Commands, Factories
+│           │   │   - Type-safe Resolution with Generics
+│           │   │   - Auto-Wiring of all Dependencies
 │           │   └── index.ts               # Barrel Export
 │           │
 │           ├── registry/                  # 📋 Event Handler Registry
-│           │   ├── HandlerRegistry.ts     # Handler-Registrierung
-│           │   │   - Unterstützt: before, on, after
+│           │   ├── HandlerRegistry.ts     # Handler Registration
+│           │   │   - Supports: before, on, after
 │           │   │   - Fluent API & Logging
-│           │   ├── HandlerRegistrar.ts    # Handler-Registrierung
+│           │   ├── HandlerRegistrar.ts    # Handler Registration
 │           │   └── index.ts               # Barrel Export
 │           │
 │           ├── setup/                     # 🏗️ Setup & Initialization
-│           │   ├── HandlerSetup.ts        # Builder Pattern für Handler Setup
+│           │   ├── HandlerSetup.ts        # Builder Pattern for Handler Setup
 │           │   └── index.ts               # Barrel Export
 │           │
 │           ├── handlers/                  # 🎯 Event Handler (Separation of Concerns)
 │           │   ├── TimeEntryHandlers.ts   # CRUD
-│           │   ├── GenerationHandlers.ts  # Bulk-Generierung
-│           │   ├── BalanceHandlers.ts     # Balance-Abfragen
+│           │   ├── GenerationHandlers.ts  # Bulk Generation
+│           │   ├── BalanceHandlers.ts     # Balance Queries
 │           │   └── index.ts               # Barrel Export
 │           │
 │           ├── commands/                  # 🎯 Command Pattern
@@ -243,9 +243,9 @@ cap-fiori-timetracking/
 │           └── utils/                     # 🛠️ Utilities (DateUtils, Logger)
 │
 ├── mta.yaml                               # ☁️ Multi-Target Application Descriptor (SAP BTP)
-├── @cds-models/                           # 🎯 Auto-generierte TypeScript Types
-├── docs/                                  # 📚 Dokumentation
-│   ├── ARCHITECTURE.md                    # arc42 Architektur
+├── @cds-models/                           # 🎯 Auto-generated TypeScript Types
+├── docs/                                  # 📚 Documentation
+│   ├── ARCHITECTURE.md                    # arc42 Architecture
 │   └── ADR/                               # Architecture Decision Records
 ├── test/                                  # 🧪 Tests
 └── package.json, tsconfig.json, etc.
@@ -254,106 +254,106 @@ cap-fiori-timetracking/
 </details>
 </br>
 
-**📖 Detaillierte Struktur & Diagramme:** Siehe [ARCHITECTURE.md - Kapitel 5](docs/ARCHITECTURE.md#5-bausteinsicht)
+**📖 Detailed Structure & Diagrams:** See [ARCHITECTURE.md - Chapter 5](docs/ARCHITECTURE.md#5-building-block-view)
 
 ---
 
-## 📚 Dokumentation
+## 📚 Documentation
 
-### 📖 Für Einsteiger
+### 📖 For Beginners
 
-| Dokument                                     | Inhalt                                     | Wann lesen?           |
-| -------------------------------------------- | ------------------------------------------ | --------------------- |
-| **[GETTING_STARTED.md](GETTING_STARTED.md)** | Installation, Quick Start, Troubleshooting | ⭐ **Start hier!**    |
-| **[README.md](README.md)** (diese Datei)     | Executive Summary, Highlights, Navigation  | Überblick verschaffen |
+| Document                                     | Content                                     | When to read?         |
+| -------------------------------------------- | ------------------------------------------- | --------------------- |
+| **[GETTING_STARTED.md](GETTING_STARTED.md)** | Installation, Quick Start, Troubleshooting  | ⭐ **Start here!**    |
+| **[README.md](README.md)** (this file)       | Executive Summary, Highlights, Navigation   | Get an overview       |
 
-### 🏗️ Für Architekten & Entwickler
+### 🏗️ For Architects & Developers
 
-| Dokument                                    | Inhalt                                     | Wann lesen?                            |
-| ------------------------------------------- | ------------------------------------------ | -------------------------------------- |
-| **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | arc42-Dokumentation (12 Kapitel)           | Deep Dive in Architektur               |
-| **[ADR-Verzeichnis](docs/ADR/)**            | 12 Architecture Decision Records           | Warum wurden Entscheidungen getroffen? |
-| **[CONTRIBUTING.md](CONTRIBUTING.md)**      | Code Style, Commit Conventions, PR-Process | Bevor du Code beiträgst                |
+| Document                                    | Content                                     | When to read?                            |
+| ------------------------------------------- | ------------------------------------------- | ----------------------------------------- |
+| **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | arc42 Documentation (12 Chapters)           | Deep Dive into Architecture              |
+| **[ADR Directory](docs/ADR/)**              | 12 Architecture Decision Records            | Why were decisions made?                 |
+| **[CONTRIBUTING.md](CONTRIBUTING.md)**      | Code Style, Commit Conventions, PR Process  | Before contributing code                 |
 
-### 🤖 AI-Unterstützung & Prompts
+### 🤖 AI Support & Prompts
 
-- **Prompt-Katalog:** `.github/prompts/` – YAML-Prompts nach [GitHub Models Guideline](https://docs.github.com/en/github-models/use-github-models/storing-prompts-in-github-repositories).
-- **Rollenspezifische Einstiegspunkte:**
+- **Prompt Catalog:** `.github/prompts/` – YAML prompts according to [GitHub Models Guideline](https://docs.github.com/en/github-models/use-github-models/storing-prompts-in-github-repositories).
+- **Role-specific Entry Points:**
   - Product Owner: `product-owner-feature-brief`, `product-owner-story-outline`
   - Reviewer & QA: `review-coach`, `test-strategy-designer`
-  - Architektur & Wissensaufbau: `architecture-deep-dive`, `adr-drafting-assistant`
-  - Betrieb & Support: `bug-triage-investigator`, `release-notes-curator`
-- **MCP-Server:** In `.vscode/mcp.json` vorkonfiguriert – `sap-docs` (aggregierte SAP Docs via HTTP), `cds-mcp` (CAP Docs), `@sap-ux/fiori-mcp-server` (Fiori UX Guidance), `@ui5/mcp-server` (UI5 SDK). Installiere `cds-mcp` global (`npm install -g @cap-js/mcp-server`), die anderen starten automatisch bzw. via `npx`.
-- **Workflow-Tipps:** Siehe [GETTING_STARTED.md](GETTING_STARTED.md#-ai-prompts--llm-workflows) für Beispiele, wie die Prompts in Discovery, Delivery und Review eingesetzt werden.
+  - Architecture & Knowledge Building: `architecture-deep-dive`, `adr-drafting-assistant`
+  - Operations & Support: `bug-triage-investigator`, `release-notes-curator`
+- **MCP Server:** Preconfigured in `.vscode/mcp.json` – `sap-docs` (aggregated SAP Docs via HTTP), `cds-mcp` (CAP Docs), `@sap-ux/fiori-mcp-server` (Fiori UX Guidance), `@ui5/mcp-server` (UI5 SDK). Install `cds-mcp` globally (`npm install -g @cap-js/mcp-server`), the others start automatically or via `npx`.
+- **Workflow Tips:** See [GETTING_STARTED.md](GETTING_STARTED.md#-ai-prompts--llm-workflows) for examples of how the prompts are used in Discovery, Delivery, and Review.
 
-### 🎯 arc42-Kapitel Schnellzugriff
+### 🎯 arc42 Chapter Quick Access
 
-| Kapitel     | Inhalt                                              | Link                                                               |
-| ----------- | --------------------------------------------------- | ------------------------------------------------------------------ |
-| **Kap. 1**  | Aufgabenstellung, Qualitätsziele, Stakeholder       | [Einführung](docs/ARCHITECTURE.md#1-einführung-und-ziele)          |
-| **Kap. 2**  | Technische Randbedingungen, Konventionen            | [Randbedingungen](docs/ARCHITECTURE.md#2-randbedingungen)          |
-| **Kap. 3**  | Fachlicher/Technischer Kontext (C4-Diagramme)       | [Kontext](docs/ARCHITECTURE.md#3-kontextabgrenzung)                |
-| **Kap. 4**  | Lösungsstrategie, Architektur-Treiber               | [Lösungsstrategie](docs/ARCHITECTURE.md#4-lösungsstrategie)        |
-| **Kap. 5**  | Bausteinsicht (5 Ebenen, 10 Patterns)               | [Bausteinsicht](docs/ARCHITECTURE.md#5-bausteinsicht)              |
-| **Kap. 6**  | Laufzeitsicht (Sequence-Diagramme)                  | [Laufzeitsicht](docs/ARCHITECTURE.md#6-laufzeitsicht)              |
-| **Kap. 7**  | Verteilungssicht (Dev/Cloud/Docker)                 | [Verteilung](docs/ARCHITECTURE.md#7-verteilungssicht)              |
-| **Kap. 8**  | Querschnittliche Konzepte (DI, Validation, Logging) | [Querschnitte](docs/ARCHITECTURE.md#8-querschnittliche-konzepte)   |
-| **Kap. 9**  | Entscheidungen (ADR-Übersicht)                      | [Entscheidungen](docs/ARCHITECTURE.md#9-architekturentscheidungen) |
-| **Kap. 10** | Qualitätsszenarien mit Metriken                     | [Qualität](docs/ARCHITECTURE.md#10-qualitätsanforderungen)         |
-| **Kap. 11** | Risiken & Technische Schulden                       | [Risiken](docs/ARCHITECTURE.md#11-risiken-und-technische-schulden) |
-| **Kap. 12** | Glossar (40+ Begriffe)                              | [Glossar](docs/ARCHITECTURE.md#12-glossar)                         |
+| Chapter     | Content                                              | Link                                                               |
+| ----------- | ---------------------------------------------------- | ------------------------------------------------------------------ |
+| **Chap. 1** | Requirements, Quality Goals, Stakeholders            | [Introduction](docs/ARCHITECTURE.md#1-introduction-and-goals)      |
+| **Chap. 2** | Technical Constraints, Conventions                   | [Constraints](docs/ARCHITECTURE.md#2-constraints)                  |
+| **Chap. 3** | Business/Technical Context (C4 Diagrams)             | [Context](docs/ARCHITECTURE.md#3-context-delimitation)             |
+| **Chap. 4** | Solution Strategy, Architecture Drivers              | [Solution Strategy](docs/ARCHITECTURE.md#4-solution-strategy)      |
+| **Chap. 5** | Building Block View (5 Levels, 10 Patterns)          | [Building Block View](docs/ARCHITECTURE.md#5-building-block-view)  |
+| **Chap. 6** | Runtime View (Sequence Diagrams)                     | [Runtime View](docs/ARCHITECTURE.md#6-runtime-view)                |
+| **Chap. 7** | Deployment View (Dev/Cloud/Docker)                   | [Deployment](docs/ARCHITECTURE.md#7-deployment-view)               |
+| **Chap. 8** | Cross-cutting Concepts (DI, Validation, Logging)     | [Cross-sections](docs/ARCHITECTURE.md#8-cross-cutting-concepts)    |
+| **Chap. 9** | Decisions (ADR Overview)                             | [Decisions](docs/ARCHITECTURE.md#9-architecture-decisions)         |
+| **Chap. 10**| Quality Scenarios with Metrics                        | [Quality](docs/ARCHITECTURE.md#10-quality-requirements)            |
+| **Chap. 11**| Risks & Technical Debt                                | [Risks](docs/ARCHITECTURE.md#11-risks-and-technical-debt)          |
+| **Chap. 12**| Glossary (40+ Terms)                                  | [Glossary](docs/ARCHITECTURE.md#12-glossary)                       |
 
 ---
 
 ## 🛠️ Development Scripts
 
-| Befehl                         | Zweck                                              | Wann verwenden?                         |
-| ------------------------------ | -------------------------------------------------- | --------------------------------------- |
-| `npm run watch`                | Dev-Server mit Auto-Reload                         | ⭐ **Hauptbefehl für Development**      |
-| `npm run build`                | TypeScript kompilieren                             | Vor Commit (prüft Syntax)               |
-| `npm run format`               | Prettier Formatierung                              | **Vor jedem Commit (Pflicht!)**         |
-| `npm run generate-entry-point` | Service Entry Points für Dev Tools (dev-cap-tools) | Nach neuen Services/Commands (optional) |
-| `npm test`                     | Jest Tests ausführen                               | Nach Code-Änderungen                    |
+| Command                         | Purpose                                             | When to use?                         |
+| ------------------------------- | --------------------------------------------------- | ------------------------------------ |
+| `npm run watch`                 | Dev server with auto-reload                         | ⭐ **Main command for development**  |
+| `npm run build`                 | Compile TypeScript                                  | Before commit (checks syntax)        |
+| `npm run format`                | Prettier formatting                                 | **Before every commit (mandatory!)** |
+| `npm run generate-entry-point`  | Service entry points for dev tools (dev-cap-tools)  | After new services/commands (optional) |
+| `npm test`                      | Run Jest tests                                      | After code changes                   |
 
-📖 **Vollständiger Workflow:** Siehe [GETTING_STARTED.md](GETTING_STARTED.md#-wichtige-npm-scripts)
+📖 **Complete Workflow:** See [GETTING_STARTED.md](GETTING_STARTED.md#-important-npm-scripts)
 
 ---
 
 ## 🧭 SAP CAP Console
 
-- **Installation:** Lade die native Desktop-App (Windows/macOS) über [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole) herunter.
-- **Projekt-Erkennung:** Die Konsole scannt laufende CAP-Projekte (JavaScript & Java) und listet sie automatisch; Projekte lassen sich „merken“ oder manuell über „Add Project“ einbinden.
-- **Monitoring & Insights:** Visualisiert Module aus der `mta.yaml`, zeigt Status/CPU/RAM, Live-Logs und bietet Log-Level-Switching, sofern das Projekt das CAP-Console-Plugin (`@cap-js/console`) enthält – bei uns bereits installiert.
-- **Deployments:** Geführter Dialog für SAP BTP Cloud Foundry (Entitlements prüfen, Services anlegen, In-App- oder CLI-Deploy). Standardverbindungen können hinterlegt werden.
-- **Environments & Security:** Environment-Profile (.cds/\*.yaml, siehe `.cds/trial.yaml.example`) ermöglichen schnellen Wechsel zwischen lokal, Dev und Prod; SSH-Tunnel für Plugin-Zugriff lassen sich pro App steuern – Security-Hinweise beachten.
-- **Limitierungen:** Aktuell kein Support für µ-Services, MTX oder Kyma; fokus auf CAP auf BTP Cloud Foundry.
+- **Installation:** Download the native desktop app (Windows/macOS) from [SAP Tools](https://tools.hana.ondemand.com/#cloud-capconsole).
+- **Project Detection:** The console scans running CAP projects (JavaScript & Java) and lists them automatically; projects can be "remembered" or manually added via "Add Project".
+- **Monitoring & Insights:** Visualizes modules from the `mta.yaml`, shows status/CPU/RAM, live logs and offers log level switching, provided the project contains the CAP Console plugin (`@cap-js/console`) – already installed in our case.
+- **Deployments:** Guided dialog for SAP BTP Cloud Foundry (check entitlements, create services, in-app or CLI deploy). Standard connections can be stored.
+- **Environments & Security:** Environment profiles (.cds/*.yaml, see `.cds/trial.yaml.example`) enable quick switching between local, dev, and prod; SSH tunnels for plugin access can be controlled per app – note security hints.
+- **Limitations:** Currently no support for µ-services, MTX, or Kyma; focus on CAP on BTP Cloud Foundry.
 
-Die Konsole ergänzt unsere lokalen Tools (REST Client, Swagger UI) und wird in Onboarding-Sessions für Troubleshooting und First Deployments empfohlen.
+The console complements our local tools (REST Client, Swagger UI) and is recommended for onboarding sessions for troubleshooting and first deployments.
 
 ---
 
 ## 🔁 Inner Loop Development
 
 1. **Watch & Hot Reload**
-   `npm run watch` setzt auf `cds watch`/`cds-tsx` und nutzt CAPs Entwicklungsprofil mit lokalen Mock-Services (SQLite, Mock Auth). Damit bleibt die Schleife auch offline („airplane mode“) schnell.
+   `npm run watch` is based on `cds watch`/`cds-tsx` and uses CAP's development profile with local mock services (SQLite, Mock Auth). This keeps the loop fast even offline ("airplane mode").
 2. **CAP Console & REST Client**
-   Die CAP Console (s.o.) liefert Monitoring, Deploy-Wizard und Log-Level Switching. REST Client Files in `tests/` und Swagger UI (`/$api-docs/…`) ergänzen manuelle Checks.
-3. **Typsicherheit & Linting**
-   `@cap-js/cds-typer` aktualisiert Typen automatisch bei `.cds`-Änderungen. `npm run build` + ESLint/Prettier (`npx eslint …`, `npx prettier --check …`) sichern Stil & Regeln. `npm run generate-entry-point` liefert bei Bedarf aktualisierte Entry Points für Tooling.
+   The CAP Console (see above) provides monitoring, deploy wizard, and log level switching. REST client files in `tests/` and Swagger UI (`/$api-docs/…`) complement manual checks.
+3. **Type Safety & Linting**
+   `@cap-js/cds-typer` updates types automatically on `.cds` changes. `npm run build` + ESLint/Prettier (`npx eslint …`, `npx prettier --check …`) ensure style & rules. `npm run generate-entry-point` provides updated entry points if needed for tooling.
 4. **Tests & Coverage**
-   `npm test` bzw. `npm run test:watch` decken Jest-Suites ab; Coverage liegt unter `coverage/`. Neue Businesslogik → neue Tests in `tests/`.
+   `npm test` or `npm run test:watch` covers Jest suites; coverage is under `coverage/`. New business logic → new tests in `tests/`.
 5. **Optional Rapid UI Feedback**
-   UI5 Tooling (`npm run watch -- --open`) oder Live-Logs in der CAP Console unterstützen schnelles UI-Tuning, bevor es in den äußeren Loop (PR/CI) geht.
+   UI5 tooling (`npm run watch -- --open`) or live logs in the CAP Console support quick UI tuning before going into the outer loop (PR/CI).
 
-> Ziel: Schleife „Ändern → Beobachten → Validieren“ in wenigen Minuten halten, bevor Features in den äußeren Loop (PR, CI, Deployment) gehen.
+> Goal: Keep the loop "Change → Observe → Validate" in a few minutes before features go into the outer loop (PR, CI, deployment).
 
 ---
 
-## ⚙️ Automatisierung & DevOps
+## ⚙️ Automation & DevOps
 
-- **CI/CD Tests & Build** (`.github/workflows/test.yaml`): Läuft auf Push/PR für `develop`, `main` und `feature/**`; Lint & Unit Tests werden getrennt (fail-fast) ausgeführt. Erst wenn beide Jobs erfolgreich sind, erstellt der Build-Job (`cds-typer`, `npm run build`) Artefakte (`gen/`, `@cds-models/`) und Coverage/JUnit-Reports.
-- **Release Automation** (`.github/workflows/release-please.yaml`): Reagiert über `workflow_run` auf erfolgreiche `main`-Builds. Sie aktualisiert/erstellt den Release-PR, aber setzt Tags und GitHub Releases erst nach dem Merge dieses PRs (vgl. [ADR-0017](docs/ADR/0017-release-automation-mit-release-please.md)).
-- **Cloud Foundry Deploy** (`.github/workflows/cf.yaml` + Composite Action `cf-setup`): Automatischer Staging-Rollout nach erfolgreichem `develop`-Build, Production-Deployment nach erfolgreicher Release-Automation (oder via Dispatch). Beide Jobs hängen an GitHub-Environments (`Staging`, `Production`) – Production wartet auf die manuelle Freigabe der Reviewer und nutzt dieselben cf/mbt-Toolchains wie lokal.
+- **CI/CD Tests & Build** (`.github/workflows/test.yaml`): Runs on push/PR for `develop`, `main`, and `feature/**`; lint & unit tests are run separately (fail-fast). Only when both jobs succeed does the build job (`cds-typer`, `npm run build`) create artifacts (`gen/`, `@cds-models/`) and coverage/JUnit reports.
+- **Release Automation** (`.github/workflows/release-please.yaml`): Reacts via `workflow_run` to successful `main` builds. It updates/creates the release PR, but only sets tags and GitHub releases after merging this PR (see [ADR-0017](docs/ADR/0017-release-automation-with-release-please.md)).
+- **Cloud Foundry Deploy** (`.github/workflows/cf.yaml` + Composite Action `cf-setup`): Automatic staging rollout after successful `develop` build, production deployment after successful release automation (or via dispatch). Both jobs depend on GitHub environments (`Staging`, `Production`) – production waits for manual approval from reviewers and uses the same cf/mbt toolchains as local.
 
 ```mermaid
 flowchart LR
@@ -361,35 +361,35 @@ flowchart LR
     A -->|test.yaml| C["Tests"]
     B --> D{Lint & Tests ok?}
     C --> D
-    D --> E["Build & Artefakte"]
+    D --> E["Build & Artifacts"]
     E --> F["cf.yaml → Deploy Staging"]
     F --> G["Staging Environment"]
     H["Merge → main"] -->|test.yaml| I["Lint & Tests (main)"]
     I --> J{ok?}
-    J --> K["Build & Artefakte (main)"]
+    J --> K["Build & Artifacts (main)"]
     K --> L["release-please.yaml"]
-    L --> M["Release PR (manuell mergen)"]
+    L --> M["Release PR (manual merge)"]
     M --> N["cf.yaml → Deploy Production"]
     N --> O["Production Environment (Approval)"]
 ```
 
-> Lokale Voraussetzung für Deployments: `cf` CLI ≥8 mit MultiApps-Plugin (`cf install-plugin multiapps`) und `mbt` CLI (`npm install -g mbt`). Die GitHub-Action installiert diese Tools automatisch, lokal müssen sie manuell eingerichtet werden.
+> Local prerequisite for deployments: `cf` CLI ≥8 with MultiApps plugin (`cf install-plugin multiapps`) and `mbt` CLI (`npm install -g mbt`). The GitHub action installs these tools automatically, locally they must be set up manually.
 
 ---
 
 ## 🌐 CAP Plugins & Calesi Pattern
 
-- **Calesi („CAP-level Service Integrations“)** steht für das stetig wachsende CAP-Plugin-Ökosystem (GraphQL, OData V2, WebSockets, OpenTelemetry, Attachments, Messaging, Notifications, Audit Logging, …).
-- Durch CAPs offene Architektur nutzen wir Plugins wie `@cap-js/attachments` oder `@cap-js/console` ohne Vendor-Lock-in und erweitern das System modular.
-- Eigene Erweiterungen folgen dem gleichen Muster (`cds add …`, registrieren im ServiceContainer) und können bei Bedarf als Reuse-Pakete geteilt werden.
-- Siehe [CAP Plugins](https://cap.cloud.sap/docs/plugins/) und [ADR-0018](docs/ADR/0018-mta-deployment-cloud-foundry.md) für den Umgang mit Infrastruktur-Add-ons.
+- **Calesi ("CAP-level Service Integrations")** stands for the steadily growing CAP plugin ecosystem (GraphQL, OData V2, WebSockets, OpenTelemetry, Attachments, Messaging, Notifications, Audit Logging, …).
+- Through CAP's open architecture, we use plugins like `@cap-js/attachments` or `@cap-js/console` without vendor lock-in and extend the system modularly.
+- Own extensions follow the same pattern (`cds add …`, register in ServiceContainer) and can be shared as reuse packages if needed.
+- See [CAP Plugins](https://cap.cloud.sap/docs/plugins/) and [ADR-0018](docs/ADR/0018-mta-deployment-cloud-foundry.md) for dealing with infrastructure add-ons.
 
 ---
 
 ## ☁️ Cloud Deployment (SAP BTP)
 
-- `mta.yaml` bündelt CAP Service (`gen/srv`), HANA-DB-Deployer (`gen/db`), das UI Content Module (`cap-fiori-timetracking-app-deployer`), den AMS Policy Deployer (`cap-fiori-timetracking-ams-policies-deployer`) und bindet Attachments-, Malware-Scanning-, Connectivity-, Destination-, Application-Logging-, Identity- sowie den Application-Frontend-Service für das Hosting der Fiori Apps.
-- Vor dem Deploy die benötigten Instanzen anlegen (einmalig pro Subaccount):
+- `mta.yaml` bundles CAP service (`gen/srv`), HANA DB deployer (`gen/db`), the UI content module (`cap-fiori-timetracking-app-deployer`), the AMS policy deployer (`cap-fiori-timetracking-ams-policies-deployer`), and binds attachments, malware scanning, connectivity, destination, application logging, identity, and the application frontend service for hosting the Fiori apps.
+- Before deploying, create the required instances (once per subaccount):
 
   ```bash
   cf create-service hana hdi-shared cap-fiori-timetracking-db
@@ -403,58 +403,58 @@ flowchart LR
   cf create-service identity-authorization application cap-fiori-timetracking-ams
   ```
 
-- Der Application Frontend Service liefert einen Managed App Router inklusive statischem Hosting für die Fiori Apps; die Destinations aus `cap-fiori-timetracking-app-deployer` werden dort automatisch hinterlegt.
-- IAS (Identity Authentication Service) stellt die produktive Authentifizierung bereit; AMS (Authorization Management Service) hostet die Policies aus `ams/dcl`. Der Deployer lädt die DCL-Dateien per Task in das AMS.
-- Build & Deploy via Cloud MTA Build Tool (benötigt `cf` CLI + MultiApps Plugin, `mbt` CLI sowie ein JDK ≥17 für das `@sap/ams-dev` Build-Plugin – lokal z. B. Temurin 17):
+- The Application Frontend Service provides a managed app router including static hosting for the Fiori apps; the destinations from `cap-fiori-timetracking-app-deployer` are automatically stored there.
+- IAS (Identity Authentication Service) provides productive authentication; AMS (Authorization Management Service) hosts the policies from `ams/dcl`. The deployer uploads the DCL files per task to the AMS.
+- Build & Deploy via Cloud MTA Build Tool (requires `cf` CLI + MultiApps plugin, `mbt` CLI, and JDK ≥17 for the `@sap/ams-dev` build plugin – locally e.g. Temurin 17):
 
   ```bash
   npm ci
-  npm run clean        # optional, entfernt alte Artefakte
+  npm run clean        # optional, removes old artifacts
   npm run build:mta
   npm run deploy:cf
   ```
 
-- Das Build erzeugt deterministisch `gen/mta.mtar`. Dieses Artefakt nutzt sowohl die CF-Deployment-Pipeline als auch das Release-Asset.
-- Das CAP Runtime Binding auf `application-logging`, `malware-scanner`, `connectivity` und `destination` ist in `package.json → cds.requires` hinterlegt; lokale Entwicklung nutzt Mock-Auth, in BTP greifen die Service-Bindings automatisch. `connectivity` + `destination` stellen die 3rd-Party Holiday API via Destination zur Verfügung. Der Build-/Run-Split erfüllt zentrale 12-Factor-Prinzipien und qualifiziert die Lösung als cloud-native Application.
+- The build generates deterministic `gen/mta.mtar`. This artifact is used by both the CF deployment pipeline and the release asset.
+- The CAP runtime binding to `application-logging`, `malware-scanner`, `connectivity`, and `destination` is stored in `package.json → cds.requires`; local development uses mock auth, in BTP the service bindings apply automatically. `connectivity` + `destination` provide the 3rd-party holiday API via destination. The build/run split fulfills central 12-factor principles and qualifies the solution as a cloud-native application.
 
 ---
 
 ## 🤝 Contributing
 
-Willst du zum Projekt beitragen? **Awesome!** 🎉
+Want to contribute to the project? **Awesome!** 🎉
 
-### Schnell-Guide
+### Quick Guide
 
-1. **Fork & Clone** das Repository
-2. **Branch erstellen**: `git checkout develop && git checkout -b feature/my-feature`
-3. **Code schreiben** (siehe [CONTRIBUTING.md](CONTRIBUTING.md) für Style Guidelines)
+1. **Fork & Clone** the repository
+2. **Create branch**: `git checkout develop && git checkout -b feature/my-feature`
+3. **Write code** (see [CONTRIBUTING.md](CONTRIBUTING.md) for style guidelines)
 4. **Tests + Format**: `npm test && npm run format`
 5. **Commit**: `git commit -m "feat: add awesome feature"` ([Conventional Commits](https://www.conventionalcommits.org/))
-6. **Push & PR**: `git push origin feature/my-feature` → Pull Request gegen `develop`
+6. **Push & PR**: `git push origin feature/my-feature` → Pull Request against `develop`
 
-### Wichtige Regeln
+### Important Rules
 
-- ✅ TypeScript ohne `any`-Types
-- ✅ Design Patterns befolgen (Command, Repository, Factory, ...)
-- ✅ JSDoc für alle public APIs
-- ✅ Prettier vor Commit (`npm run format`)
+- ✅ TypeScript without `any` types
+- ✅ Follow design patterns (Command, Repository, Factory, ...)
+- ✅ JSDoc for all public APIs
+- ✅ Prettier before commit (`npm run format`)
 - ✅ Conventional Commits (`feat:`, `fix:`, `docs:`, ...)
 
-📖 **Vollständige Guidelines:** Siehe [CONTRIBUTING.md](CONTRIBUTING.md)
+📖 **Complete Guidelines:** See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ---
 
-## 📦 Release-Prozess
+## 📦 Release Process
 
-- Automatisierte Release-PRs entstehen über [release-please](https://github.com/googleapis/release-please-action) auf Basis unserer Conventional Commits.
-- Die Konfiguration (`release-please-config.json`, `.release-please-manifest.json`) hält Root- und UI5-App-Versionen (`app/timetable`, `app/timetracking`, `app/manage-activity-types`) sowie `mta.yaml` über `extra-files` synchron.
-- Solange der Release-PR offen ist, bleibt das Release unveröffentlicht. Erst der Merge nach `main` erzeugt Tag & Changelog; eine npm-Publikation ist nicht vorgesehen.
-- Sobald release-please ein neues Release erstellt, hängt der Workflow das im CI erzeugte `gen/mta.mtar` als `cap-fiori-timetracking_<version>.mtar` an die GitHub-Release-Assets an.
-- Vor der ersten Ausführung im CI empfiehlt sich ein lokaler Dry-Run:
+- Automated release PRs are created via [release-please](https://github.com/googleapis/release-please-action) based on our conventional commits.
+- The configuration (`release-please-config.json`, `.release-please-manifest.json`) keeps root and UI5 app versions (`app/timetable`, `app/timetracking`, `app/manage-activity-types`) as well as `mta.yaml` synchronized via `extra-files`.
+- As long as the release PR is open, the release remains unpublished. Only the merge to `main` creates tag & changelog; npm publication is not planned.
+- As soon as release-please creates a new release, the workflow attaches the CI-generated `gen/mta.mtar` as `cap-fiori-timetracking_<version>.mtar` to the GitHub release assets.
+- Before the first run in CI, a local dry-run is recommended:
   ```bash
   npx release-please release-pr --config-file release-please-config.json --manifest-file .release-please-manifest.json --dry-run
   ```
-- Visualer Ablauf (vereinfacht):
+- Visual flow (simplified):
   ```mermaid
   gitGraph
     commit id: "main"
@@ -480,42 +480,42 @@ Willst du zum Projekt beitragen? **Awesome!** 🎉
 
 ---
 
-## 📊 Projekt-Stats
+## 📊 Project Stats
 
-**45 Pattern-Klassen + 14 Barrel Exports:**
+**45 Pattern Classes + 14 Barrel Exports:**
 
 - 11 Commands (CRUD, Generation, Balance)
-- 7 Validators (Domain-spezifisch)
+- 7 Validators (Domain-specific)
 - 7 Repositories (Data Access)
 - 7 Services (Domain Logic + Customizing)
 - 2 Strategies (Algorithms)
 - 2 Factories (TimeEntry + Handler)
-- 1 ServiceContainer (DI mit 6 Kategorien)
+- 1 ServiceContainer (DI with 6 categories)
 - 1 HandlerRegistry (Event-Driven)
 - 1 HandlerRegistrar
-- 1 HandlerSetup (Builder mit Fluent API)
-- 3 Handler-Klassen
+- 1 HandlerSetup (Builder with Fluent API)
+- 3 Handler Classes
 - 1 Logger
 - 1 DateUtils
 
 ---
 
-## 🌐 Links & Ressourcen
+## 🌐 Links & Resources
 
-### Interne Dokumentation
+### Internal Documentation
 
-- 📖 [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Vollständige arc42-Dokumentation
+- 📖 [ARCHITECTURE.md](docs/ARCHITECTURE.md) - Complete arc42 documentation
 - 🚀 [GETTING_STARTED.md](GETTING_STARTED.md) - Installation & Quick Start
 - 🤝 [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution Guidelines
-- 📋 [ADR-Verzeichnis](docs/ADR/) - Architecture Decision Records
+- 📋 [ADR Directory](docs/ADR/) - Architecture Decision Records
 
-### Externe Ressourcen
+### External Resources
 
 - **SAP CAP**: [cap.cloud.sap](https://cap.cloud.sap) - Official CAP Documentation
 - **SAPUI5**: [ui5.sap.com](https://ui5.sap.com) - UI5 SDK & Samples
 - **TypeScript**: [typescriptlang.org](https://www.typescriptlang.org) - TypeScript Handbook
 - **Fiori Guidelines**: [experience.sap.com/fiori-design](https://experience.sap.com/fiori-design) - Design Principles
-- **Feiertage-API**: [feiertage-api.de](https://feiertage-api.de) - German Public Holidays
+- **Holiday API**: [feiertage-api.de](https://feiertage-api.de) - German Public Holidays
 
 ---
 
@@ -527,10 +527,10 @@ Willst du zum Projekt beitragen? **Awesome!** 🎉
 
 ## 🙏 Acknowledgments
 
-- **SAP CAP Team** - Für das großartige Framework
-- **UI5 Team** - Für Fiori Elements & UI5
-- **TypeScript Team** - Für typsichere Entwicklung
-- **Open Source Community** - Für Inspiration & Best Practices
+- **SAP CAP Team** - For the great framework
+- **UI5 Team** - For Fiori Elements & UI5
+- **TypeScript Team** - For type-safe development
+- **Open Source Community** - For inspiration & best practices
 
 ---
 
