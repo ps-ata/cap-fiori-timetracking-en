@@ -1,74 +1,74 @@
-# ADR 0012: Customizing-Singleton für globale Defaults
+# ADR 0012: Customizing Singleton for Global Defaults
 
 ## Status
 
-Akzeptiert – Iteration 6 (Global Defaults Refactoring)
+Accepted – Iteration 6 (Global Defaults Refactoring)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Bislang waren zahlreiche globale Standardwerte direkt im Code oder als CDS-`default` hinterlegt. Dazu zählen u. a. Arbeitsbeginn (08:00), Pausenlänge, EntryType-Codes (`W`, `O`, `H`), Source-Codes (`UI`, `GENERATED`), Fallback-Werte für Wochenstunden/Arbeitstage sowie Schwellenwerte für Salden-, Urlaubs- und Krankenstandsberechnungen. Diese harte Kodierung führte zu folgenden Schwierigkeiten:
+So far, many global default values were hard-coded in the code or stored as CDS `default` values. This includes, among others, work start time (08:00), break duration, entry type codes (`W`, `O`, `H`), source codes (`UI`, `GENERATED`), fallback values for weekly hours/workdays, and thresholds for balance, vacation, and sick leave calculations. This hard-coding caused the following issues:
 
-1. **Hoher Änderungsaufwand:** Jede fachliche Anpassung erforderte einen Code-Change samt Deployment.
-2. **Inkonsistenzen:** Verschiedene Komponenten hielten eigene Defaults vor (Factory, Commands, Validatoren, Services, UI).
-3. **Fehlende Transparenz:** Es gab keinen zentralen Ort, an dem Key User Defaults prüfen oder pflegen konnten.
-4. **Testing Pain:** Unit-Tests mussten Werte mocken oder Duplikate pflegen; Integrationstests hatten keine kontrollierte Quelle.
-5. **Internationalisierung & Locale:** `DateUtils` war fest auf `de-DE` eingestellt, obwohl andere Mandanten denkbar sind.
+1. **High change effort:** Every functional adjustment required a code change and deployment.
+2. **Inconsistencies:** Different components maintained their own defaults (factories, commands, validators, services, UI).
+3. **Lack of transparency:** There was no central place where key users could inspect or maintain defaults.
+4. **Testing pain:** Unit tests had to mock values or maintain duplicates; integration tests had no controlled source.
+5. **Internationalization & locale:** `DateUtils` was hard-coded to `de-DE`, even though other tenants are possible.
 
-Wir benötigen eine zentrale, pflegbare Quelle für alle nicht user-spezifischen Defaults mit konsistentem Zugriff.
+We need a central, maintainable source for all non-user-specific defaults with consistent access.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Single Source of Truth:** Alle Komponenten sollen denselben Default-Wert nutzen.
-- **Konfigurierbarkeit zur Laufzeit:** Key User sollen Defaults ohne Deployment ändern können.
-- **Performanter Zugriff:** Werte sollen einmal geladen und mehrfach verwendet werden (Caching).
-- **Testbarkeit:** Unit-Tests müssen Defaults einfach mocken können; Integrationstests brauchen initiale Seed-Daten.
-- **Sicherheit:** Pflege der Defaults soll rollenbasiert eingeschränkt werden.
-- **Übersichtlichkeit:** Lösung soll ohne redundante Tabellen oder komplexe Migrationspfade auskommen.
+- **Single source of truth:** All components should use the same default value.
+- **Runtime configurability:** Key users should be able to change defaults without deployment.
+- **Performant access:** Values should be loaded once and reused multiple times (caching).
+- **Testability:** Unit tests should be able to mock defaults easily; integration tests need initial seed data.
+- **Security:** Default maintenance should be restricted by role.
+- **Clarity:** The solution should avoid redundant tables or complex migration paths.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – Harte Kodierung im Code/Schema (Status quo)
+### Option A – Hard-coding in code/schema (status quo)
 
-- **Vorteile:** Kein zusätzlicher Aufwand, bekannte Implementierung.
-- **Nachteile:** Keine Konfigurierbarkeit, Inkonsistenzen, erhöhter Test- und Pflegeaufwand.
+- **Pros:** No additional effort, known implementation.
+- **Cons:** No configurability, inconsistencies, increased testing and maintenance effort.
 
-### Option B – Mehrere Konfigurationstabellen pro Bereich
+### Option B – Multiple configuration tables per area
 
-- z. B. separate Entities für Zeit-Defaults, Balances, UI usw.
-- **Vorteile:** Hohe Granularität, theoretisch explizite Ownership je Bereich.
-- **Nachteile:** Fragmentierte Pflege, hoher Overhead (mehrere Tabellen, Services, Authorization-Regeln).
+- For example, separate entities for time defaults, balances, UI, etc.
+- **Pros:** High granularity, theoretically explicit ownership per area.
+- **Cons:** Fragmented maintenance, high overhead (multiple tables, services, authorization rules).
 
-### Option C – Singleton-Entität `Customizing` mit Service-Layer (gewählt)
+### Option C – Singleton entity `Customizing` with service layer (chosen)
 
-- Eine Entity hält alle globalen Default-Werte; `CustomizingService` cached die Daten und stellt Typsicherheit bereit.
-- **Vorteile:** Single Source of Truth, einfacher Zugriff via Service, klare Berechtigung, geringer Codelärm.
-- **Nachteile:** Größere Entity mit vielen Feldern, Validierung der Inhalte muss im Service erfolgen.
+- A single entity holds all global default values; `CustomizingService` caches the data and provides type-safe access.
+- **Pros:** Single source of truth, easy service-based access, clear authorization, low code noise.
+- **Cons:** Larger entity with many fields; content validation must occur in the service.
 
-## Entscheidung
+## Decision
 
-Wir implementieren **Option C**. Die Entity `Customizing` wird als Singleton im Datenmodell (`db/data-model.cds`) definiert und initial per CSV (`db/data/io.nimble-Customizing.csv`) geladen. Ein neuer `CustomizingService` liest den Datensatz beim Service-Start, cached ihn und stellt Typsichere Getter (TimeEntry-, User-, Balance-, Vacation-/Sick-Leave-, Holiday-API-Defaults). `TrackService.init()` ruft `customizingService.initialize()` auf und konfiguriert anschließend `DateUtils`. Business-Komponenten (Factories, Commands, Validators, Services) beziehen ihre Defaults ausschließlich über `CustomizingService`.
+We implement **Option C**. The `Customizing` entity is defined as a singleton in the data model (`db/data-model.cds`) and initially loaded via CSV (`db/data/io.nimble-Customizing.csv`). A new `CustomizingService` reads the record on service startup, caches it, and provides type-safe getters for time entry, user, balance, vacation/sick leave, and holiday API defaults. `TrackService.init()` calls `customizingService.initialize()` and then configures `DateUtils`. Business components (factories, commands, validators, services) obtain their defaults exclusively through `CustomizingService`.
 
-## Konsequenzen
+## Consequences
 
-**Positiv**
+**Positive**
 
-- Single Source of Truth für alle globalen Defaults.
-- Änderungen können ohne Deployment vorgenommen werden (Fiori Elements Object Page für Key User).
-- Tests können Defaults zentral mocken; Integrationstests erhalten deterministische Seed-Daten.
-- `DateUtils` und HolidayService verwenden konfigurierbare Locale und API-Parameter.
-- Autorisierung differenziert zwischen Lesezugriff (alle) und Pflege (Admin).
+- Single source of truth for all global defaults.
+- Changes can be made without deployment (Fiori Elements object page for key users).
+- Tests can mock defaults centrally; integration tests get deterministic seed data.
+- `DateUtils` and `HolidayService` use configurable locale and API parameters.
+- Authorization distinguishes between read access (all users) and maintenance (admins).
 
-**Negativ**
+**Negative**
 
-- Zusätzliche Entity/Felder erhöhen den Pflegeaufwand (Validierung, Dokumentation).
-- Falsche Werte im Customizing können Systemverhalten brechen; daher Monitoring/Validierung erforderlich.
-- Migration bestehender Hardcodings auf den Service verursachte initialen Refactorings-Aufwand.
+- Additional entity/fields increase maintenance effort (validation, documentation).
+- Incorrect values in customizing can break system behavior; monitoring/validation are required.
+- Migrating existing hard-coded defaults to the service required initial refactoring effort.
 
-## Verweise
+## References
 
-- `db/data-model.cds` – Definition der `Customizing`-Entity
-- `db/data/io.nimble-Customizing.csv` – Initiale Seed-Daten
-- `srv/track-service/handler/services/CustomizingService.ts` – Zugriff & Caching
-- `srv/track-service/handler/container/ServiceContainer.ts` – Wiring & Berechtigungen
-- `srv/track-service/track-service.ts` – Initialisierung & DateUtils-Konfiguration
-- `srv/track-service/annotations/ui/customizing-ui.cds` – Fiori Elements Object Page
+- `db/data-model.cds` – definition of the `Customizing` entity
+- `db/data/io.nimble-Customizing.csv` – initial seed data
+- `srv/track-service/handler/services/CustomizingService.ts` – access & caching
+- `srv/track-service/handler/container/ServiceContainer.ts` – wiring & authorization
+- `srv/track-service/track-service.ts` – initialization & DateUtils configuration
+- `srv/track-service/annotations/ui/customizing-ui.cds` – Fiori Elements object page
