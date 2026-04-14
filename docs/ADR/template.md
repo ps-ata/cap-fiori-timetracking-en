@@ -1,41 +1,41 @@
-# ADR XXXX: Kurzer Titel in Satzform
+# ADR XXXX: short title in sentence form
 
 ## Status
 
-{Entwurf/Akzeptiert/Verworfen} – kurzer Statuskommentar
+{draft/accepted/rejected} – brief status comment
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-- Beschreibe die Ausgangslage. Welche Herausforderung oder Chance adressieren wir?
-- Welche Stakeholder sind betroffen? Welche Randbedingungen gibt es?
+- Describe the initial situation. What challenge or opportunity are we addressing?
+- Which stakeholders are affected? What constraints are there?
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Liste die Kriterien, die die Entscheidung beeinflussen (z. B. Wartbarkeit, Performance, Sicherheit).
+- List the criteria that influence the decision (e.g., maintainability, performance, security).
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – Titel
+### Option A – title
 
-- Kernelemente / Schritte
-- Vorteile
-- Nachteile
+- core elements / steps
+- pros
+- cons
 
-### Option B – Titel
+### Option B – title
 
 - …
 
-## Entscheidung
+## Decision
 
-- Für welche Option entscheiden wir uns und warum?
-- Verweise auf konkrete Artefakte (Dateien, Skripte, Services).
+- Which option do we choose and why?
+- references to concrete artifacts (files, scripts, services).
 
-## Konsequenzen
+## Consequences
 
-- Positive Effekte
-- Negative Effekte / Risiken
-- Nachgelagerte Aufgaben oder Follow-ups
+- positive effects
+- negative effects / risks
+- downstream tasks or follow-ups
 
-## Verweise
+## References
 
-- Links zu relevanten Dateien, Tickets, PRs oder externer Doku
+- links to relevant files, tickets, PRs, or external documentation
