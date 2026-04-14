@@ -2,92 +2,92 @@
 
 ## Purpose and Scope
 
-- Unterstützt Entwickler:innen bei Aufgaben in einem SAP CAP / Fiori Time-Tracking Projekt.
-- Liefert kontextsensitives Wissen über Architektur, Richtlinien und Workflows aus der bestehenden Dokumentation.
-- Richtet sich an autonome oder halb-autonome Agents, die Code-, Dokumentations- oder Analyseaufgaben übernehmen.
+- Supports developers with tasks in a SAP CAP / Fiori Time-Tracking project.
+- Provides context-sensitive knowledge about architecture, guidelines, and workflows from existing documentation.
+- Targets autonomous or semi-autonomous agents that take on code, documentation, or analysis tasks.
 
-## Projekt-Essentials
+## Project Essentials
 
-- **Domäne**: Zeiterfassung mit Fokus auf Projekterfassung, Saldenberechnung, Feiertagslogik und Bulk-Generierung von Arbeitstagen.
-- **Architektur**: Fünfstufige Clean Architecture (Presentation, Application, Business Logic, Data, Infrastructure) mit Command-, Service-, Repository- und Validator-Pattern; konsequente Dependency Injection via `ServiceContainer`.
-- **Technologie-Stack**: SAP Cloud Application Programming Model (Node.js), 100 % TypeScript, UI5 ≥ 1.120, SQLite (Dev) / SAP HANA (Prod), Jest für Tests, ESLint/Prettier.
-- **Schlüsselartefakte**: `README.md` (Executive Overview), `docs/ARCHITECTURE.md` (arc42-Detail), `GETTING_STARTED.md`, ADRs unter `docs/ADR/`.
+- **Domain**: Time tracking with focus on project recording, balance calculation, holiday logic, and bulk generation of work days.
+- **Architecture**: Five-layer Clean Architecture (Presentation, Application, Business Logic, Data, Infrastructure) with Command, Service, Repository, and Validator patterns; consistent Dependency Injection via `ServiceContainer`.
+- **Technology Stack**: SAP Cloud Application Programming Model (Node.js), 100% TypeScript, UI5 ≥ 1.120, SQLite (Dev) / SAP HANA (Prod), Jest for tests, ESLint/Prettier.
+- **Key Artifacts**: `README.md` (Executive Overview), `docs/ARCHITECTURE.md` (arc42 detail), `GETTING_STARTED.md`, ADRs under `docs/ADR/`.
 
-## Agent-Verantwortlichkeiten
+## Agent Responsibilities
 
-- Geschäfts- und Architekturkontext aus `README.md`, `docs/ARCHITECTURE.md` und ADRs heranziehen, bevor Änderungen vorgeschlagen werden.
-- Änderungen entsprechend der Layer-Trennung platzieren (z. B. Commands im Business-Logic-Layer, Handler im Application-Layer, Repositories im Data-Layer).
-- Typensicherheit aufrechterhalten (keine `any`, Interfaces/DTOs bevorzugen, CAP CDS-Definitionen beachten).
-- Dokumentation synchron halten (Änderungen an APIs, Verhalten oder Architektur auch in relevanten Markdown-Dateien nachführen).
-- Tests berücksichtigen: existierende Jest-Suites respektieren und für neue Businesslogik eigene Tests ergänzen.
+- Consult business and architecture context from `README.md`, `docs/ARCHITECTURE.md`, and ADRs before proposing changes.
+- Place changes according to layer separation (e.g., Commands in Business Logic Layer, Handlers in Application Layer, Repositories in Data Layer).
+- Maintain type safety (no `any`, prefer Interfaces/DTOs, respect CAP CDS definitions).
+- Keep documentation in sync (document changes to APIs, behavior, or architecture in relevant Markdown files).
+- Consider tests: respect existing Jest suites and add new tests for new business logic.
 
-## MCP-Server und Tools
+## MCP Servers and Tools
 
-- **sap-docs**: Aggregierte SAP-Dokumentation über HTTP-Server (ABAP, CAP, UI5, OpenUI5, SAP Community).
-- **cap-js/mcp-server**: Zugriff auf CAP-Dokumentation, API-Referenzen und Best Practices für CAP Node.js/TypeScript.
-- **@sap-ux/fiori-mcp-server**: Informationen zu Fiori Elements, UI5 Templates, Annotationen und SAP Fiori Guidelines.
-- **@ui5/mcp-server**: Tiefere UI5-API-Referenzen (Controls, MVC, i18n, Routing).
+- **sap-docs**: Aggregated SAP documentation via HTTP server (ABAP, CAP, UI5, OpenUI5, SAP Community).
+- **cap-js/mcp-server**: Access to CAP documentation, API references, and best practices for CAP Node.js/TypeScript.
+- **@sap-ux/fiori-mcp-server**: Information on Fiori Elements, UI5 templates, annotations, and SAP Fiori Guidelines.
+- **@ui5/mcp-server**: Deeper UI5 API references (Controls, MVC, i18n, Routing).
 
-Zusätzliche lokale Werkzeuge:
+Additional local tools:
 
-- `rg` für Code- und Textsuchen (schneller als `grep`).
-- `npm run watch` für CAP-Server & UI5 Development Preview.
-- `npm test` für Jest-Suites; `npm run lint` falls verfügbar.
-- REST-Client-Dateien unter `tests` für manuelle OData-Calls.
+- `rg` for code and text search (faster than `grep`).
+- `npm run watch` for CAP server & UI5 Development Preview.
+- `npm test` for Jest suites; `npm run lint` if available.
+- REST client files under `tests` for manual OData calls.
 
-## Relevante Wissensquellen
+## Relevant Knowledge Sources
 
-- **Architektur**: `docs/ARCHITECTURE.md` (Bausteinsichten, Laufzeit-Flows, Qualitätsziele).
-- **Serviceverhalten**: `srv/track-service/` (Handlers, Commands, Services).
-- **Datenmodell**: `db/data-model.cds`, plus CSV-Stammdaten in `db/data/`.
-- **UI-Schichten**: `app/timetable` (Fiori Elements) und `app/timetracking` (Custom UI5 mit TypeScript).
-- **Integrationen**: Feiertags-API, Attachments Plugin (`@cap-js/attachments`), Logging über Infrastruktur-Layer.
+- **Architecture**: `docs/ARCHITECTURE.md` (building block insights, runtime flows, quality goals).
+- **Service Behavior**: `srv/track-service/` (Handlers, Commands, Services).
+- **Data Model**: `db/data-model.cds`, plus CSV master data in `db/data/`.
+- **UI Layers**: `app/timetable` (Fiori Elements) and `app/timetracking` (Custom UI5 with TypeScript).
+- **Integrations**: Holiday API, Attachments Plugin (`@cap-js/attachments`), Logging via Infrastructure Layer.
 
-## Arbeitsabläufe für Agents
+## Workflows for Agents
 
-1. **Anforderung verstehen**: Anforderungen, betroffene Layer und Qualitätsziele identifizieren.
-2. **Kontext recherchieren**: CDS-Modelle, bestehende Commands/Services/Handlers prüfen (z. B. mittels `rg`, Projektstruktur, ADRs).
-3. **Plan erstellen**: Grobplan mit Schritten für Code, Tests, Dokumentation formulieren, bevor Änderungen umgesetzt werden.
-4. **Implementieren**: Layer-Konventionen beachten, DI-Container aktualisieren, Barrel-Exports pflegen, Typsicherheit sicherstellen.
-5. **Validieren**: Relevante Tests (`npm test`) und ggf. `npm run lint` ausführen; bei UI-Anpassungen Auto-Previews anpassen.
-6. **Dokumentieren**: Release-Notes, README, Architekturzusätze oder ADRs aktualisieren, falls Verhalten oder Struktur sich ändert.
-7. **Review vorbereiten**: Zusammenfassung der Änderung, Testergebnisse und offene Punkte bereitstellen.
+1. **Understand Requirements**: Identify requirements, affected layers, and quality goals.
+2. **Research Context**: Check CDS models, existing Commands/Services/Handlers (e.g., using `rg`, project structure, ADRs).
+3. **Create Plan**: Formulate a rough plan with steps for code, tests, and documentation before implementing changes.
+4. **Implement**: Respect layer conventions, update DI container, maintain barrel exports, ensure type safety.
+5. **Validate**: Run relevant tests (`npm test`) and optionally `npm run lint`; adjust auto-previews for UI changes.
+6. **Document**: Update release notes, README, architecture additions, or ADRs if behavior or structure changes.
+7. **Prepare Review**: Provide summary of changes, test results, and open points.
 
-## Coding- & Architektur-Guidelines
+## Coding & Architecture Guidelines
 
-- **TypeScript only**: keine JavaScript-Dateien hinzufügen; CAP-Handler strikt typisieren.
-- **Separation of Concerns**: Businesslogik nicht in Handlern, sondern in Commands/Services kapseln.
-- **Dependency Injection**: neue Komponenten im `ServiceContainer` registrieren, Unit-Tests über Interfaces und Mocks realisieren.
-- **Validation & Error Handling**: bestehende Validator-Pipeline nutzen, Fehler als CAP `ServiceError` mit Codes/Details zurückgeben.
-- **Internationalisierung**: UI-Änderungen in `_i18n` prüfen; neue Texte in `i18n.properties` ablegen.
-- **Logging**: strukturiertes Logging über bereitgestellte Logger-Utilities nutzen, keine `console.log`.
-- **Performance**: Langläufer vermeiden, Caching-Utilities beachten (siehe Abschnitt 8.6 der Architektur-Doku).
+- **TypeScript only**: Do not add JavaScript files; strictly type CAP handlers.
+- **Separation of Concerns**: Encapsulate business logic in Commands/Services, not in Handlers.
+- **Dependency Injection**: Register new components in `ServiceContainer`, realize unit tests via interfaces and mocks.
+- **Validation & Error Handling**: Use existing validator pipeline, return errors as CAP `ServiceError` with codes/details.
+- **Internationalization**: Check UI changes in `_i18n`; place new texts in `i18n.properties`.
+- **Logging**: Use provided Logger utilities for structured logging, no `console.log`.
+- **Performance**: Avoid long-running operations, consider caching utilities (see section 8.6 of architecture docs).
 
-## Umgebung & Einschränkungen
+## Environment & Constraints
 
-- Lokale Laufzeit: Node.js ≥ 18, `npm install` zum Setup; `.env` Dateien niemals einchecken.
-- Datenbank: SQLite lokal (`db.sqlite`), Migrationen via `cds deploy`. In Prod ist SAP HANA vorgesehen – SQL-Statements müssen kompatibel sein.
-- Netzwerkzugriff ist eingeschränkt; externe Abhängigkeiten nur über freigegebene Schnittstellen (z. B. Feiertags-API) nutzen.
+- Local runtime: Node.js ≥ 18, `npm install` for setup; never commit `.env` files.
+- Database: SQLite locally (`db.sqlite`), migrations via `cds deploy`. In Prod, SAP HANA is planned – SQL statements must be compatible.
+- Network access is restricted; use external dependencies only via permitted interfaces (e.g., holiday API).
 
-## Domänenspezifische Hinweise
+## Domain-Specific Hints
 
-- **Kern-Entities**: `TimeEntries`, `Projects`, `Users`, `ActivityTypes`, `EntryTypes`, `Customizing`.
-- **Bulk-Generierung**: Strategien (`Monthly`, `Yearly`) kombinieren API-Abfragen für Feiertage mit Entry-Erzeugung.
-- **Saldo-Logik**: Commands transformieren Daten in Monats- und Gesamtsalden; UI zeigt Criticality via Annotations.
-- **Attachments**: `@cap-js/attachments` sorgt für Upload/Download; bei Änderungen Konsistenz zwischen Backend und UI prüfen.
+- **Core Entities**: `TimeEntries`, `Projects`, `Users`, `ActivityTypes`, `EntryTypes`, `Customizing`.
+- **Bulk Generation**: Strategies (`Monthly`, `Yearly`) combine API queries for holidays with entry generation.
+- **Balance Logic**: Commands transform data into monthly and total balances; UI shows criticality via annotations.
+- **Attachments**: `@cap-js/attachments` handles upload/download; verify consistency between backend and UI on changes.
 
-## Qualitäts-Checkliste vor Abschluss
+## Quality Checklist Before Completion
 
-- Relevante Tests laufen grün (oder es gibt eine Begründung plus offenen Task).
-- Code entspricht Layering-, Typisierung- und Style-Vorgaben.
-- Dokumentation/ADR aktualisiert, falls Architektur- oder Prozessentscheidungen betroffen sind.
-- Reviewer erhalten klare Beschreibung von Änderung, Tests und offenen Fragen.
+- Relevant tests pass (or there is justification plus an open task).
+- Code complies with layering, typing, and style guidelines.
+- Documentation/ADR updated if architecture or process decisions are affected.
+- Reviewers receive clear description of changes, tests, and open questions.
 
-## Eskalation & Zusammenarbeit
+## Escalation & Collaboration
 
-- Unklare Anforderungen oder Architekturfragen im Zweifel mit Maintainer-Team (Development Team) abstimmen.
-- Bei größeren Entscheidungen (z. B. neue Integration, Pattern-Wechsel) einen neuen ADR-Eintrag vorbereiten.
-- Offene Risiken oder technische Schulden in `docs/ARCHITECTURE.md` Abschnitt 11 ergänzen.
+- Clarify unclear requirements or architecture questions with the Maintainer Team (Development Team) when in doubt.
+- For larger decisions (e.g., new integration, pattern change), prepare a new ADR entry.
+- Add open risks or technical debt to section 11 of `docs/ARCHITECTURE.md`.
 
 ## Rules for creation or modification of SAP Fiori elements apps
 
