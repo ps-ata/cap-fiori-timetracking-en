@@ -1,61 +1,61 @@
-# ADR 0018: MTA-Deployment für SAP BTP Cloud Foundry
+# ADR 0018: MTA Deployment for SAP BTP Cloud Foundry
 
 ## Status
 
-Akzeptiert – mta.yaml liegt vor, Deployment-Pipeline folgt
+Accepted – `mta.yaml` is available, deployment pipeline pending
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-- Die Anwendung soll produktiv auf der SAP Business Technology Platform (BTP) im Cloud-Foundry-Umfeld betrieben werden.
-- Neben dem CAP-Service müssen weitere Service-Instanzen (HANA HDI, Object Store, Malware Scanning, Application Logging) konsistent gebunden werden.
-- Die Fiori Frontends sollen ohne eigenes App-Router-Modul über den SAP Application Frontend Service (Managed App Router + Static Hosting) bereitgestellt werden.
-- Ein einfaches `cf push` mit Manifest stößt an Grenzen (kein DB-Deployer-Build, keine geordneten Service-Abhängigkeiten, kein Mehrmodul-Support).
-- Für CI/CD ist ein reproduzierbares Packaging notwendig, das Build- und Deploy-Schritte klar trennt.
+- The application should be operated in production on SAP Business Technology Platform (BTP) in the Cloud Foundry environment.
+- In addition to the CAP service, other service instances (HANA HDI, Object Store, Malware Scanning, Application Logging) must be bound consistently.
+- The Fiori frontends should be delivered via the SAP Application Frontend Service (Managed App Router + Static Hosting) without a dedicated app router module.
+- A simple `cf push` with a manifest reaches its limits (no DB deployer build, no ordered service dependencies, no multi-module support).
+- For CI/CD, reproducible packaging is needed that clearly separates build and deploy steps.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Cloud-native Principles** – Infrastrukturabhängigkeiten sollen deklarativ beschrieben werden (Infrastructure-as-Code).
-- **Mehrmodul-Support** – CAP-Service (`gen/srv`) und HDI-Deployer (`gen/db`) müssen in richtiger Reihenfolge gebaut und gebunden werden.
-- **Service-Bindings** – Attachments, Malware-Scanner, Logging und HANA benötigen identische Namen zwischen Build und Deploy.
-- **CI/CD-Fähigkeit** – Artefakt (`.mtar`) soll sich in Pipelines einfach transportieren lassen (Promotion zu Test/Prod).
-- **Standardkonformität** – Orientierung an SAP-Best-Practices für BTP Deployments (Multi-Target Applications).
+- **Cloud-native principles** – infrastructure dependencies should be described declaratively (Infrastructure-as-Code).
+- **Multi-module support** – the CAP service (`gen/srv`) and HDI deployer (`gen/db`) must be built and bound in the correct order.
+- **Service bindings** – attachments, malware scanner, logging, and HANA require identical names between build and deploy.
+- **CI/CD capability** – the artifact (`.mtar`) should be easy to transport in pipelines (promotion to test/prod).
+- **Standards compliance** – alignment with SAP best practices for BTP deployments (Multi-Target Applications).
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – `cf push` mit `manifest.yaml`
+### Option A – `cf push` with `manifest.yaml`
 
-- **Vorteile**: Einfaches Setup, schnelle Iteration lokal.
-- **Nachteile**: Keine Build Hooks, keine Mehrmodul-Pakete, Services müssen manuell vorab erstellt werden, Risiken bei Reihenfolge (HDI Deployment).
+- **Pros**: simple setup, fast local iteration.
+- **Cons**: no build hooks, no multi-module packages, services must be created manually in advance, order risks for HDI deployment.
 
-### Option B – `cf deploy` mit `mta.yaml`
+### Option B – `cf deploy` with `mta.yaml`
 
-- **Vorteile**: Deklarativer Build/Deploy-Flow, Module + Ressourcen klar getrennt, Service-Bindings inklusive, unterstützt by default CI/CD (MTAR-Artifact).
-- **Nachteile**: Benötigt zusätzlichen Build-Schritt (`mbt build`), initial höhere Komplexität.
+- **Pros**: declarative build/deploy flow, clear separation of modules and resources, service bindings included, supports CI/CD by default (MTAR artifact).
+- **Cons**: requires an additional build step (`mbt build`), initially higher complexity.
 
-### Option C – Kyma / Helm Charts
+### Option C – Kyma / Helm charts
 
-- **Vorteile**: Kubernetes-native, erweitert Skalierungsoptionen.
-- **Nachteile**: Hoher Umstellungsaufwand, keine unmittelbare Notwendigkeit, zusätzliche Betriebs-Komplexität.
+- **Pros**: Kubernetes-native, expands scaling options.
+- **Cons**: high migration effort, no immediate need, additional operational complexity.
 
-## Entscheidung
+## Decision
 
-- Wir übernehmen **Option B – Multi-Target Application (MTA)** als Standard-Deployment-Strategie.
-- `mta.yaml` beschreibt drei Module (`cap-fiori-timetracking-srv`, `cap-fiori-timetracking-db-deployer`, `cap-fiori-timetracking-app-deployer`) sowie Ressourcen (HANA HDI, Object Store, Malware Scanning, Application Logging, Application Frontend Service).
-- Build Hook `before-all` führt `npm ci` und `cds build --production` aus; `mbt build` erzeugt ein transportierbares `.mtar`.
-- Deployments erfolgen via `cf deploy gen/mta.mtar`, womit Build und Deploy klar getrennt bleiben.
+- We adopt **Option B – Multi-Target Application (MTA)** as the standard deployment strategy.
+- `mta.yaml` describes three modules (`cap-fiori-timetracking-srv`, `cap-fiori-timetracking-db-deployer`, `cap-fiori-timetracking-app-deployer`) and resources (HANA HDI, Object Store, Malware Scanning, Application Logging, Application Frontend Service).
+- Build hook `before-all` runs `npm ci` and `cds build --production`; `mbt build` generates a transportable `.mtar`.
+- Deployments are performed via `cf deploy gen/mta.mtar`, keeping build and deploy clearly separated.
 
-## Konsequenzen
+## Consequences
 
-- **Positiv**: Cloud-native, reproduzierbare Deployments; Service-Abhängigkeiten deklarativ; HDI-Deployment automatisiert; UI-Auslieferung über Managed App Router ohne Eigenbetrieb.
-- **Negativ/Risiken**: `mbt`-Tooling als zusätzliche Voraussetzung in CI/CD; Versionierung des MTAR muss zur App-Version passen.
+- **Positive**: cloud-native, reproducible deployments; service dependencies declared declaratively; HDI deployment automated; UI delivery through Managed App Router without self-hosting.
+- **Negative/risks**: `mbt` tooling is an additional requirement in CI/CD; MTAR versioning must match the app version.
 - **Follow-ups**:
-  - Integration des MTA-Builds in die Release-Pipeline (Anschluss an ADR-0017).
-  - Pflege der Service-Namen in `mta.yaml` und `package.json → cds.requires` synchron halten.
-  - Bewertung eines optionalen Kyma-Deployments, sobald Anforderungen es erfordern.
+  - integrate the MTA build into the release pipeline (link to ADR-0017).
+  - keep service names in `mta.yaml` and `package.json → cds.requires` synchronized.
+  - evaluate an optional Kyma deployment once requirements make it necessary.
 
-## Verweise
+## References
 
 - `mta.yaml`
-- `README.md` Abschnitt „☁️ Cloud Deployment (SAP BTP)“
-- `GETTING_STARTED.md` Abschnitt „☁️ Deploy auf SAP BTP (Cloud Foundry)“
-- `docs/ARCHITECTURE.md` Kapitel 7.3 (Deployment-Szenarien) und 9 (ADR)
+- `README.md` section “☁️ Cloud Deployment (SAP BTP)”
+- `GETTING_STARTED.md` section “☁️ Deploy on SAP BTP (Cloud Foundry)”
+- `docs/ARCHITECTURE.md` chapters 7.3 (deployment scenarios) and 9 (ADR)
