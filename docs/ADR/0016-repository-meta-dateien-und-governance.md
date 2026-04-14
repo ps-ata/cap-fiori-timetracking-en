@@ -1,52 +1,52 @@
-# ADR 0016: Repository-Meta-Dateien und Governance-Struktur
+# ADR 0016: Repository Meta Files and Governance Structure
 
 ## Status
 
-Akzeptiert – Grundlegende Meta-Dateien eingeführt
+Accepted – Introduced foundational meta files
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Das Projekt wuchs von einer Prototyp-Implementierung zu einer umfassend dokumentierten Referenzanwendung. Bisher fehlten jedoch standardisierte Meta-Dateien (Code of Conduct, Security-Prozess, Issue- und PR-Vorlagen, `.env`-Beispiele usw.), die für Kollaboration, Compliance und Wartbarkeit essenziell sind. Ohne diese Leitplanken mussten Richtlinien ad hoc erklärt werden, Sicherheitsmeldungen liefen unstrukturiert auf und neue Contributors hatten keinen roten Faden.
+The project grew from a prototype implementation into a fully documented reference application. However, it lacked standardized meta files (Code of Conduct, security process, issue and PR templates, `.env` examples, etc.) that are essential for collaboration, compliance, and maintainability. Without these guardrails, policies had to be explained ad hoc, security reports were handled inconsistently, and new contributors had no clear onboarding path.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- Klare Community- und Sicherheitsrichtlinien (Open Source Best Practices)
-- Reproduzierbare lokale Setups (Node-Version, .env-Beispiele, Editor-Einstellungen)
-- Automatisierte Dependency-Sicherheit (Dependabot)
-- Einheitliche Beiträge (Issue-/PR-Vorlagen, CODEOWNERS)
-- Geringer Overhead in Pflege und Dokumentation
+- Clear community and security policies (open source best practices)
+- Reproducible local setups (Node version, .env examples, editor settings)
+- Automated dependency security (Dependabot)
+- Consistent contributions (issue/PR templates, CODEOWNERS)
+- Low maintenance and documentation overhead
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – Minimal-Setup ohne zusätzliche Meta-Dateien
+### Option A – Minimal setup without additional meta files
 
-- Konzentration auf Quellcode und Architektur-Dokumente
-- Kommunikation über individuelle Issues/PRs
-- Vorteil: Kein zusätzlicher Pflegeaufwand
-- Nachteil: Hohe Einarbeitungshürde, inkonsistente Prozesse, keine proaktive Security- oder Dependency-Strategie
+- Focus on source code and architecture documents
+- Communication via individual issues/PRs
+- Pros: No extra maintenance effort
+- Cons: High onboarding barrier, inconsistent processes, no proactive security or dependency strategy
 
-### Option B – Kuratiertes Set an Meta-Dateien (Best Practices)
+### Option B – Curated set of meta files (best practices)
 
 - `.env.example`, `.editorconfig`, `.nvmrc`, `.npmrc`
-- Community-Richtlinien (`CODE_OF_CONDUCT.md`, `SECURITY.md`, `.github/CODEOWNERS`)
-- Automatisierte Pflege (`.github/dependabot.yml`)
-- Beitragstemplates (`.github/ISSUE_TEMPLATE/*`, `.github/PULL_REQUEST_TEMPLATE.md`)
-- Vorteil: Definierte Prozesse, geringere Einstiegshürden, automatische Benachrichtigung relevanter Reviewer
-- Nachteil: Zusätzlicher Initial- und Pflegeaufwand, Dateien müssen aktuell gehalten werden
+- Community guidelines (`CODE_OF_CONDUCT.md`, `SECURITY.md`, `.github/CODEOWNERS`)
+- Automated maintenance (`.github/dependabot.yml`)
+- Contribution templates (`.github/ISSUE_TEMPLATE/*`, `.github/PULL_REQUEST_TEMPLATE.md`)
+- Pros: Defined processes, lower onboarding barriers, automatic notification of relevant reviewers
+- Cons: Additional initial and maintenance effort; files must be kept up to date
 
-## Entscheidung
+## Decision
 
-Wir entscheiden uns für Option B und führen ein vollständiges Paket an Meta-Dateien ein. Dadurch wird das Repository produktionsreif, Contributors verstehen Erwartungen sofort und Sicherheits- bzw. Wartungsvorfälle können strukturiert abgewickelt werden. CODEOWNERS weist vorerst alle Änderungen `@nimble-123` zu, was spätere Erweiterungen (Teams/Module) vereinfacht.
+We choose Option B and introduce a complete package of meta files. This makes the repository production-ready, helps contributors understand expectations immediately, and allows security and maintenance incidents to be handled in a structured way. CODEOWNERS initially assigns all changes to `@nimble-123`, simplifying later expansion to teams/modules.
 
-## Konsequenzen
+## Consequences
 
-- Positiv: Vereinheitlichte Arbeitsweise, klarer Verantwortlichkeiten, reproduzierbare lokale Umgebung
-- Positiv: Dependabot informiert proaktiv über Updates in CAP-, UI5- und GitHub-Actions-Abhängigkeiten
-- Positiv: Sicherheitslücken können vertraulich gemeldet und koordiniert geschlossen werden
-- Negativ: Meta-Dateien müssen mit Produktentwicklungen synchron gehalten werden (z. B. neue Umgebungsvariablen, geänderte Build-Skripte)
-- Negativ: Zusätzliche Reviewer-Benachrichtigungen können zunächst den Review-Backlog erhöhen
+- Positive: Standardized working practices, clear responsibilities, reproducible local environment
+- Positive: Dependabot proactively notifies about updates to CAP, UI5, and GitHub Actions dependencies
+- Positive: Security issues can be reported confidentially and closed in a coordinated manner
+- Negative: Meta files must be kept in sync with product developments (e.g. new environment variables, changed build scripts)
+- Negative: Additional reviewer notifications may initially increase the review backlog
 
-## Verweise
+## References
 
 - `.env.example`
 - `.editorconfig`
