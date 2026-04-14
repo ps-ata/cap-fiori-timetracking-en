@@ -1,59 +1,59 @@
-# ADR 0017: Release-Automatisierung mit `release-please`
+# ADR 0017: Release Automation with `release-please`
 
 ## Status
 
-Akzeptiert – Umsetzung in der aktuellen Iteration abgeschlossen
+Accepted – implementation completed in the current iteration
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-- Bisher erfolgte die Versionierung und Changelog-Pflege manuell, obwohl Commits bereits das Conventional-Commits-Schema nutzen.
-- Das Repository enthält mehrere `package.json`-Dateien (Root + UI5-Apps unter `app/*`), die synchron versioniert werden müssen.
-- Für spätere SAP-BTP-Deployments (Cloud Foundry) soll ein nachvollziehbarer Release-Prozess etabliert sein, der sich einfach in CI/CD integrieren lässt.
-- GitHub wird als Quellcode- und Automatisierungsplattform eingesetzt; Branch-Strategie folgt `develop` (Integration) und `main` (Release) mit kurzlebigen Feature-Branches.
+- Versioning and changelog maintenance were previously done manually, even though commits already follow the Conventional Commits scheme.
+- The repository contains multiple `package.json` files (root + UI5 apps under `app/*`) that must be versioned in sync.
+- For future SAP BTP deployments (Cloud Foundry), a traceable release process should be established that can be easily integrated into CI/CD.
+- GitHub is used as the source code and automation platform; branch strategy follows `develop` (integration) and `main` (release) with short-lived feature branches.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Nachvollziehbarkeit & Reviewbarkeit** – Release-Schritte sollen über PRs überprüfbar bleiben.
-- **Mehrpaket-Fähigkeit** – konsistente Versionierung über Root- und App-Packages hinweg.
-- **Stabilität & Wartbarkeit** – etablierte, aktiv gepflegte Lösung ohne proprietäre Erweiterungen.
-- **CI/CD-Integration** – unkomplizierte Anbindung an GitHub Actions und spätere Erweiterbarkeit (Deployments, Artefakte).
-- **Onboarding & Dokumentation** – der Prozess muss leicht verständlich und dokumentierbar sein.
+- **Traceability & reviewability** – release steps should remain reviewable via PRs.
+- **Multi-package capability** – consistent versioning across root and app packages.
+- **Stability & maintainability** – established, actively maintained solution without proprietary extensions.
+- **CI/CD integration** – easy connection to GitHub Actions and future extensibility (deployments, artifacts).
+- **Onboarding & documentation** – the process must be easy to understand and document.
 
-## Betrachtete Optionen
+## Considered Options
 
 ### Option A – `semantic-release`
 
-- **Kernelemente**: CLI-Tool, Plugins für Changelog, Git Tags, optionale npm-Publikation.
-- **Vorteile**: Sehr verbreitet, große Plugin-Landschaft, vollautomatische Releases.
-- **Nachteile**: Weniger Fokus auf PR-basierte Freigabe, mehr Eigenkonfiguration für Monorepos, schreibt direkt auf `main`.
+- **Core elements**: CLI tool, plugins for changelog, git tags, optional npm publishing.
+- **Pros**: Very common, large plugin ecosystem, fully automated releases.
+- **Cons**: Less focus on PR-based approval, more custom configuration for monorepos, writes directly to `main`.
 
 ### Option B – `release-please` (Google)
 
-- **Kernelemente**: Release-PRs, Manifest-/Monorepo-Support, GitHub Action.
-- **Vorteile**: PR-Zentrierter Workflow, `node-workspace`-Plugin synchronisiert mehrere Packages, native GitHub-Integration.
-- **Nachteile**: Fokus auf GitHub-Ökosystem, kein direktes npm-Publishing (hier jedoch nicht erforderlich).
+- **Core elements**: release PRs, manifest/monorepo support, GitHub Action.
+- **Pros**: PR-centered workflow, `node-workspace` plugin syncs multiple packages, native GitHub integration.
+- **Cons**: Focused on the GitHub ecosystem, no direct npm publishing (not required here).
 
-### Option C – Manueller Prozess
+### Option C – Manual process
 
-- **Kernelemente**: Manuelle Versionserhöhungen + Changelog-Einträge.
-- **Vorteile**: Keine zusätzliche Tooling-Abhängigkeit.
-- **Nachteile**: Fehleranfällig, unskalierbar, fehlende Automatisierung für geplante CI/CD-Erweiterungen.
+- **Core elements**: manual version bumps + changelog entries.
+- **Pros**: No additional tooling dependency.
+- **Cons**: Error-prone, unscalable, lacks automation for planned CI/CD extensions.
 
-## Entscheidung
+## Decision
 
-- Wir entscheiden uns für **Option B – `release-please` mit Manifest-Workflow**.
-- Konfiguration über `release-please-config.json` + `.release-please-manifest.json`, inklusive `node-workspace`-Plugin für `app/timetable` und `app/timetracking`.
-- GitHub Action (`.github/workflows/release-please.yaml`) reagiert nach erfolgreichen `main`-Builds (`workflow_run`) und erzeugt/aktualisiert Release-PRs mit Changelog, Version Bumps und Tags – der tatsächliche Tag entsteht erst nach Merge des Release-PRs.
-- Lokaler Dry-Run über `npx release-please release-pr --dry-run` bleibt vor dem ersten echten Lauf verpflichtend.
+- We choose **Option B – `release-please` with manifest workflow**.
+- Configuration via `release-please-config.json` + `.release-please-manifest.json`, including the `node-workspace` plugin for `app/timetable` and `app/timetracking`.
+- GitHub Action (`.github/workflows/release-please.yaml`) responds after successful `main` builds (`workflow_run`) and creates/updates release PRs with changelog, version bumps, and tags – the actual tag is created only after the release PR is merged.
+- A local dry run via `npx release-please release-pr --dry-run` remains mandatory before the first real run.
 
-## Konsequenzen
+## Consequences
 
-- **Positiv**: Automatisierte, überprüfbare Releases; konsistente Versionen in allen Packages; Changelog wird kontinuierlich gepflegt.
-- **Negativ/Risiken**: Abhängigkeit vom Release-Please-Projekt; Conventional-Commit-Disziplin erforderlich; Tokens/Permissions müssen gepflegt werden.
-- **Follow-ups**: Integration des Release-Schritts in zukünftige BTP-Deployments; regelmäßige Prüfung der Action-Version; Ergänzung von Release-Notes-Vorlagen, sobald Deployments live gehen.
+- **Positive**: automated, reviewable releases; consistent versions across all packages; changelog is continuously maintained.
+- **Negative/risks**: dependency on the release-please project; Conventional Commits discipline required; tokens/permissions must be maintained.
+- **Follow-ups**: integrate the release step into future BTP deployments; regularly review the action version; add release notes templates once deployments go live.
 
-## Verweise
+## References
 
-- Konfiguration: `release-please-config.json`, `.release-please-manifest.json`
+- Configuration: `release-please-config.json`, `.release-please-manifest.json`
 - GitHub Action: `.github/workflows/release-please.yaml`
-- Dokumentation: `README.md` (Release-Prozess), `docs/ARCHITECTURE.md` Abschnitt „Transport & Lifecycle Governance“
+- Documentation: `README.md` (release process), `docs/ARCHITECTURE.md` section “Transport & Lifecycle Governance”
