@@ -1,73 +1,73 @@
-# ADR 0013: CAP Attachments Plugin für Dokumentanhänge
+# ADR 0013: CAP Attachments Plugin for Document Attachments
 
 ## Status
 
-Akzeptiert – Iteration 7 (Introduced Attachment Capability)
+Accepted – Iteration 7 (Introduced Attachment Capability)
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-Für die Object Page der TimeEntries sollen Benutzer Belege, Buchungsnachweise oder ergänzende Dokumente hochladen und abrufen können. Die Lösung muss sowohl lokal (SQLite) als auch in der HANA Cloud funktionieren, versionierbar sein und sich in die Fiori Elements Attachments Section integrieren. Gleichzeitig sollen Security-, Streaming- und Metadata-Aspekte konsistent über alle Umgebungen hinweg umgesetzt werden.
+For the TimeEntries object page, users should be able to upload and retrieve receipts, booking documents, or supplementary files. The solution must work both locally (SQLite) and in HANA Cloud, support versioning, and integrate into the Fiori Elements attachments section. At the same time, security, streaming, and metadata aspects must be implemented consistently across all environments.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Standardkonformität:** Nutzung offizieller CAP-Erweiterungen statt individueller Implementierungen
-- **Wartbarkeit:** Minimaler eigener Code für Medien-Handler, Fokus auf Fachlogik
-- **Deployment-Flexibilität:** Funktioniert lokal (SQLite) und in produktiven HANA-Szenarien
-- **Integration in Fiori Elements:** Attachment-Facet soll „out-of-the-box“ funktionieren
-- **Kosten / Infrastruktur:** Vermeidung zusätzlicher Services oder Lizenzen, wenn nicht zwingend nötig
+- **Standards compliance:** Use official CAP extensions instead of custom implementations
+- **Maintainability:** Minimal custom code for media handling, focus on business logic
+- **Deployment flexibility:** Works locally (SQLite) and in productive HANA scenarios
+- **Fiori Elements integration:** Attachment facet should work out of the box
+- **Cost / infrastructure:** Avoid additional services or licenses unless strictly required
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – SAP CAP Attachments Plugin (`@cap-js/attachments`) **(gewählt)**
+### Option A – SAP CAP Attachments Plugin (`@cap-js/attachments`) **(chosen)**
 
-- **Vorteile:**
-  - Offizielle CAP-Erweiterung mit automatischen Handlern, Metadaten-Haltung und Streaming-Unterstützung
-  - Funktioniert ohne zusätzliche Services sowohl auf SQLite als auch HANA
-  - Fiori Attachments Facet kann direkt angebunden werden, inkl. Toggle über Customizing
-- **Nachteile:**
-  - Persistiert Binärdaten in der Datenbank (kein dediziertes Content Repository)
-  - Funktionsumfang auf Standard-Anwendungsfälle beschränkt
+- **Pros:**
+  - Official CAP extension with auto-generated handlers, metadata storage, and streaming support
+  - Works without additional services on both SQLite and HANA
+  - Fiori Attachments facet can be connected directly, including toggle via customizing
+- **Cons:**
+  - Persists binary data in the database (no dedicated content repository)
+  - Feature set is limited to standard use cases
 
 ### Option B – SAP Document Management Service Plugin (`@cap-js/sdm`)
 
-- **Vorteile:**
-  - Auslagerung der Binärdaten in einen dedizierten Content Store mit Versionierung & Sharing-Features
-  - Geeignet für große Datenmengen und unternehmensweite Dokumentenverwaltung
-- **Nachteile:**
-  - Benötigt zusätzlich konfigurierten SAP Document Management Service (Kosten, Setup, Betrieb)
-  - Höhere Komplexität (Authentifizierung, Destinations, Lifecycle-Management)
-  - Overkill für projektinterne Attachments im MVP
+- **Pros:**
+  - Offloads binary data to a dedicated content store with versioning and sharing features
+  - Suitable for large volumes and enterprise-wide document management
+- **Cons:**
+  - Requires a configured SAP Document Management Service (cost, setup, operation)
+  - Higher complexity (authentication, destinations, lifecycle management)
+  - Overkill for project-internal attachments in the MVP
 
-### Option C – Eigenentwicklung (Custom Media Entity / Storage Service)
+### Option C – Custom implementation (Custom Media Entity / Storage Service)
 
-- **Vorteile:**
-  - Maximale Kontrolle über Speicherort (z. B. S3, Azure Blob) und Business Rules
-- **Nachteile:**
-  - Hoher Entwicklungs- und Wartungsaufwand (Streaming, Security, Metadaten, Clean-up)
-  - Risiko von Security- und Compliance-Lücken ohne geprüfte Standardkomponenten
-  - Zusätzliche Tests & Dokumentation erforderlich
+- **Pros:**
+  - Maximum control over storage location (e.g. S3, Azure Blob) and business rules
+- **Cons:**
+  - High development and maintenance effort (streaming, security, metadata, cleanup)
+  - Risk of security and compliance gaps without tested standard components
+  - Additional tests and documentation required
 
-## Entscheidung
+## Decision
 
-Wir setzen auf **Option A** und integrieren das CAP Attachments Plugin. Die `TimeEntries`-Entity wurde um eine `Composition of many Attachments` erweitert (`db/attachments.cds`). Das Plugin liefert alle notwendigen Handler und OData-Endpunkte, sodass Upload/Download direkt von Fiori Elements aus erfolgen kann. Die Sichtbarkeit steuern wir über das Customizing-Feld `hideAttachmentFacet`.
+We choose **Option A** and integrate the CAP Attachments Plugin. The `TimeEntries` entity was extended with a `Composition of many Attachments` (`db/attachments.cds`). The plugin provides all required handlers and OData endpoints, allowing upload/download directly from Fiori Elements. Visibility is controlled via the customizing field `hideAttachmentFacet`.
 
-## Konsequenzen
+## Consequences
 
-**Positiv**
+**Positive**
 
-- Schnelle Implementierung ohne eigene Media-Handler
-- Einheitliches Verhalten in Dev/Prod, Streaming unterstützt große Dateien
-- Direkte Fiori Attachments Integration, UI-Toggle über Customizing
+- Fast implementation without custom media handlers
+- Consistent behavior in dev/prod, streaming supports large files
+- Direct Fiori attachments integration, UI toggle via customizing
 
-**Negativ**
+**Negative**
 
-- Binärdaten landen in der Datenbank – zusätzlicher Speicherbedarf
-- Erweiterte Anforderungen (Versionierung, Sharing) müssten in Zukunft via DMS oder Custom-Lösung ergänzt werden
+- Binary data is stored in the database, increasing storage requirements
+- Advanced requirements (versioning, sharing) would need future extension via DMS or a custom solution
 
-## Verweise
+## References
 
-- `package.json` – Dependency `@cap-js/attachments`
-- `db/attachments.cds` – Composition-Erweiterung für `TimeEntries`
-- `srv/track-service/annotations/ui/timeentries-ui.cds` – Attachment-Facet + Hidden-Toggle
-- `docs/ARCHITECTURE.md` – Abschnitt [8.8 Dokumentanhänge (Attachments Plugin)](#88-dokumentanhänge-attachments-plugin)
-- `README.md` – Abschnitt „Key Features“ (Dokumentenanhänge)
+- `package.json` – dependency `@cap-js/attachments`
+- `db/attachments.cds` – composition extension for `TimeEntries`
+- `srv/track-service/annotations/ui/timeentries-ui.cds` – attachment facet + hidden toggle
+- `docs/ARCHITECTURE.md` – section [8.8 Document Attachments (Attachments Plugin)](#88-dokumentanhänge-attachments-plugin)
+- `README.md` – section “Key Features” (document attachments)
