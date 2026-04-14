@@ -1,8 +1,8 @@
 # 🏗️ Builder Pattern (Fluent API)
 
-**Datei:** `srv/handler/setup/HandlerSetup.ts`
+**File:** `srv/handler/setup/HandlerSetup.ts`
 
-Builder mit Fluent API für elegantes Handler-Setup:
+builder with fluent API for elegant handler setup:
 
 ```typescript
 class HandlerSetup {
@@ -26,7 +26,7 @@ class HandlerSetup {
 }
 ```
 
-**Usage in TrackService:**
+**usage in TrackService:**
 
 ```typescript
 private setupHandlers(): void {
@@ -41,7 +41,7 @@ private setupHandlers(): void {
 
 **Features:**
 
-- ⛓️ Chainable API
-- 🎨 Sehr elegant und lesbar
-- 🔧 Flexibel - kann selektiv Handler hinzufügen
-- 🧩 Kombiniert Factory + Registrar
+- ⛓️ chainable API
+- 🎨 very elegant and readable
+- 🔧 flexible – can selectively add handlers
+- 🧩 combines factory + registrar
