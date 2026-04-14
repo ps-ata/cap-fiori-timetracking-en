@@ -1,56 +1,56 @@
-# ADR 0019: Produktive Authentifizierung mit IAS & Authorization Management Service
+# ADR 0019: Productive Authentication with IAS & Authorization Management Service
 
 ## Status
 
-Akzeptiert – Implementierung im Repository abgeschlossen, BTP-Konfiguration folgt im Subaccount.
+Accepted – implementation completed in the repository, BTP configuration pending in the subaccount.
 
-## Kontext und Problemstellung
+## Context and Problem Statement
 
-- Die Zeit­erfassung soll auf SAP BTP Cloud Foundry laufen und über SAP Build Work Zone Standard Edition bereitgestellt werden.
-- Bisher nutzten wir lokal `auth.kind = mocked` (ADR-0010) und hatten kein produktionsfähiges Identitäts- und Rollenmodell.
-- Anforderungen: SSO über IAS, rollenbasierte Freigaben für Zeit­einträge, vorbereitete Attribute für spätere Policy-Regeln (Projekt, Bundesland).
-- Stakeholder: Endanwender:innen (Time Tracking), Teamleitungen (Freigabe), Admins (Stammdaten), Security & Compliance.
+- Time tracking should run on SAP BTP Cloud Foundry and be delivered via SAP Build Work Zone Standard Edition.
+- So far we used `auth.kind = mocked` locally (ADR-0010) and had no production-ready identity and role model.
+- Requirements: SSO via IAS, role-based approvals for time entries, prepared attributes for future policy rules (project, federal state).
+- Stakeholders: end users (time tracking), team leads (approval), admins (master data), security & compliance.
 
-## Entscheidungsfaktoren
+## Decision Factors
 
-- **Security & Compliance:** Unternehmensweite Identitäten, zentrale Rollentransporte, Auditierbarkeit.
-- **Integration Work Zone:** AFS benötigt IAS-/XSUAA-kompatible JWTs; Fiori Feature-Toggles lesen Shell-Rollen.
-- **Attribute-basierte Policies:** AMS soll perspektivisch Projekt-/Standort-Filter steuern.
-- **Developer Experience:** Lokale Mock-User müssen weiterhin schnell nutzbar bleiben.
+- **Security & compliance:** enterprise-wide identities, centralized role transport, auditability.
+- **Work Zone integration:** AFS requires IAS-/XSUAA-compatible JWTs; Fiori feature toggles read shell roles.
+- **Attribute-based policies:** AMS should eventually drive project/location filters.
+- **Developer experience:** local mock users must remain quick to use.
 
-## Betrachtete Optionen
+## Considered Options
 
-### Option A – Reines XSUAA-Setup
+### Option A – pure XSUAA setup
 
-- XSUAA liefert OAuth2 Tokens und Role Templates (`xs-security.json`).
-- Vorteile: Bewährt, geringe Zusatzkomplexität, direkte CF-Integration.
-- Nachteile: Kein Attribut-Policy-Layer, zusätzliche Kopplung für SAML/Corporate IdP, spätere Migration zu AMS notwendig.
+- XSUAA provides OAuth2 tokens and role templates (`xs-security.json`).
+- Pros: proven, low additional complexity, direct CF integration.
+- Cons: no attribute policy layer, additional coupling for SAML/corporate IdP, later migration to AMS required.
 
-### Option B – IAS + AMS (gewählt)
+### Option B – IAS + AMS (chosen)
 
-- IAS übernimmt AuthN, AMS Policies liefern Attribute; XSUAA bleibt Fallback via `xsuaa-cross-consumption`.
-- Vorteile: Einheitliche Identity-Provider-Landschaft, vorbereitete Attribute (`db/ams-attributes.cds`), automatische DCL-Deployments (`ams/dcl/basePolicies.dcl`).
-- Nachteile: Zwei neue CF-Services, zusätzliche Deploy-Schritte, Service Keys für Policy-Deployment erforderlich.
+- IAS handles AuthN, AMS policies provide attributes; XSUAA remains a fallback via `xsuaa-cross-consumption`.
+- Pros: unified identity provider landscape, prepared attributes (`db/ams-attributes.cds`), automatic DCL deployments (`ams/dcl/basePolicies.dcl`).
+- Cons: two new CF services, additional deployment steps, service keys required for policy deployment.
 
-## Entscheidung
+## Decision
 
-Wir wählen **Option B**. Die Umsetzung umfasst:
+We choose **Option B**. The implementation includes:
 
-- `package.json`: Default `cds.requires.auth = "ias"`, Fallback `xsuaa = true`, Mock-User mit Rollen `TimeTrackingUser/Approver/Admin`.
-- `xs-security.json`: Scopes & Role Templates für die drei Produktivrollen.
-- `db/ams-attributes.cds`: Mapping von User-, Projekt- und Statusinformationen (inkl. `ProjectNumber`) auf AMS-Attribute.
-- `ams/dcl/basePolicies.dcl`: Basis-Policies für AMS, deployt durch `cap-fiori-timetracking-ams-policies-deployer`.
-- `mta.yaml`: Bindings für `cap-fiori-timetracking-ias` und `cap-fiori-timetracking-ams`, inkl. Zertifikats-Credentials.
+- `package.json`: default `cds.requires.auth = "ias"`, fallback `xsuaa = true`, mock users with roles `TimeTrackingUser/Approver/Admin`.
+- `xs-security.json`: scopes & role templates for the three production roles.
+- `db/ams-attributes.cds`: mapping of user, project, and status information (including `ProjectNumber`) to AMS attributes.
+- `ams/dcl/basePolicies.dcl`: base AMS policies deployed by `cap-fiori-timetracking-ams-policies-deployer`.
+- `mta.yaml`: bindings for `cap-fiori-timetracking-ias` and `cap-fiori-timetracking-ams`, including certificate credentials.
 
-## Konsequenzen
+## Consequences
 
-- **Positiv:** Einheitlicher AuthN/A-Z-Stack für Work Zone; Attribute stehen der Business-Logik und AMS Policies zur Verfügung; kein Code-Tausch zwischen Dev & Prod.
-- **Negativ:** Zusätzlich zu provisionierende Dienste (kostenrelevant), Deployment scheitert, wenn AMS- oder IAS-Bindings fehlen; lokale Tests benötigen weiterhin Mock-Rollenpflege.
-- **Follow-ups:** AMS-Policies pro Fachbereich verfeinern, Role Collections im Subaccount anlegen, End-to-End-Tests mit echten JWTs automatisieren.
+- **Positive:** unified AuthN/AuthZ stack for Work Zone; attributes available to business logic and AMS policies; no code swap between dev & prod.
+- **Negative:** additional services to provision (cost-relevant), deployment fails if AMS or IAS bindings are missing; local tests still require mock role maintenance.
+- **Follow-ups:** refine AMS policies per business area, create role collections in the subaccount, automate end-to-end tests with real JWTs.
 
-## Verweise
+## References
 
 - `package.json`, `xs-security.json`
-- `mta.yaml` (Module & Ressourcen für IAS/AMS)
+- `mta.yaml` (modules & resources for IAS/AMS)
 - `db/ams-attributes.cds`, `ams/dcl/basePolicies.dcl`
-- `docs/ARCHITECTURE.md` Abschnitt 7.4
+- `docs/ARCHITECTURE.md` section 7.4
